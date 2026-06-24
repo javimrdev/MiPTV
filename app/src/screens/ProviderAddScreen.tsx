@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -69,8 +69,17 @@ export function ProviderAddScreen({ navigation }: RootStackScreenProps<'Provider
     );
   }, [addProvider, name, providerType, url, username, password, epgUrl, needsCredentials, navigation]);
 
-  const inputStyle = [styles.input, { borderColor: theme.colors.border, color: theme.colors.text }];
-  const labelStyle = { color: theme.colors.textSecondary };
+  const themedStyles = useMemo(
+    () => ({
+      input: { borderColor: theme.colors.border, color: theme.colors.text },
+      label: { color: theme.colors.textSecondary },
+      segmentDefault: { color: theme.colors.text },
+    }),
+    [theme],
+  );
+
+  const inputStyle = [styles.input, themedStyles.input];
+  const labelStyle = themedStyles.label;
 
   return (
     <KeyboardAvoidingView
@@ -105,7 +114,7 @@ export function ProviderAddScreen({ navigation }: RootStackScreenProps<'Provider
               <Text
                 style={[
                   styles.segmentText,
-                  { color: providerType === pt.value ? '#fff' : theme.colors.text },
+                  providerType === pt.value ? styles.segmentTextActive : themedStyles.segmentDefault,
                 ]}
               >
                 {pt.label}
@@ -196,5 +205,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   segmentText: { fontSize: 13, fontWeight: '500' },
+  segmentTextActive: { color: '#fff' },
   saveBtn: { marginTop: 32 },
 });
