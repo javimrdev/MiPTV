@@ -90,10 +90,14 @@ fn parse_programme_attrs(e: &quick_xml::events::BytesStart) -> Result<PartialEnt
                 channel_id = Some(String::from_utf8_lossy(&attr.value).into_owned());
             }
             b"start" => {
-                start = Some(parse_xmltv_timestamp(&String::from_utf8_lossy(&attr.value))?);
+                start = Some(parse_xmltv_timestamp(&String::from_utf8_lossy(
+                    &attr.value,
+                ))?);
             }
             b"stop" => {
-                end = Some(parse_xmltv_timestamp(&String::from_utf8_lossy(&attr.value))?);
+                end = Some(parse_xmltv_timestamp(&String::from_utf8_lossy(
+                    &attr.value,
+                ))?);
             }
             _ => {}
         }
