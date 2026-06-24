@@ -12,7 +12,7 @@ async function ensureInit() {
   if (initialized) {
     return;
   }
-  await NativeMiPTVCore.init('miptv.db');
+  await NativeMiPTVCore.initialize('miptv.db');
   initialized = true;
 }
 

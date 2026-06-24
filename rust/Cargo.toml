@@ -7,6 +7,7 @@ members = [
     "crates/parser-m3u",
     "crates/parser-xmltv",
     "crates/ffi-uniffi",
+    "crates/uniffi-bindgen",
 ]
 
 [workspace.package]
@@ -59,7 +60,7 @@ keyring = "3"
 regex = "1"
 
 # FFI
-uniffi = { version = "0.28", features = ["tokio"] }
+uniffi = { version = "0.28", features = ["tokio", "cli"] }
 
 # Internal crates
 core-domain = { path = "crates/core-domain" }
