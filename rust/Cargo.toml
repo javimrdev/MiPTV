@@ -33,7 +33,7 @@ quick-xml = { version = "0.37", features = ["serialize"] }
 nom = "7"
 
 # Database
-sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "migrate", "time"] }
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "time"] }
 
 # Time
 time = { version = "0.3", features = ["serde"] }
