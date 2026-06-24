@@ -386,6 +386,43 @@ impl Database {
             .await?;
         Ok(())
     }
+
+    pub async fn get_recently_watched_channels(&self, limit: i64) -> Result<Vec<Channel>> {
+        let ids: Vec<String> = sqlx::query_scalar(
+            "SELECT channel_id FROM watch_history GROUP BY channel_id ORDER BY MAX(started_at) DESC LIMIT ?",
+        )
+        .bind(limit)
+        .fetch_all(&self.pool)
+        .await?;
+        self.fetch_channels_by_ids(&ids).await
+    }
+
+    pub async fn get_most_watched_channels(&self, limit: i64) -> Result<Vec<Channel>> {
+        let ids: Vec<String> = sqlx::query_scalar(
+            "SELECT channel_id FROM watch_history GROUP BY channel_id ORDER BY SUM(duration_secs) DESC LIMIT ?",
+        )
+        .bind(limit)
+        .fetch_all(&self.pool)
+        .await?;
+        self.fetch_channels_by_ids(&ids).await
+    }
+
+    async fn fetch_channels_by_ids(&self, ids: &[String]) -> Result<Vec<Channel>> {
+        let mut channels = Vec::with_capacity(ids.len());
+        for id in ids {
+            let row: Option<ChannelRow> = sqlx::query_as(
+                "SELECT id, provider_id, name, stream_url, logo_url, grp, country, languages, tvg_id, catchup_support \
+                 FROM channels WHERE id = ?",
+            )
+            .bind(id)
+            .fetch_optional(&self.pool)
+            .await?;
+            if let Some(r) = row {
+                channels.push(channel_from_row(r));
+            }
+        }
+        Ok(channels)
+    }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

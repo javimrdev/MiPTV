@@ -42,6 +42,7 @@ import { useCurrentEpg, useEpgForChannel } from '../hooks/useEpg';
 import { useChannels } from '../hooks/useChannels';
 import { useProviders } from '../hooks/useProviders';
 import { useProviderStore } from '../store/providerStore';
+import { useMiPTVCore } from '../hooks/useMiPTVCore';
 import type { RootStackScreenProps } from '../navigation/types';
 import type { Channel, EpgEntry } from '../specs/NativeMiPTVCore';
 import { usePlayerStore } from '../store/playerStore';
@@ -133,6 +134,7 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
   const autoHideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const volumeStartRef = useRef(1);
   const sliderWidthRef = useRef(0);
+  const startedAtRef = useRef(Math.floor(Date.now() / 1000));
 
   // Playback state
   const [paused, setPaused] = useState(false);
@@ -157,6 +159,7 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
   const controlsStyle = useAnimatedStyle(() => ({ opacity: controlsVisible.value }));
 
   const { setChannel, setPlaying } = usePlayerStore();
+  const core = useMiPTVCore();
 
   // ── Mini guide state ────────────────────────────────────────────────────────
 
@@ -239,6 +242,7 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
   // ── Mount / unmount ─────────────────────────────────────────────────────────
 
   useEffect(() => {
+    const watchStartedAt = startedAtRef.current;
     Orientation.lockToLandscape();
     StatusBar.setHidden(true);
     setChannel({
@@ -258,6 +262,10 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
       Orientation.lockToPortrait();
       StatusBar.setHidden(false);
       setChannel(null);
+      const watchDuration = Math.floor(Date.now() / 1000) - watchStartedAt;
+      if (watchDuration > 0) {
+        core.recordWatch(channelId, watchStartedAt, watchDuration).catch(() => {});
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

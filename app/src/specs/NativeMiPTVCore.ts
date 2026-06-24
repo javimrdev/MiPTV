@@ -76,6 +76,9 @@ export interface Spec extends TurboModule {
     startedAt: number,
     durationSeconds: number,
   ): Promise<void>;
+
+  getRecentlyWatched(limit: number): Promise<Channel[]>;
+  getMostWatched(limit: number): Promise<Channel[]>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('NativeMiPTVCore');
