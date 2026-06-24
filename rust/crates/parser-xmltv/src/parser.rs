@@ -79,9 +79,7 @@ struct PartialEntry {
     category: Option<String>,
 }
 
-fn parse_programme_attrs(
-    e: &quick_xml::events::BytesStart,
-) -> Result<PartialEntry, XmltvError> {
+fn parse_programme_attrs(e: &quick_xml::events::BytesStart) -> Result<PartialEntry, XmltvError> {
     let mut channel_id = None;
     let mut start = None;
     let mut end = None;
@@ -89,27 +87,20 @@ fn parse_programme_attrs(
     for attr in e.attributes().flatten() {
         match attr.key.as_ref() {
             b"channel" => {
-                channel_id = Some(
-                    String::from_utf8_lossy(&attr.value).into_owned(),
-                );
+                channel_id = Some(String::from_utf8_lossy(&attr.value).into_owned());
             }
             b"start" => {
-                start = Some(parse_xmltv_timestamp(
-                    &String::from_utf8_lossy(&attr.value),
-                )?);
+                start = Some(parse_xmltv_timestamp(&String::from_utf8_lossy(&attr.value))?);
             }
             b"stop" => {
-                end = Some(parse_xmltv_timestamp(
-                    &String::from_utf8_lossy(&attr.value),
-                )?);
+                end = Some(parse_xmltv_timestamp(&String::from_utf8_lossy(&attr.value))?);
             }
             _ => {}
         }
     }
 
     Ok(PartialEntry {
-        channel_id: channel_id
-            .ok_or_else(|| XmltvError::MissingAttribute("channel".into()))?,
+        channel_id: channel_id.ok_or_else(|| XmltvError::MissingAttribute("channel".into()))?,
         start: start.ok_or_else(|| XmltvError::MissingAttribute("start".into()))?,
         end: end.ok_or_else(|| XmltvError::MissingAttribute("stop".into()))?,
         title: String::new(),
