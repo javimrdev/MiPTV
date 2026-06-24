@@ -361,4 +361,22 @@ impl MiPTVCore {
             .await
             .map_err(|e| CoreError::Database { msg: e.to_string() })
     }
+
+    pub async fn get_recently_watched(&self, limit: u64) -> Result<Vec<FfiChannel>, CoreError> {
+        let channels = self
+            .db
+            .get_recently_watched_channels(limit as i64)
+            .await
+            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+        Ok(channels.into_iter().map(FfiChannel::from).collect())
+    }
+
+    pub async fn get_most_watched(&self, limit: u64) -> Result<Vec<FfiChannel>, CoreError> {
+        let channels = self
+            .db
+            .get_most_watched_channels(limit as i64)
+            .await
+            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+        Ok(channels.into_iter().map(FfiChannel::from).collect())
+    }
 }

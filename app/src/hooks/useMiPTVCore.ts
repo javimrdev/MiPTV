@@ -124,6 +124,22 @@ export function useMiPTVCore() {
     [ready],
   );
 
+  const getRecentlyWatched = useCallback(
+    async (limit: number): Promise<Channel[]> => {
+      await ready();
+      return NativeMiPTVCore.getRecentlyWatched(limit);
+    },
+    [ready],
+  );
+
+  const getMostWatched = useCallback(
+    async (limit: number): Promise<Channel[]> => {
+      await ready();
+      return NativeMiPTVCore.getMostWatched(limit);
+    },
+    [ready],
+  );
+
   return {
     listProviders,
     addProvider,
@@ -138,5 +154,7 @@ export function useMiPTVCore() {
     listPlaylists,
     deletePlaylist,
     recordWatch,
+    getRecentlyWatched,
+    getMostWatched,
   };
 }
