@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import {
   View,
   Text,
-  FlatList,
   SectionList,
   TouchableOpacity,
   Image,
   StyleSheet,
 } from 'react-native';
+import type { Playlist } from '../specs/NativeMiPTVCore';
 import { useFavouritesStore } from '../store/favouritesStore';
 import { usePlaylists } from '../hooks/usePlaylists';
 import { useProviderStore } from '../store/providerStore';
@@ -40,9 +40,9 @@ export function PlaylistsScreen({ navigation }: TabScreenProps<'PlaylistsTab'>) 
     if (favouriteChannels.length > 0) {
       result.push({ title: 'Favourites ★', data: favouriteChannels });
     }
-    playlists.forEach(pl => {
+    playlists.forEach((pl: Playlist) => {
       const chans = pl.channelIds
-        .map(id => allChannels.find((ch: Channel) => ch.id === id))
+        .map((id: string) => allChannels.find((ch: Channel) => ch.id === id))
         .filter((ch): ch is Channel => ch !== undefined);
       if (chans.length > 0) {
         result.push({ title: pl.name, data: chans });
