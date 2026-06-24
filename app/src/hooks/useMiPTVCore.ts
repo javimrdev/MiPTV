@@ -9,7 +9,9 @@ import NativeMiPTVCore, {
 let initialized = false;
 
 async function ensureInit() {
-  if (initialized) return;
+  if (initialized) {
+    return;
+  }
   await NativeMiPTVCore.init('miptv.db');
   initialized = true;
 }
