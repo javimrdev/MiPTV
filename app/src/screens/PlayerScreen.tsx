@@ -1,7 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   AppState,
+  FlatList,
+  Image,
   Modal,
   ScrollView,
   StatusBar,
@@ -36,11 +38,17 @@ import Video, {
   VideoTrack,
 } from 'react-native-video';
 import Orientation from 'react-native-orientation-locker';
+import { useCurrentEpg, useEpgForChannel } from '../hooks/useEpg';
+import { useChannels } from '../hooks/useChannels';
+import { useProviders } from '../hooks/useProviders';
+import { useProviderStore } from '../store/providerStore';
 import type { RootStackScreenProps } from '../navigation/types';
+import type { Channel, EpgEntry } from '../specs/NativeMiPTVCore';
 import { usePlayerStore } from '../store/playerStore';
 
 const FADE_MS = 250;
 const AUTO_HIDE_MS = 4000;
+const PANEL_MAX_H = 240;
 
 // ─── Track picker modal ───────────────────────────────────────────────────────
 
@@ -72,6 +80,48 @@ function TrackPickerModal({ title, items, onSelect, onClose }: TrackPickerProps)
         </View>
       </TouchableOpacity>
     </Modal>
+  );
+}
+
+// ─── Mini channel item (in swipe-up panel) ────────────────────────────────────
+
+type MiniChannelItemProps = {
+  channel: Channel;
+  isActive: boolean;
+  now: number;
+  onPress: () => void;
+};
+
+function MiniChannelItem({ channel, isActive, now, onPress }: MiniChannelItemProps) {
+  const { data: epg } = useCurrentEpg(channel.id);
+  const progress = epg
+    ? Math.max(0, Math.min(1, (now - epg.start) / (epg.end - epg.start)))
+    : 0;
+
+  return (
+    <TouchableOpacity
+      style={[styles.miniChItem, isActive && styles.miniChItemActive]}
+      onPress={onPress}
+      activeOpacity={0.7}>
+      {channel.logoUrl ? (
+        <Image source={{ uri: channel.logoUrl }} style={styles.miniChLogo} resizeMode="contain" />
+      ) : (
+        <View style={styles.miniChLogoPlaceholder}>
+          <Text style={styles.miniChLogoText} numberOfLines={1}>{channel.name.slice(0, 3)}</Text>
+        </View>
+      )}
+      <View style={styles.miniChInfo}>
+        <Text style={styles.miniChName} numberOfLines={1}>{channel.name}</Text>
+        {epg ? (
+          <>
+            <Text style={styles.miniChProg} numberOfLines={1}>{epg.title}</Text>
+            <View style={styles.miniChProgressTrack}>
+              <View style={[styles.miniChProgressFill, { width: `${progress * 100}%` }]} />
+            </View>
+          </>
+        ) : null}
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -107,6 +157,39 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
   const controlsStyle = useAnimatedStyle(() => ({ opacity: controlsVisible.value }));
 
   const { setChannel, setPlaying } = usePlayerStore();
+
+  // ── Mini guide state ────────────────────────────────────────────────────────
+
+  const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
+
+  // Update "now" every minute for EPG progress accuracy
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Math.floor(Date.now() / 1000)), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Provider / channels for the swipe-up panel
+  const { data: providers = [] } = useProviders();
+  const { activeProviderId } = useProviderStore();
+  const providerId = activeProviderId ?? providers[0]?.id ?? '';
+  const { data: channels = [] } = useChannels(providerId);
+
+  // Current and next programme for the mini guide bar
+  const { data: currentEpg } = useCurrentEpg(channelId);
+
+  // nowRounded avoids re-fetching on every onProgress tick
+  const nowRounded = useMemo(() => Math.floor(now / 300) * 300, [now]);
+  const { data: nearbyEpg } = useEpgForChannel(channelId, nowRounded, nowRounded + 7200);
+  const nextEpg = useMemo(
+    () => (nearbyEpg ?? []).find((e: EpgEntry) => e.start > now) ?? null,
+    [nearbyEpg, now],
+  );
+
+  // Channel panel animation
+  const panelH = useSharedValue(0);
+  const panelAnimStyle = useAnimatedStyle(() => ({ height: panelH.value }));
+  const panelStartH = useRef(0);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   // ── Auto-hide logic ─────────────────────────────────────────────────────────
 
@@ -256,6 +339,35 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
       videoRef.current?.seek(seekTo);
     });
 
+  // ── Mini guide pan gesture ──────────────────────────────────────────────────
+
+  const guideGesture = Gesture.Pan()
+    .onBegin(() => {
+      panelStartH.current = panelH.value;
+    })
+    .onUpdate(e => {
+      panelH.value = Math.max(0, Math.min(PANEL_MAX_H, panelStartH.current - e.translationY));
+    })
+    .onEnd(() => {
+      const shouldOpen = panelH.value > PANEL_MAX_H / 2;
+      panelH.value = withTiming(shouldOpen ? PANEL_MAX_H : 0, { duration: 250 });
+      runOnJS(setIsPanelOpen)(shouldOpen);
+    });
+
+  const closePanel = useCallback(() => {
+    panelH.value = withTiming(0, { duration: 250 });
+    setIsPanelOpen(false);
+  }, [panelH]);
+
+  const switchChannel = useCallback((ch: Channel) => {
+    closePanel();
+    navigation.replace('Player', {
+      channelId: ch.id,
+      streamUrl: ch.streamUrl,
+      channelName: ch.name,
+    });
+  }, [closePanel, navigation]);
+
   // ── Track picker helpers ────────────────────────────────────────────────────
 
   const audioPickerItems = audioTracks.map((t, i) => ({
@@ -296,6 +408,10 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
   const tapGesture = Gesture.Tap().onEnd(() => runOnJS(toggleControls)());
 
   // ── Render ──────────────────────────────────────────────────────────────────
+
+  const currentEpgProgress = currentEpg
+    ? Math.max(0, Math.min(100, ((now - currentEpg.start) / (currentEpg.end - currentEpg.start)) * 100))
+    : 0;
 
   return (
     <View style={styles.container}>
@@ -425,6 +541,60 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
           </View>
         </Animated.View>
       </GestureDetector>
+
+      {/* Mini guide bar (always visible) */}
+      <GestureDetector gesture={guideGesture}>
+        <View style={styles.miniGuide}>
+          {/* Drag handle */}
+          <View style={styles.miniGuideDragArea}>
+            <View style={styles.miniGuideDragHandle} />
+          </View>
+
+          {currentEpg ? (
+            <View style={styles.miniGuideRow}>
+              {/* Current programme */}
+              <View style={styles.miniGuideColumn}>
+                <Text style={styles.miniGuideBadge}>NOW</Text>
+                <Text style={styles.miniGuideTitle} numberOfLines={1}>{currentEpg.title}</Text>
+                <View style={styles.miniGuideProgressTrack}>
+                  <View style={[styles.miniGuideProgressFill, { width: `${currentEpgProgress}%` }]} />
+                </View>
+              </View>
+
+              {/* Next programme */}
+              {nextEpg ? (
+                <View style={[styles.miniGuideColumn, styles.miniGuideNextColumn]}>
+                  <Text style={styles.miniGuideBadgeNext}>NEXT</Text>
+                  <Text style={[styles.miniGuideTitle, styles.miniGuideTitleNext]} numberOfLines={1}>
+                    {nextEpg.title}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          ) : (
+            <Text style={styles.miniGuideEmpty}>▲ Swipe for channels</Text>
+          )}
+        </View>
+      </GestureDetector>
+
+      {/* Swipe-up channel panel */}
+      <Animated.View style={[styles.channelPanel, panelAnimStyle]}>
+        {isPanelOpen && (
+          <FlatList
+            data={channels}
+            keyExtractor={ch => ch.id}
+            renderItem={({ item: ch }) => (
+              <MiniChannelItem
+                channel={ch}
+                isActive={ch.id === channelId}
+                now={now}
+                onPress={() => switchChannel(ch)}
+              />
+            )}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </Animated.View>
 
       {/* Track picker modals */}
       {trackPicker === 'audio' && (
@@ -577,4 +747,94 @@ const styles = StyleSheet.create({
   pickerItem: { paddingVertical: 10 },
   pickerItemText: { color: '#ccc', fontSize: 14 },
   pickerItemSelected: { color: '#fff', fontWeight: '600' },
+
+  // ── Mini guide bar ────────────────────────────────────────────────────────
+
+  miniGuide: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  miniGuideDragArea: { alignItems: 'center', paddingVertical: 6 },
+  miniGuideDragHandle: {
+    width: 36,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+  },
+  miniGuideRow: { flexDirection: 'row', gap: 16 },
+  miniGuideColumn: { flex: 1 },
+  miniGuideNextColumn: { borderLeftWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,0.2)', paddingLeft: 16 },
+  miniGuideBadge: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#007AFF',
+    letterSpacing: 0.8,
+    marginBottom: 2,
+  },
+  miniGuideBadgeNext: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.5)',
+    letterSpacing: 0.8,
+    marginBottom: 2,
+  },
+  miniGuideTitle: { fontSize: 12, fontWeight: '600', color: '#fff', marginBottom: 4 },
+  miniGuideTitleNext: { color: 'rgba(255,255,255,0.65)' },
+  miniGuideProgressTrack: {
+    height: 2,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 1,
+    overflow: 'hidden',
+  },
+  miniGuideProgressFill: { height: '100%', backgroundColor: '#007AFF', borderRadius: 1 },
+  miniGuideEmpty: { fontSize: 12, color: 'rgba(255,255,255,0.5)', textAlign: 'center', paddingVertical: 4 },
+
+  // ── Channel panel ─────────────────────────────────────────────────────────
+
+  channelPanel: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 60, // sits above mini guide bar
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    overflow: 'hidden',
+  },
+
+  // Mini channel items
+  miniChItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  miniChItemActive: { backgroundColor: 'rgba(0,122,255,0.15)' },
+  miniChLogo: { width: 48, height: 28 },
+  miniChLogoPlaceholder: {
+    width: 48,
+    height: 28,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  miniChLogoText: { color: '#fff', fontSize: 9, fontWeight: '700' },
+  miniChInfo: { flex: 1, gap: 2 },
+  miniChName: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  miniChProg: { color: 'rgba(255,255,255,0.6)', fontSize: 10 },
+  miniChProgressTrack: {
+    height: 2,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 1,
+    overflow: 'hidden',
+    marginTop: 2,
+  },
+  miniChProgressFill: { height: '100%', backgroundColor: '#007AFF', borderRadius: 1 },
 });
