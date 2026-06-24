@@ -9,6 +9,7 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 core-domain = { workspace = true }
 core-data = { workspace = true }
+parser-xmltv = { workspace = true }
 uniffi = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }

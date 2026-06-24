@@ -246,6 +246,55 @@ impl MiPTVCore {
         Ok(channels.into_iter().map(FfiChannel::from).collect())
     }
 
+    pub async fn sync_epg(&self, provider_id: String) -> Result<u64, CoreError> {
+        let providers = self
+            .db
+            .list_providers()
+            .await
+            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+        let provider = providers
+            .into_iter()
+            .find(|p| p.id == provider_id)
+            .ok_or_else(|| CoreError::Other {
+                msg: format!("provider {provider_id} not found"),
+            })?;
+        let epg_url = provider.epg_url.ok_or_else(|| CoreError::Other {
+            msg: format!("provider {provider_id} has no EPG URL configured"),
+        })?;
+
+        let xml = self
+            .http
+            .fetch_text(&epg_url)
+            .await
+            .map_err(|e| CoreError::Network { msg: e.to_string() })?;
+
+        let entries = parser_xmltv::parse(&xml).map_err(|e| CoreError::Parse { msg: e.to_string() })?;
+        let count = entries.len() as u64;
+
+        // Replace stale EPG data for this provider
+        self.db
+            .delete_epg_for_provider(&provider_id)
+            .await
+            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+
+        // Purge entries from any provider that ended >24 h ago
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs() as i64;
+        self.db
+            .purge_old_epg_entries(now - 86_400)
+            .await
+            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+
+        self.db
+            .upsert_epg_entries(&entries)
+            .await
+            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+
+        Ok(count)
+    }
+
     pub async fn get_current_epg(&self, channel_id: String) -> Result<Option<FfiEpgEntry>, CoreError> {
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)

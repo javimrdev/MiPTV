@@ -297,6 +297,22 @@ impl Database {
         Ok(rows.into_iter().map(epg_from_row).collect())
     }
 
+    pub async fn delete_epg_for_provider(&self, provider_id: &str) -> Result<()> {
+        sqlx::query("DELETE FROM epg_entries WHERE channel_id IN (SELECT id FROM channels WHERE provider_id = ?)")
+            .bind(provider_id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
+    }
+
+    pub async fn purge_old_epg_entries(&self, older_than_ts: i64) -> Result<()> {
+        sqlx::query("DELETE FROM epg_entries WHERE end_ts < ?")
+            .bind(older_than_ts)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
+    }
+
     pub async fn get_current_epg(&self, channel_id: &str, now: i64) -> Result<Option<EpgEntry>> {
         let row: Option<EpgRow> = sqlx::query_as(
             "SELECT channel_id, title, description, start_ts, end_ts, category, poster_url

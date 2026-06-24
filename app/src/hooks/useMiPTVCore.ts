@@ -71,6 +71,14 @@ export function useMiPTVCore() {
     [ready],
   );
 
+  const syncEpg = useCallback(
+    async (providerId: string): Promise<number> => {
+      await ready();
+      return NativeMiPTVCore.syncEpg(providerId);
+    },
+    [ready],
+  );
+
   const getCurrentEpg = useCallback(
     async (channelId: string): Promise<EpgEntry | null> => {
       await ready();
@@ -121,6 +129,7 @@ export function useMiPTVCore() {
     addProvider,
     deleteProvider,
     syncProvider,
+    syncEpg,
     listChannels,
     searchChannels,
     getCurrentEpg,

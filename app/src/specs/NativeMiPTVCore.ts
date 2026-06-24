@@ -58,6 +58,7 @@ export interface Spec extends TurboModule {
   listChannels(providerId: string): Promise<Channel[]>;
   searchChannels(query: string): Promise<Channel[]>;
 
+  syncEpg(providerId: string): Promise<number>;
   getCurrentEpg(channelId: string): Promise<EpgEntry | null>;
   getEpgForChannel(
     channelId: string,
