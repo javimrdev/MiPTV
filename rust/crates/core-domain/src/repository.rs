@@ -1,4 +1,3 @@
-// Repository traits — implemented in issue #6
 use crate::error::DomainError;
 use crate::models::{Channel, EpgEntry, Playlist, Provider, WatchHistory};
 
