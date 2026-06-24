@@ -98,11 +98,9 @@ impl Database {
         .execute(&pool)
         .await?;
 
-        sqlx::query(
-            "CREATE INDEX IF NOT EXISTS idx_channels_provider ON channels(provider_id)",
-        )
-        .execute(&pool)
-        .await?;
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_channels_provider ON channels(provider_id)")
+            .execute(&pool)
+            .await?;
 
         sqlx::query(
             "CREATE TABLE IF NOT EXISTS epg_entries (
@@ -119,11 +117,9 @@ impl Database {
         .execute(&pool)
         .await?;
 
-        sqlx::query(
-            "CREATE INDEX IF NOT EXISTS idx_epg_channel ON epg_entries(channel_id)",
-        )
-        .execute(&pool)
-        .await?;
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_epg_channel ON epg_entries(channel_id)")
+            .execute(&pool)
+            .await?;
 
         sqlx::query(
             "CREATE TABLE IF NOT EXISTS playlists (
@@ -285,12 +281,7 @@ impl Database {
         Ok(())
     }
 
-    pub async fn get_epg_for_channel(
-        &self,
-        channel_id: &str,
-        date_start: i64,
-        date_end: i64,
-    ) -> Result<Vec<EpgEntry>> {
+    pub async fn get_epg_for_channel(&self, channel_id: &str, date_start: i64, date_end: i64) -> Result<Vec<EpgEntry>> {
         let rows: Vec<EpgRow> = sqlx::query_as(
             "SELECT channel_id, title, description, start_ts, end_ts, category, poster_url
              FROM epg_entries WHERE channel_id = ? AND end_ts >= ? AND start_ts <= ?
@@ -359,14 +350,12 @@ impl Database {
     // ── Watch History ─────────────────────────────────────────────────────────
 
     pub async fn record_watch(&self, entry: &WatchHistory) -> Result<()> {
-        sqlx::query(
-            "INSERT INTO watch_history (channel_id, started_at, duration_secs) VALUES (?, ?, ?)",
-        )
-        .bind(&entry.channel_id)
-        .bind(entry.started_at)
-        .bind(entry.duration_seconds as i64)
-        .execute(&self.pool)
-        .await?;
+        sqlx::query("INSERT INTO watch_history (channel_id, started_at, duration_secs) VALUES (?, ?, ?)")
+            .bind(&entry.channel_id)
+            .bind(entry.started_at)
+            .bind(entry.duration_seconds as i64)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 }
