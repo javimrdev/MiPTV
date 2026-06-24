@@ -231,7 +231,7 @@ impl MiPTVCore {
     pub async fn list_channels(&self, provider_id: String) -> Result<Vec<FfiChannel>, CoreError> {
         let channels = self
             .db
-            .list_channels(&provider_id)
+            .list_channels(Some(&provider_id))
             .await
             .map_err(|e| CoreError::Database { msg: e.to_string() })?;
         Ok(channels.into_iter().map(FfiChannel::from).collect())
