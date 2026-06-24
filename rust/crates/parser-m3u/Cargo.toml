@@ -1,0 +1,9 @@
+[package]
+name = "parser-m3u"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+core-domain = { workspace = true }
+nom = { workspace = true }
+thiserror = { workspace = true }
