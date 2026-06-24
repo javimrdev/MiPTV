@@ -1,7 +1,31 @@
 import { useColorScheme } from 'react-native';
 import { colors, spacing, radius, fontSize, fontWeight } from './tokens';
 
-const lightTheme = {
+export type Theme = {
+  colors: {
+    background: string;
+    surface: string;
+    surfaceVariant: string;
+    border: string;
+    text: string;
+    textSecondary: string;
+    textDisabled: string;
+    primary: string;
+    primaryForeground: string;
+    error: string;
+    success: string;
+    warning: string;
+    tabBar: string;
+    tabBarBorder: string;
+  };
+  spacing: typeof spacing;
+  radius: typeof radius;
+  fontSize: typeof fontSize;
+  fontWeight: typeof fontWeight;
+  dark: boolean;
+};
+
+const lightTheme: Theme = {
   colors: {
     background: colors.white,
     surface: colors.grey50,
@@ -25,7 +49,7 @@ const lightTheme = {
   dark: false,
 };
 
-const darkTheme = {
+const darkTheme: Theme = {
   colors: {
     background: colors.grey900,
     surface: colors.grey800,
@@ -48,8 +72,6 @@ const darkTheme = {
   fontWeight,
   dark: true,
 };
-
-export type Theme = typeof lightTheme;
 
 export function useTheme(): Theme {
   const scheme = useColorScheme();
