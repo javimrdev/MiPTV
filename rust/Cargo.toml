@@ -59,9 +59,10 @@ keyring = "3"
 regex = "1"
 
 # FFI
-uniffi = "0.28"
+uniffi = { version = "0.28", features = ["tokio"] }
 
 # Internal crates
 core-domain = { path = "crates/core-domain" }
+core-data = { path = "crates/core-data" }
 parser-m3u = { path = "crates/parser-m3u" }
 parser-xmltv = { path = "crates/parser-xmltv" }
