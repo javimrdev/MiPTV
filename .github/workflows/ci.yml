@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  rust:
+    name: Rust (fmt · clippy · test)
+    runs-on: ubuntu-latest
+    if: hashFiles('rust/Cargo.toml') != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache Rust build artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust -> rust/target
+
+      - name: Check formatting
+        run: cargo fmt --check
+        working-directory: rust
+
+      - name: Clippy (deny warnings)
+        run: cargo clippy --all-targets --all-features -- -D warnings
+        working-directory: rust
+
+      - name: Tests
+        run: cargo test --all-features
+        working-directory: rust
+
+  react-native:
+    name: React Native (typecheck · lint · test)
+    runs-on: ubuntu-latest
+    if: hashFiles('app/package.json') != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+        working-directory: app
+
+      - name: TypeScript type check
+        run: bun run typecheck
+        working-directory: app
+
+      - name: Lint
+        run: bun run lint
+        working-directory: app
+
+      - name: Unit tests
+        run: bun run test --passWithNoTests --ci
+        working-directory: app
