@@ -16,7 +16,7 @@ export function RootNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Main" component={TabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="Player" component={PlayerScreen} options={{ headerShown: false, presentation: 'fullScreenModal' }} />
+      <Stack.Screen name="Player" component={PlayerScreen} options={{ headerShown: false, presentation: 'modal' }} />
       <Stack.Screen name="ProviderAdd" component={ProviderAddScreen} options={{ title: 'Add Provider' }} />
       <Stack.Screen name="ProviderList" component={ProviderListScreen} options={{ title: 'Providers' }} />
       <Stack.Screen name="ChannelSearch" component={ChannelSearchScreen} options={{ title: 'Search' }} />
