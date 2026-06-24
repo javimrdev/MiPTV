@@ -66,7 +66,7 @@ export function PlaylistsScreen({ navigation }: TabScreenProps<'PlaylistsTab'>) 
     return (
       <EmptyState
         title="No playlists yet"
-        message='Tap ☆ on any channel to add it to Favourites.'
+        message="Tap ☆ on any channel to add it to Favourites."
       />
     );
   }
