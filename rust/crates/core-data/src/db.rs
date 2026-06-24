@@ -2,6 +2,7 @@ use anyhow::Result;
 use core_domain::models::{Channel, Credentials, EpgEntry, Playlist, Provider, ProviderType, WatchHistory};
 use sqlx::{sqlite::SqlitePoolOptions, FromRow, SqlitePool};
 
+#[derive(Clone)]
 pub struct Database {
     pool: SqlitePool,
 }

@@ -63,5 +63,6 @@ uniffi = "0.28"
 
 # Internal crates
 core-domain = { path = "crates/core-domain" }
+core-data = { path = "crates/core-data" }
 parser-m3u = { path = "crates/parser-m3u" }
 parser-xmltv = { path = "crates/parser-xmltv" }
