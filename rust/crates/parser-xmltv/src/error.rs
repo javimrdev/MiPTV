@@ -2,8 +2,16 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum XmltvError {
-    #[error("invalid XMLTV format: {0}")]
-    InvalidFormat(String),
     #[error("XML parse error: {0}")]
-    XmlError(String),
+    Xml(String),
+    #[error("invalid timestamp format: {0}")]
+    InvalidTimestamp(String),
+    #[error("missing required attribute: {0}")]
+    MissingAttribute(String),
+}
+
+impl From<quick_xml::Error> for XmltvError {
+    fn from(e: quick_xml::Error) -> Self {
+        XmltvError::Xml(e.to_string())
+    }
 }
