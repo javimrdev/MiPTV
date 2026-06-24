@@ -36,8 +36,7 @@ impl ProviderSync {
 
     async fn sync_m3u(&self, provider: &Provider) -> Result<Vec<Channel>> {
         let text = self.http.fetch_text(&provider.url).await?;
-        let channels = parser_m3u::parse(&provider.id, &text)
-            .map_err(|e| anyhow::anyhow!("M3U parse error: {e}"))?;
+        let channels = parser_m3u::parse(&provider.id, &text).map_err(|e| anyhow::anyhow!("M3U parse error: {e}"))?;
         Ok(channels)
     }
 
@@ -47,12 +46,7 @@ impl ProviderSync {
             .as_ref()
             .ok_or_else(|| anyhow::anyhow!("Xtream Codes provider missing credentials"))?;
 
-        let client = XtreamClient::new(
-            self.http.clone(),
-            &provider.url,
-            &creds.username,
-            &creds.password,
-        );
+        let client = XtreamClient::new(self.http.clone(), &provider.url, &creds.username, &creds.password);
 
         let streams = client.get_live_streams().await?;
         let channels = streams
@@ -64,11 +58,19 @@ impl ProviderSync {
                     provider_id: provider.id.clone(),
                     name: s.name,
                     stream_url,
-                    logo_url: if s.stream_icon.is_empty() { None } else { Some(s.stream_icon) },
+                    logo_url: if s.stream_icon.is_empty() {
+                        None
+                    } else {
+                        Some(s.stream_icon)
+                    },
                     group: s.category_id,
                     country: None,
                     languages: vec![],
-                    tvg_id: if s.epg_channel_id.is_empty() { None } else { Some(s.epg_channel_id) },
+                    tvg_id: if s.epg_channel_id.is_empty() {
+                        None
+                    } else {
+                        Some(s.epg_channel_id)
+                    },
                     catchup_support: false,
                 }
             })
