@@ -338,6 +338,13 @@ impl MiPTVCore {
         Ok(playlists.into_iter().map(FfiPlaylist::from).collect())
     }
 
+    pub async fn update_playlist(&self, playlist: FfiPlaylist) -> Result<(), CoreError> {
+        self.db
+            .update_playlist(&ffi_to_playlist(playlist))
+            .await
+            .map_err(|e| CoreError::Database { msg: e.to_string() })
+    }
+
     pub async fn delete_playlist(&self, id: String) -> Result<(), CoreError> {
         self.db
             .delete_playlist(&id)

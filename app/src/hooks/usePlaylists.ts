@@ -21,6 +21,15 @@ export function useCreatePlaylist() {
   });
 }
 
+export function useUpdatePlaylist() {
+  const core = useMiPTVCore();
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (playlist: Playlist) => core.updatePlaylist(playlist),
+    onSuccess: () => client.invalidateQueries({ queryKey: PLAYLISTS_KEY }),
+  });
+}
+
 export function useDeletePlaylist() {
   const core = useMiPTVCore();
   const client = useQueryClient();

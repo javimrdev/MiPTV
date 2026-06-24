@@ -68,6 +68,7 @@ export interface Spec extends TurboModule {
 
   createPlaylist(playlist: Playlist): Promise<void>;
   listPlaylists(): Promise<Playlist[]>;
+  updatePlaylist(playlist: Playlist): Promise<void>;
   deletePlaylist(id: string): Promise<void>;
 
   recordWatch(

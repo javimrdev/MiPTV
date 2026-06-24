@@ -108,6 +108,14 @@ export function useMiPTVCore() {
     return NativeMiPTVCore.listPlaylists();
   }, [ready]);
 
+  const updatePlaylist = useCallback(
+    async (playlist: Playlist): Promise<void> => {
+      await ready();
+      return NativeMiPTVCore.updatePlaylist(playlist);
+    },
+    [ready],
+  );
+
   const deletePlaylist = useCallback(
     async (id: string): Promise<void> => {
       await ready();
@@ -136,6 +144,7 @@ export function useMiPTVCore() {
     getEpgForChannel,
     createPlaylist,
     listPlaylists,
+    updatePlaylist,
     deletePlaylist,
     recordWatch,
   };

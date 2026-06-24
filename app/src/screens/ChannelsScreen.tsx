@@ -1,23 +1,27 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
-  View,
-  Text,
+  Alert,
   FlatList,
-  SectionList,
-  TouchableOpacity,
   Image,
-  StyleSheet,
+  Modal,
+  Pressable,
   RefreshControl,
+  SectionList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useChannels } from '../hooks/useChannels';
 import { useProviderStore } from '../store/providerStore';
 import { useProviders } from '../hooks/useProviders';
+import { usePlaylists, useUpdatePlaylist } from '../hooks/usePlaylists';
 import { LoadingView } from '../components/LoadingView';
 import { FavouriteButton } from '../components/FavouriteButton';
 import { EmptyState } from '../components/EmptyState';
 import { useTheme } from '../theme/useTheme';
 import type { TabScreenProps } from '../navigation/types';
-import type { Channel } from '../specs/NativeMiPTVCore';
+import type { Channel, Playlist } from '../specs/NativeMiPTVCore';
 
 type Section = { title: string; data: Channel[] };
 
@@ -30,8 +34,31 @@ export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
   const selectedProviderId = activeProviderId ?? firstProvider?.id ?? '';
 
   const { data: channels = [], isLoading, refetch, isRefetching } = useChannels(selectedProviderId);
+  const { data: playlists = [] } = usePlaylists();
+  const updatePlaylist = useUpdatePlaylist();
+
+  const [longPressedChannel, setLongPressedChannel] = useState<Channel | null>(null);
 
   const tabTextUnselected = useMemo(() => ({ color: theme.colors.text }), [theme.colors.text]);
+
+  const userPlaylists = useMemo(
+    () => playlists.filter((pl: Playlist) => !pl.isFavorites),
+    [playlists],
+  );
+
+  const handleAddToPlaylist = useCallback((playlist: Playlist) => {
+    if (!longPressedChannel) { return; }
+    if (playlist.channelIds.includes(longPressedChannel.id)) {
+      Alert.alert('Already added', `"${longPressedChannel.name}" is already in "${playlist.name}".`);
+      setLongPressedChannel(null);
+      return;
+    }
+    updatePlaylist.mutate({
+      ...playlist,
+      channelIds: [...playlist.channelIds, longPressedChannel.id],
+    });
+    setLongPressedChannel(null);
+  }, [longPressedChannel, updatePlaylist]);
 
   const sections = useMemo<Section[]>(() => {
     const map = new Map<string, Channel[]>();
@@ -128,6 +155,8 @@ export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
                 channelName: item.name,
               })
             }
+            onLongPress={() => setLongPressedChannel(item)}
+            delayLongPress={400}
           >
             {item.logoUrl ? (
               <Image source={{ uri: item.logoUrl }} style={styles.logo} resizeMode="contain" />
@@ -152,6 +181,46 @@ export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
           </TouchableOpacity>
         )}
       />
+
+      {/* Add-to-playlist modal (triggered by long-press) */}
+      {longPressedChannel && (
+        <Modal transparent animationType="fade" onRequestClose={() => setLongPressedChannel(null)}>
+          <Pressable style={styles.modalBackdrop} onPress={() => setLongPressedChannel(null)}>
+            <View
+              style={[styles.playlistPicker, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+              onStartShouldSetResponder={() => true}
+            >
+              <Text style={[styles.pickerTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                Add "{longPressedChannel.name}" to…
+              </Text>
+              {userPlaylists.length === 0 ? (
+                <Text style={[styles.pickerEmpty, { color: theme.colors.textSecondary }]}>
+                  No playlists yet. Create one in the Playlists tab.
+                </Text>
+              ) : (
+                userPlaylists.map((pl: Playlist) => (
+                  <TouchableOpacity
+                    key={pl.id}
+                    style={[styles.pickerRow, { borderTopColor: theme.colors.border }]}
+                    onPress={() => handleAddToPlaylist(pl)}
+                  >
+                    <Text style={[styles.pickerRowText, { color: theme.colors.text }]}>{pl.name}</Text>
+                    <Text style={[styles.pickerCount, { color: theme.colors.textSecondary }]}>
+                      {pl.channelIds.length} channels
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
+              <TouchableOpacity
+                style={[styles.pickerCancel, { borderTopColor: theme.colors.border }]}
+                onPress={() => setLongPressedChannel(null)}
+              >
+                <Text style={[styles.pickerCancelText, { color: theme.colors.textSecondary }]}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Modal>
+      )}
     </View>
   );
 }
@@ -192,4 +261,36 @@ const styles = StyleSheet.create({
   info: { flex: 1 },
   channelName: { fontSize: 15, fontWeight: '500' },
   tvgId: { fontSize: 12, marginTop: 1 },
+
+  // Add-to-playlist modal
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  playlistPicker: {
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+  },
+  pickerTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  pickerEmpty: { fontSize: 13, paddingHorizontal: 16, paddingBottom: 14 },
+  pickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  pickerRowText: { fontSize: 15 },
+  pickerCount: { fontSize: 12 },
+  pickerCancel: { borderTopWidth: StyleSheet.hairlineWidth, paddingVertical: 14, alignItems: 'center' },
+  pickerCancelText: { fontSize: 15 },
 });
