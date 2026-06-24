@@ -48,7 +48,7 @@ export type Playlist = {
 // ── Turbo Module spec ─────────────────────────────────────────────────────────
 
 export interface Spec extends TurboModule {
-  init(dbPath: string): Promise<void>;
+  initialize(dbPath: string): Promise<void>;
 
   addProvider(provider: Provider): Promise<void>;
   listProviders(): Promise<Provider[]>;
