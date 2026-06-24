@@ -13,6 +13,7 @@ import { useChannels } from '../hooks/useChannels';
 import { useProviderStore } from '../store/providerStore';
 import { useProviders } from '../hooks/useProviders';
 import { LoadingView } from '../components/LoadingView';
+import { FavouriteButton } from '../components/FavouriteButton';
 import { EmptyState } from '../components/EmptyState';
 import { useTheme } from '../theme/useTheme';
 import type { TabScreenProps } from '../navigation/types';
@@ -147,6 +148,7 @@ export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
                 </Text>
               ) : null}
             </View>
+            <FavouriteButton channelId={item.id} size={20} />
           </TouchableOpacity>
         )}
       />
