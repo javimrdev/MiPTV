@@ -356,6 +356,17 @@ impl Database {
         Ok(rows.into_iter().map(playlist_from_row).collect())
     }
 
+    pub async fn update_playlist(&self, pl: &Playlist) -> Result<()> {
+        let channel_ids = serde_json::to_string(&pl.channel_ids)?;
+        sqlx::query("UPDATE playlists SET name = ?, channel_ids = ? WHERE id = ?")
+            .bind(&pl.name)
+            .bind(&channel_ids)
+            .bind(&pl.id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
+    }
+
     pub async fn delete_playlist(&self, id: &str) -> Result<()> {
         sqlx::query("DELETE FROM playlists WHERE id = ?")
             .bind(id)
