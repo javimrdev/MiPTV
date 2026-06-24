@@ -59,7 +59,10 @@ impl Database {
                 provider_type: parse_provider_type(&r.provider_type),
                 url: r.url,
                 credentials: match (r.username, r.password) {
-                    (Some(u), Some(pw)) => Some(Credentials { username: u, password: pw }),
+                    (Some(u), Some(pw)) => Some(Credentials {
+                        username: u,
+                        password: pw,
+                    }),
                     _ => None,
                 },
                 epg_url: r.epg_url,
@@ -275,7 +278,9 @@ impl Database {
     }
 
     pub async fn delete_playlist(&self, id: &str) -> Result<()> {
-        sqlx::query!("DELETE FROM playlists WHERE id = ?", id).execute(&self.pool).await?;
+        sqlx::query!("DELETE FROM playlists WHERE id = ?", id)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 
