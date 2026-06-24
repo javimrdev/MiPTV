@@ -32,7 +32,7 @@ export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
 
   const sections = useMemo<Section[]>(() => {
     const map = new Map<string, Channel[]>();
-    channels.forEach(ch => {
+    channels.forEach((ch: Channel) => {
       const group = ch.group || 'Uncategorized';
       const existing = map.get(group);
       if (existing) {
