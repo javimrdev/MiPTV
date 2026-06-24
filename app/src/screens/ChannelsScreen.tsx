@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -29,6 +29,8 @@ export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
   const selectedProviderId = activeProviderId ?? firstProvider?.id ?? '';
 
   const { data: channels = [], isLoading, refetch, isRefetching } = useChannels(selectedProviderId);
+
+  const tabTextUnselected = useMemo(() => ({ color: theme.colors.text }), [theme.colors.text]);
 
   const sections = useMemo<Section[]>(() => {
     const map = new Map<string, Channel[]>();
@@ -93,7 +95,7 @@ export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
               <Text
                 style={[
                   styles.providerTabText,
-                  { color: selectedProviderId === item.id ? '#fff' : theme.colors.text },
+                  selectedProviderId === item.id ? styles.providerTabTextActive : tabTextUnselected,
                 ]}
               >
                 {item.name}
@@ -162,6 +164,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   providerTabText: { fontSize: 13, fontWeight: '500' },
+  providerTabTextActive: { color: '#fff' },
   sectionHeader: {
     paddingHorizontal: 16,
     paddingVertical: 6,
