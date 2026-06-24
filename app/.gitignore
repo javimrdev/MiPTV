@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+android/app/build/
+android/.gradle/
+ios/build/
+ios/Pods/
+ios/DerivedData/
+
+# Bun
+.bun/
+
+# Metro
+.metro-health-check*
+
+# Generated
+android/app/src/main/assets/index.android.bundle
+ios/main.jsbundle
+
+# Env
+.env
+.env.local
+.env.production
+
+# IDE
+.idea/
+*.xcuserstate
+*.xcworkspace/xcuserdata/

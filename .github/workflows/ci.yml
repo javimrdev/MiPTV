@@ -74,7 +74,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.rn.outputs.present == 'true'
-        run: bun install --frozen-lockfile
+        run: bun install
         working-directory: app
 
       - name: TypeScript type check
