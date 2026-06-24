@@ -1,0 +1,12 @@
+[package]
+name = "ffi-uniffi"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+core-domain = { workspace = true }
+uniffi = { workspace = true }
+thiserror = { workspace = true }

@@ -1,0 +1,10 @@
+[package]
+name = "core-viewmodel"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+core-domain = { workspace = true }
+tokio = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }

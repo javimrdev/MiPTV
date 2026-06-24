@@ -1,0 +1,67 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core-domain",
+    "crates/core-data",
+    "crates/core-viewmodel",
+    "crates/parser-m3u",
+    "crates/parser-xmltv",
+    "crates/ffi-uniffi",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["MiPTV Team"]
+license = "MIT"
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.24"
+
+# HTTP
+reqwest = { version = "0.12", features = ["json", "stream"] }
+url = "2"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+quick-xml = { version = "0.37", features = ["serialize"] }
+
+# Parsing
+nom = "7"
+
+# Database
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "migrate", "time"] }
+
+# Time
+time = { version = "0.3", features = ["serde"] }
+
+# IDs
+uuid = { version = "1", features = ["v4"] }
+
+# Errors
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Cache
+moka = { version = "0.12", features = ["future"] }
+
+# Secure storage
+keyring = "3"
+
+# Regex
+regex = "1"
+
+# FFI
+uniffi = "0.28"
+
+# Internal crates
+core-domain = { path = "crates/core-domain" }
+parser-m3u = { path = "crates/parser-m3u" }
+parser-xmltv = { path = "crates/parser-xmltv" }
