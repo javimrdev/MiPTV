@@ -144,7 +144,10 @@ fn ffi_to_provider(ffi: FfiProvider) -> models::Provider {
         },
         url: ffi.url,
         credentials: match (ffi.username, ffi.password) {
-            (Some(u), Some(p)) => Some(models::Credentials { username: u, password: p }),
+            (Some(u), Some(p)) => Some(models::Credentials {
+                username: u,
+                password: p,
+            }),
             _ => None,
         },
         epg_url: ffi.epg_url,
@@ -178,8 +181,7 @@ impl MiPTVCore {
         let db = core_data::db::Database::open(&db_path)
             .await
             .map_err(|e| CoreError::Database { msg: e.to_string() })?;
-        let http = core_data::http::HttpClient::new()
-            .map_err(|e| CoreError::Network { msg: e.to_string() })?;
+        let http = core_data::http::HttpClient::new().map_err(|e| CoreError::Network { msg: e.to_string() })?;
         Ok(Arc::new(Self { db, http }))
     }
 
@@ -215,7 +217,9 @@ impl MiPTVCore {
         let provider = providers
             .into_iter()
             .find(|p| p.id == provider_id)
-            .ok_or_else(|| CoreError::Other { msg: format!("provider {provider_id} not found") })?;
+            .ok_or_else(|| CoreError::Other {
+                msg: format!("provider {provider_id} not found"),
+            })?;
         let sync = core_data::sync::ProviderSync::new(self.http.clone(), self.db.clone());
         let count = sync
             .sync(&provider)
@@ -298,7 +302,11 @@ impl MiPTVCore {
         started_at: i64,
         duration_seconds: u64,
     ) -> Result<(), CoreError> {
-        let entry = models::WatchHistory { channel_id, started_at, duration_seconds };
+        let entry = models::WatchHistory {
+            channel_id,
+            started_at,
+            duration_seconds,
+        };
         self.db
             .record_watch(&entry)
             .await
