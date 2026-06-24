@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  AppState,
   Modal,
   ScrollView,
   StatusBar,
@@ -21,6 +22,7 @@ import Video, {
   IgnoreSilentSwitchType,
   OnBufferData,
   OnLoadData,
+  OnPictureInPictureStatusChangedData,
   OnProgressData,
   OnVideoErrorData,
   OnVideoTracksData,
@@ -84,6 +86,7 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
 
   // Playback state
   const [paused, setPaused] = useState(false);
+  const [isPiP, setIsPiP] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
@@ -127,6 +130,28 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
       showControls();
     }
   }, [controlsVisible, showControls]);
+
+  // ── PiP ─────────────────────────────────────────────────────────────────────
+
+  const handlePiPStatusChanged = useCallback(({ isActive }: OnPictureInPictureStatusChangedData) => {
+    setIsPiP(isActive);
+    if (isActive) {
+      if (autoHideRef.current) { clearTimeout(autoHideRef.current); }
+      controlsVisible.value = withTiming(0, { duration: FADE_MS });
+    } else {
+      showControls();
+    }
+  }, [controlsVisible, showControls]);
+
+  // Auto-enter PiP when the app is backgrounded while the player is mounted
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', nextState => {
+      if (nextState === 'background') {
+        videoRef.current?.enterPictureInPicture();
+      }
+    });
+    return () => sub.remove();
+  }, []);
 
   // ── Mount / unmount ─────────────────────────────────────────────────────────
 
@@ -297,6 +322,7 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
           playWhenInactive
           ignoreSilentSwitch={IgnoreSilentSwitchType.IGNORE}
           showNotificationControls
+          onPictureInPictureStatusChanged={handlePiPStatusChanged}
         />
       )}
 
@@ -323,6 +349,14 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
           {/* Top bar */}
           <View style={styles.topBar}>
             <Text style={styles.channelName} numberOfLines={1}>{channelName}</Text>
+            {!isPiP && (
+              <TouchableOpacity
+                onPress={() => videoRef.current?.enterPictureInPicture()}
+                hitSlop={12}
+                style={styles.topBarBtn}>
+                <Text style={styles.topBarBtnText}>PiP</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
               <Text style={styles.closeBtn}>✕</Text>
             </TouchableOpacity>
@@ -446,6 +480,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
   },
   channelName: { flex: 1, color: '#fff', fontSize: 16, fontWeight: '600', marginRight: 12 },
+  topBarBtn: { marginRight: 16 },
+  topBarBtnText: { color: '#fff', fontSize: 13, fontWeight: '600', opacity: 0.85 },
   closeBtn: { color: '#fff', fontSize: 22 },
 
   // Center controls
