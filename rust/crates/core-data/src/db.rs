@@ -298,12 +298,10 @@ impl Database {
     }
 
     pub async fn delete_epg_for_provider(&self, provider_id: &str) -> Result<()> {
-        sqlx::query(
-            "DELETE FROM epg_entries WHERE channel_id IN (SELECT id FROM channels WHERE provider_id = ?)",
-        )
-        .bind(provider_id)
-        .execute(&self.pool)
-        .await?;
+        sqlx::query("DELETE FROM epg_entries WHERE channel_id IN (SELECT id FROM channels WHERE provider_id = ?)")
+            .bind(provider_id)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 
