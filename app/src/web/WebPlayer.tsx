@@ -11,6 +11,12 @@ type WebPlayerProps = {
 export function WebPlayer({ uri, paused, onError, onLoad }: WebPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
+  const onLoadRef = useRef(onLoad);
+  onLoadRef.current = onLoad;
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -22,22 +28,22 @@ export function WebPlayer({ uri, paused, onError, onLoad }: WebPlayerProps) {
       hls.loadSource(uri);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        onLoad?.();
-        if (!paused) { video.play().catch(() => {}); }
+        onLoadRef.current?.();
+        if (!pausedRef.current) { video.play().catch(() => {}); }
       });
       hls.on(Hls.Events.ERROR, (_event, data) => {
         if (data.fatal) {
-          onError?.(data.details ?? 'HLS error');
+          onErrorRef.current?.(data.details ?? 'HLS error');
         }
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = uri;
       video.addEventListener('loadedmetadata', () => {
-        onLoad?.();
-        if (!paused) { video.play().catch(() => {}); }
+        onLoadRef.current?.();
+        if (!pausedRef.current) { video.play().catch(() => {}); }
       });
     } else {
-      onError?.('HLS not supported in this browser');
+      onErrorRef.current?.('HLS not supported in this browser');
     }
 
     return () => {

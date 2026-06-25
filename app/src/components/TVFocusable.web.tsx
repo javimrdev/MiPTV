@@ -34,7 +34,6 @@ export function TVFocusable({ children, onPress, style, hasTVPreferredFocus }: T
           onPress?.();
         }
       }}
-      // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus={hasTVPreferredFocus}
     >
       {children}
