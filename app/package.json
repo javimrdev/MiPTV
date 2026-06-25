@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "ios": "REACT_NATIVE_NODE_MODULES_DIR=$(pwd)/node_modules react-native run-ios",
+    "pods": "REACT_NATIVE_NODE_MODULES_DIR=$(pwd)/node_modules pod install --project-directory=ios",
     "start": "react-native start",
     "web": "webpack serve --config webpack.config.js",
     "web:build": "webpack --config webpack.config.js --mode production",

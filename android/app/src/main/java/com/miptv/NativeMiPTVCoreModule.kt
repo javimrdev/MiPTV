@@ -19,9 +19,14 @@ class NativeMiPTVCoreModule(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun initialize(dbPath: String, promise: Promise) {
+        val resolvedPath = if (dbPath.startsWith("/") || dbPath == ":memory:") {
+            dbPath
+        } else {
+            reactApplicationContext.filesDir.resolve(dbPath).absolutePath
+        }
         scope.launch {
             try {
-                core = MiPTVCore.init(dbPath)
+                core = MiPTVCore.init(resolvedPath)
                 promise.resolve(null)
             } catch (e: CoreError) {
                 promise.reject("INIT_ERROR", e.message, e)
@@ -114,6 +119,19 @@ class NativeMiPTVCoreModule(reactContext: ReactApplicationContext) :
     // ── EPG ───────────────────────────────────────────────────────────────────
 
     @ReactMethod
+    fun syncEpg(providerId: String, promise: Promise) {
+        val c = core ?: return promise.reject("NOT_INIT", "Call init first", null)
+        scope.launch {
+            try {
+                val count = c.syncEpg(providerId)
+                promise.resolve(count.toDouble())
+            } catch (e: CoreError) {
+                promise.reject("SYNC_ERROR", e.message, e)
+            }
+        }
+    }
+
+    @ReactMethod
     fun getCurrentEpg(channelId: String, promise: Promise) {
         val c = core ?: return promise.reject("NOT_INIT", "Call init first", null)
         scope.launch {
@@ -168,6 +186,19 @@ class NativeMiPTVCoreModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun updatePlaylist(playlist: ReadableMap, promise: Promise) {
+        val c = core ?: return promise.reject("NOT_INIT", "Call init first", null)
+        scope.launch {
+            try {
+                c.updatePlaylist(playlist.toFfiPlaylist())
+                promise.resolve(null)
+            } catch (e: CoreError) {
+                promise.reject("DB_ERROR", e.message, e)
+            }
+        }
+    }
+
+    @ReactMethod
     fun deletePlaylist(id: String, promise: Promise) {
         val c = core ?: return promise.reject("NOT_INIT", "Call init first", null)
         scope.launch {
@@ -189,6 +220,32 @@ class NativeMiPTVCoreModule(reactContext: ReactApplicationContext) :
             try {
                 c.recordWatch(channelId, startedAt.toLong(), durationSeconds.toULong())
                 promise.resolve(null)
+            } catch (e: CoreError) {
+                promise.reject("DB_ERROR", e.message, e)
+            }
+        }
+    }
+
+    @ReactMethod
+    fun getRecentlyWatched(limit: Double, promise: Promise) {
+        val c = core ?: return promise.reject("NOT_INIT", "Call init first", null)
+        scope.launch {
+            try {
+                val list = c.getRecentlyWatched(limit.toULong())
+                promise.resolve(list.toWritableArray { it.toWritableMap() })
+            } catch (e: CoreError) {
+                promise.reject("DB_ERROR", e.message, e)
+            }
+        }
+    }
+
+    @ReactMethod
+    fun getMostWatched(limit: Double, promise: Promise) {
+        val c = core ?: return promise.reject("NOT_INIT", "Call init first", null)
+        scope.launch {
+            try {
+                val list = c.getMostWatched(limit.toULong())
+                promise.resolve(list.toWritableArray { it.toWritableMap() })
             } catch (e: CoreError) {
                 promise.reject("DB_ERROR", e.message, e)
             }

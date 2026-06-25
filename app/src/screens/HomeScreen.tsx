@@ -16,6 +16,7 @@ import { TVFocusable } from '../components/TVFocusable';
 import { LoadingView } from '../components/LoadingView';
 import { SyncBanner } from '../components/SyncBanner';
 import { TVHomeScreen } from './TVHomeScreen';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/useTheme';
 import type { Channel } from '../specs/NativeMiPTVCore';
 import type { TabScreenProps } from '../navigation/types';
@@ -80,6 +81,7 @@ function Carousel({ title, channels, onChannelPress }: CarouselProps) {
 
 export function HomeScreen({ navigation }: TabScreenProps<'HomeTab'>) {
   const theme = useTheme();
+  const { top } = useSafeAreaInsets();
   const { data: providers = [], isLoading } = useProviders();
   const { data: recentChannels = [] } = useRecentlyWatched(20);
   const { data: mostChannels = [] } = useMostWatched(20);
@@ -105,7 +107,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'HomeTab'>) {
   const hasCarousels = recentChannels.length > 0 || mostChannels.length > 0;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: top }]}>
       <SyncBanner />
       {hasCarousels ? (
         <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>

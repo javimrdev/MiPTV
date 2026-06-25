@@ -225,6 +225,14 @@ impl MiPTVCore {
             .sync(&provider)
             .await
             .map_err(|e| CoreError::Network { msg: e.to_string() })?;
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs() as i64;
+        self.db
+            .update_provider_last_sync(&provider_id, now)
+            .await
+            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
         Ok(count as u64)
     }
 

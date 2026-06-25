@@ -19,6 +19,7 @@ import { usePlaylists, useUpdatePlaylist } from '../hooks/usePlaylists';
 import { LoadingView } from '../components/LoadingView';
 import { FavouriteButton } from '../components/FavouriteButton';
 import { EmptyState } from '../components/EmptyState';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/useTheme';
 import type { TabScreenProps } from '../navigation/types';
 import type { Channel, Playlist } from '../specs/NativeMiPTVCore';
@@ -27,6 +28,7 @@ type Section = { title: string; data: Channel[] };
 
 export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
   const theme = useTheme();
+  const { top } = useSafeAreaInsets();
   const { data: providers = [] } = useProviders();
   const { activeProviderId, setActiveProvider } = useProviderStore();
 
@@ -101,7 +103,7 @@ export function ChannelsScreen({ navigation }: TabScreenProps<'ChannelsTab'>) {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: top }]}>
       {providers.length > 1 ? (
         <FlatList
           horizontal

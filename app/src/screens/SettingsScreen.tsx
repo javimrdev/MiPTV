@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TVFocusable } from '../components/TVFocusable';
 import { PinEntryModal } from '../components/PinEntryModal';
 import { useTheme } from '../theme/useTheme';
@@ -112,6 +113,7 @@ export function SettingsScreen({ navigation }: TabScreenProps<'SettingsTab'>) {
     autoPlayLastChannel, setAutoPlayLastChannel,
   } = useSettingsStore();
 
+  const { top } = useSafeAreaInsets();
   const [pinModalVisible, setPinModalVisible] = useState(false);
 
   const THEME_OPTIONS: { label: string; value: ThemeSetting }[] = [
@@ -174,7 +176,7 @@ export function SettingsScreen({ navigation }: TabScreenProps<'SettingsTab'>) {
     <>
       <ScrollView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingTop: top + 16 }]}
       >
         <Text style={[styles.pageTitle, { color: theme.colors.text }]}>{t('settings.title')}</Text>
 
@@ -267,7 +269,7 @@ export function SettingsScreen({ navigation }: TabScreenProps<'SettingsTab'>) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { paddingVertical: 16, paddingHorizontal: 0 },
+  content: { paddingBottom: 16, paddingHorizontal: 0 },
   pageTitle: {
     fontSize: Platform.isTV ? 32 : 28,
     fontWeight: '700',

@@ -19,6 +19,7 @@ import { useProviders } from '../hooks/useProviders';
 import { useChannels } from '../hooks/useChannels';
 import { FavouriteButton } from '../components/FavouriteButton';
 import { EmptyState } from '../components/EmptyState';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/useTheme';
 import type { TabScreenProps } from '../navigation/types';
 import type { Channel } from '../specs/NativeMiPTVCore';
@@ -101,6 +102,7 @@ function CreatePlaylistModal({
 
 export function PlaylistsScreen({ navigation }: TabScreenProps<'PlaylistsTab'>) {
   const theme = useTheme();
+  const { top } = useSafeAreaInsets();
   const favouriteIds = useFavouritesStore(s => s.favouriteIds);
   const { data: rawPlaylists } = usePlaylists();
   const playlists: Playlist[] = rawPlaylists ?? [];
@@ -158,7 +160,7 @@ export function PlaylistsScreen({ navigation }: TabScreenProps<'PlaylistsTab'>) 
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
       <FlatList
         data={[
           // Favourites section header + channels

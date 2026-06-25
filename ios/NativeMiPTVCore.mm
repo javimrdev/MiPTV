@@ -30,6 +30,10 @@ RCT_EXTERN_METHOD(searchChannels:(NSString *)query
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(syncEpg:(NSString *)providerId
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(getCurrentEpg:(NSString *)channelId
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -47,6 +51,10 @@ RCT_EXTERN_METHOD(createPlaylist:(NSDictionary *)playlist
 RCT_EXTERN_METHOD(listPlaylists:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(updatePlaylist:(NSDictionary *)playlist
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(deletePlaylist:(NSString *)id
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -54,6 +62,14 @@ RCT_EXTERN_METHOD(deletePlaylist:(NSString *)id
 RCT_EXTERN_METHOD(recordWatch:(NSString *)channelId
                   startedAt:(double)startedAt
                   durationSeconds:(double)durationSeconds
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(getRecentlyWatched:(double)limit
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(getMostWatched:(double)limit
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 

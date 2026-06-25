@@ -14,6 +14,7 @@ async function ensureInit() {
   }
   await NativeMiPTVCore.initialize('miptv.db');
   initialized = true;
+  console.log('[MiPTVCore] DB initialized OK');
 }
 
 export function useMiPTVCore() {

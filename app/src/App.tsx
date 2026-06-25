@@ -1,5 +1,6 @@
 import './i18n';
-import React from 'react';
+import React, { useEffect } from 'react';
+import NativeMiPTVCore from './specs/NativeMiPTVCore';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,6 +18,12 @@ const queryClient = new QueryClient({
 
 function AppRoot() {
   useCodePushUpdate();
+
+  useEffect(() => {
+    NativeMiPTVCore.initialize('miptv.db')
+      .then(() => console.log('[MiPTVCore] DB init OK'))
+      .catch((e: unknown) => console.error('[MiPTVCore] DB init FAILED:', e));
+  }, []);
 
   return (
     <GestureHandlerRootView style={styles.root}>

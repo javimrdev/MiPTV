@@ -18,9 +18,16 @@ class NativeMiPTVCore: NSObject {
     // MARK: - Lifecycle
 
     @objc func initialize(_ dbPath: String, resolve: @escaping Resolve, reject: @escaping Reject) {
+        let resolvedPath: String
+        if dbPath.hasPrefix("/") || dbPath == ":memory:" {
+            resolvedPath = dbPath
+        } else {
+            let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            resolvedPath = docs.appendingPathComponent(dbPath).path
+        }
         Task {
             do {
-                self.core = try await MiPtvCore.`init`(dbPath: dbPath)
+                self.core = try await MiPtvCore.`init`(dbPath: resolvedPath)
                 resolve(nil)
             } catch {
                 reject("INIT_ERROR", error.localizedDescription, error as NSError)
@@ -66,7 +73,7 @@ class NativeMiPTVCore: NSObject {
         Task {
             do {
                 let count = try await core.syncProvider(providerId: providerId)
-                resolve(count)
+                resolve(NSNumber(value: count))
             } catch { reject("SYNC_ERROR", error.localizedDescription, error as NSError) }
         }
     }
@@ -115,6 +122,18 @@ class NativeMiPTVCore: NSObject {
         }
     }
 
+    // MARK: - EPG
+
+    @objc func syncEpg(_ providerId: String, resolve: @escaping Resolve, reject: @escaping Reject) {
+        guard let core else { reject("NOT_INIT", "Call init first", nil); return }
+        Task {
+            do {
+                let count = try await core.syncEpg(providerId: providerId)
+                resolve(NSNumber(value: count))
+            } catch { reject("SYNC_ERROR", error.localizedDescription, error as NSError) }
+        }
+    }
+
     // MARK: - Playlists
 
     @objc func createPlaylist(_ playlist: NSDictionary, resolve: @escaping Resolve, reject: @escaping Reject) {
@@ -138,6 +157,17 @@ class NativeMiPTVCore: NSObject {
         }
     }
 
+    @objc func updatePlaylist(_ playlist: NSDictionary, resolve: @escaping Resolve, reject: @escaping Reject) {
+        guard let core else { reject("NOT_INIT", "Call init first", nil); return }
+        Task {
+            do {
+                let ffi = FfiPlaylist(from: playlist)
+                try await core.updatePlaylist(playlist: ffi)
+                resolve(nil)
+            } catch { reject("DB_ERROR", error.localizedDescription, error as NSError) }
+        }
+    }
+
     @objc func deletePlaylist(_ id: String, resolve: @escaping Resolve, reject: @escaping Reject) {
         guard let core else { reject("NOT_INIT", "Call init first", nil); return }
         Task {
@@ -156,6 +186,26 @@ class NativeMiPTVCore: NSObject {
             do {
                 try await core.recordWatch(channelId: channelId, startedAt: Int64(startedAt), durationSeconds: UInt64(durationSeconds))
                 resolve(nil)
+            } catch { reject("DB_ERROR", error.localizedDescription, error as NSError) }
+        }
+    }
+
+    @objc func getRecentlyWatched(_ limit: Double, resolve: @escaping Resolve, reject: @escaping Reject) {
+        guard let core else { reject("NOT_INIT", "Call init first", nil); return }
+        Task {
+            do {
+                let channels = try await core.getRecentlyWatched(limit: UInt64(limit))
+                resolve(channels.map { $0.toDict() })
+            } catch { reject("DB_ERROR", error.localizedDescription, error as NSError) }
+        }
+    }
+
+    @objc func getMostWatched(_ limit: Double, resolve: @escaping Resolve, reject: @escaping Reject) {
+        guard let core else { reject("NOT_INIT", "Call init first", nil); return }
+        Task {
+            do {
+                let channels = try await core.getMostWatched(limit: UInt64(limit))
+                resolve(channels.map { $0.toDict() })
             } catch { reject("DB_ERROR", error.localizedDescription, error as NSError) }
         }
     }

@@ -16,6 +16,7 @@ import { useChannels } from '../hooks/useChannels';
 import { useProviders } from '../hooks/useProviders';
 import { useEpgForChannel, useAutoSyncEpg } from '../hooks/useEpg';
 import { useProviderStore } from '../store/providerStore';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/useTheme';
 import { TVEPGScreen } from './TVEPGScreen';
 import type { TabScreenProps } from '../navigation/types';
@@ -190,6 +191,7 @@ export function EPGScreen(props: TabScreenProps<'EPGTab'>) {
 
 function EPGScreenMobile(_props: TabScreenProps<'EPGTab'>) {
   const theme = useTheme();
+  const { top } = useSafeAreaInsets();
   const { data: providers = [] } = useProviders();
   const { activeProviderId } = useProviderStore();
   const selectedId = activeProviderId ?? providers[0]?.id ?? '';
@@ -275,7 +277,7 @@ function EPGScreenMobile(_props: TabScreenProps<'EPGTab'>) {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
       {/* Time axis header */}
       <View style={[styles.header, { borderColor: colors.border, backgroundColor: colors.surface }]}>
         <View style={[styles.headerCorner, { borderColor: colors.border }]} />

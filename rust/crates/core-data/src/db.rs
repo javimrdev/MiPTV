@@ -195,6 +195,15 @@ impl Database {
         Ok(())
     }
 
+    pub async fn update_provider_last_sync(&self, id: &str, last_sync: i64) -> Result<()> {
+        sqlx::query("UPDATE providers SET last_sync = ? WHERE id = ?")
+            .bind(last_sync)
+            .bind(id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
+    }
+
     // ── Channels ──────────────────────────────────────────────────────────────
 
     pub async fn upsert_channels(&self, channels: &[Channel]) -> Result<()> {
