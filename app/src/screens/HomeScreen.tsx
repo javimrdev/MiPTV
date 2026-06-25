@@ -2,7 +2,7 @@ import React from 'react';
 import {
   FlatList,
   Image,
-  Pressable,
+  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -12,6 +12,7 @@ import { useAutoSync } from '../hooks/useAutoSync';
 import { useRecentlyWatched, useMostWatched } from '../hooks/useWatchHistory';
 import { ThemedText } from '../components/ThemedText';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { TVFocusable } from '../components/TVFocusable';
 import { LoadingView } from '../components/LoadingView';
 import { SyncBanner } from '../components/SyncBanner';
 import { useTheme } from '../theme/useTheme';
@@ -29,7 +30,7 @@ type ChannelCardProps = {
 function ChannelCard({ channel, onPress }: ChannelCardProps) {
   const theme = useTheme();
   return (
-    <Pressable style={[styles.card, { backgroundColor: theme.colors.surface }]} onPress={onPress}>
+    <TVFocusable style={[styles.card, { backgroundColor: theme.colors.surface }]} onPress={onPress}>
       {channel.logoUrl ? (
         <Image source={{ uri: channel.logoUrl }} style={styles.logo} resizeMode="contain" />
       ) : (
@@ -42,7 +43,7 @@ function ChannelCard({ channel, onPress }: ChannelCardProps) {
       <ThemedText variant="label" numberOfLines={1} style={styles.cardName}>
         {channel.name}
       </ThemedText>
-    </Pressable>
+    </TVFocusable>
   );
 }
 
@@ -114,6 +115,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'HomeTab'>) {
               <PrimaryButton
                 label="Add Provider"
                 onPress={() => navigation.navigate('ProviderAdd')}
+                hasTVPreferredFocus={Platform.isTV}
               />
             </View>
           )}
@@ -129,6 +131,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'HomeTab'>) {
               <PrimaryButton
                 label="Add Provider"
                 onPress={() => navigation.navigate('ProviderAdd')}
+                hasTVPreferredFocus={Platform.isTV}
               />
             </>
           ) : (
@@ -139,6 +142,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'HomeTab'>) {
               <PrimaryButton
                 label="Manage Providers"
                 onPress={() => navigation.navigate('ProviderList')}
+                hasTVPreferredFocus={Platform.isTV}
               />
             </>
           )}

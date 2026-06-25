@@ -1,5 +1,12 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, type ViewStyle } from 'react-native';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  type ViewStyle,
+} from 'react-native';
 import { useTheme } from '../theme/useTheme';
 
 type PrimaryButtonProps = {
@@ -8,11 +15,21 @@ type PrimaryButtonProps = {
   loading?: boolean;
   disabled?: boolean;
   style?: ViewStyle;
+  hasTVPreferredFocus?: boolean;
 };
 
-export function PrimaryButton({ label, onPress, loading, disabled, style }: PrimaryButtonProps) {
+export function PrimaryButton({
+  label,
+  onPress,
+  loading,
+  disabled,
+  style,
+  hasTVPreferredFocus,
+}: PrimaryButtonProps) {
+  const [tvFocused, setTvFocused] = useState(false);
   const theme = useTheme();
   const isDisabled = disabled || loading;
+  const showRing = tvFocused && Platform.isTV;
 
   return (
     <TouchableOpacity
@@ -20,11 +37,15 @@ export function PrimaryButton({ label, onPress, loading, disabled, style }: Prim
         styles.button,
         { backgroundColor: theme.colors.primary, borderRadius: theme.radius.md },
         isDisabled && styles.disabled,
+        showRing && styles.ring,
         style,
       ]}
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.8}
+      hasTVPreferredFocus={hasTVPreferredFocus}
+      onFocus={() => setTvFocused(true)}
+      onBlur={() => setTvFocused(false)}
     >
       {loading ? (
         <ActivityIndicator color={theme.colors.primaryForeground} size="small" />
@@ -44,4 +65,5 @@ const styles = StyleSheet.create({
   },
   label: { fontSize: 15, fontWeight: '600' },
   disabled: { opacity: 0.5 },
+  ring: { borderWidth: 3, borderColor: '#007AFF' },
 });
