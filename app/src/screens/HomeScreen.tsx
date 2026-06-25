@@ -15,6 +15,7 @@ import { PrimaryButton } from '../components/PrimaryButton';
 import { TVFocusable } from '../components/TVFocusable';
 import { LoadingView } from '../components/LoadingView';
 import { SyncBanner } from '../components/SyncBanner';
+import { TVHomeScreen } from './TVHomeScreen';
 import { useTheme } from '../theme/useTheme';
 import type { Channel } from '../specs/NativeMiPTVCore';
 import type { TabScreenProps } from '../navigation/types';
@@ -95,6 +96,10 @@ export function HomeScreen({ navigation }: TabScreenProps<'HomeTab'>) {
 
   if (isLoading) {
     return <LoadingView />;
+  }
+
+  if (Platform.isTV) {
+    return <TVHomeScreen navigation={navigation} />;
   }
 
   const hasCarousels = recentChannels.length > 0 || mostChannels.length > 0;
