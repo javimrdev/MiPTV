@@ -43,6 +43,7 @@ import { useChannels } from '../hooks/useChannels';
 import { useProviders } from '../hooks/useProviders';
 import { useProviderStore } from '../store/providerStore';
 import { useMiPTVCore } from '../hooks/useMiPTVCore';
+import { useTVNavigation } from '../hooks/useTVNavigation';
 import type { RootStackScreenProps } from '../navigation/types';
 import type { Channel, EpgEntry } from '../specs/NativeMiPTVCore';
 import { usePlayerStore } from '../store/playerStore';
@@ -216,6 +217,15 @@ export function PlayerScreen({ route, navigation }: RootStackScreenProps<'Player
       showControls();
     }
   }, [controlsVisible, showControls]);
+
+  // ── TV D-pad navigation ─────────────────────────────────────────────────────
+
+  useTVNavigation({
+    select: () => setPaused(p => !p),
+    menu: () => navigation.goBack(),
+    up: showControls,
+    down: showControls,
+  });
 
   // ── PiP ─────────────────────────────────────────────────────────────────────
 
