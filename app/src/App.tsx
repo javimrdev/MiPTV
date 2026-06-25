@@ -5,7 +5,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import codePush from 'react-native-code-push';
 import { RootNavigator } from './navigation/RootNavigator';
+import { useCodePushUpdate } from './hooks/useCodePushUpdate';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,7 +15,9 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function App() {
+function AppRoot() {
+  useCodePushUpdate();
+
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
@@ -30,3 +34,5 @@ export default function App() {
 const styles = StyleSheet.create({
   root: { flex: 1 },
 });
+
+export default codePush({ checkFrequency: codePush.CheckFrequency.MANUAL })(AppRoot);
