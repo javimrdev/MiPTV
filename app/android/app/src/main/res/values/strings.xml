@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">miptv</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey"></string>
+    <string name="CodePushServerUrl">https://codepush.appcenter.ms/</string>
 </resources>
