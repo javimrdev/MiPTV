@@ -18,7 +18,7 @@ import { useRecentlyWatched } from '../hooks/useWatchHistory';
 import { usePlaylists } from '../hooks/usePlaylists';
 import { TVChannelCard } from '../components/TVChannelCard';
 import { PrimaryButton } from '../components/PrimaryButton';
-import type { Channel } from '../specs/NativeMiPTVCore';
+import type { Channel, Playlist, Provider } from '../specs/NativeMiPTVCore';
 import type { TabScreenProps } from '../navigation/types';
 
 type Props = Pick<TabScreenProps<'HomeTab'>, 'navigation'>;
@@ -58,12 +58,16 @@ function ChannelRow({ title, channels, onChannelPress, firstFocused }: ChannelRo
 export function TVHomeScreen({ navigation }: Props) {
   const { currentChannel } = usePlayerStore();
   const { favouriteIds } = useFavouritesStore();
-  const { data: providers = [] } = useProviders();
+  const { data: rawProviders } = useProviders();
+  const providers = useMemo<Provider[]>(() => rawProviders ?? [], [rawProviders]);
   const { activeProviderId } = useProviderStore();
   const providerId = activeProviderId ?? providers[0]?.id ?? '';
-  const { data: allChannels = [] } = useChannels(providerId);
-  const { data: recentChannels = [] } = useRecentlyWatched(15);
-  const { data: playlists = [] } = usePlaylists();
+  const { data: rawChannels } = useChannels(providerId);
+  const allChannels = useMemo<Channel[]>(() => rawChannels ?? [], [rawChannels]);
+  const { data: rawRecent } = useRecentlyWatched(15);
+  const recentChannels = useMemo<Channel[]>(() => rawRecent ?? [], [rawRecent]);
+  const { data: rawPlaylists } = usePlaylists();
+  const playlists = useMemo<Playlist[]>(() => rawPlaylists ?? [], [rawPlaylists]);
 
   const heroChannel = currentChannel ?? recentChannels[0] ?? allChannels[0] ?? null;
   const { data: heroEpg } = useCurrentEpg(heroChannel?.id ?? '');
@@ -72,10 +76,10 @@ export function TVHomeScreen({ navigation }: Props) {
     const favPlaylist = playlists.find((p) => p.isFavorites);
     if (favPlaylist) {
       return favPlaylist.channelIds
-        .map((id) => allChannels.find((ch) => ch.id === id))
+        .map((id: string) => allChannels.find((ch: Channel) => ch.id === id))
         .filter((ch): ch is Channel => ch !== undefined);
     }
-    return allChannels.filter((ch) => favouriteIds.has(ch.id));
+    return allChannels.filter((ch: Channel) => favouriteIds.has(ch.id));
   }, [playlists, allChannels, favouriteIds]);
 
   const browseChannels = useMemo<Channel[]>(() => allChannels.slice(0, 20), [allChannels]);
