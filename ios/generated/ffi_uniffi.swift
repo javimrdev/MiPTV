@@ -510,6 +510,10 @@ public protocol MiPtvCoreProtocol : AnyObject {
     
     func getEpgForChannel(channelId: String, start: Int64, end: Int64) async throws  -> [FfiEpgEntry]
     
+    func getMostWatched(limit: UInt64) async throws  -> [FfiChannel]
+    
+    func getRecentlyWatched(limit: UInt64) async throws  -> [FfiChannel]
+    
     func listChannels(providerId: String) async throws  -> [FfiChannel]
     
     func listPlaylists() async throws  -> [FfiPlaylist]
@@ -520,7 +524,11 @@ public protocol MiPtvCoreProtocol : AnyObject {
     
     func searchChannels(query: String) async throws  -> [FfiChannel]
     
+    func syncEpg(providerId: String) async throws  -> UInt64
+    
     func syncProvider(providerId: String) async throws  -> UInt64
+    
+    func updatePlaylist(playlist: FfiPlaylist) async throws 
     
 }
 
@@ -691,6 +699,40 @@ open func getEpgForChannel(channelId: String, start: Int64, end: Int64)async thr
         )
 }
     
+open func getMostWatched(limit: UInt64)async throws  -> [FfiChannel] {
+    return
+        try  await uniffiRustCallAsync(
+            rustFutureFunc: {
+                uniffi_ffi_uniffi_fn_method_miptvcore_get_most_watched(
+                    self.uniffiClonePointer(),
+                    FfiConverterUInt64.lower(limit)
+                )
+            },
+            pollFunc: ffi_ffi_uniffi_rust_future_poll_rust_buffer,
+            completeFunc: ffi_ffi_uniffi_rust_future_complete_rust_buffer,
+            freeFunc: ffi_ffi_uniffi_rust_future_free_rust_buffer,
+            liftFunc: FfiConverterSequenceTypeFfiChannel.lift,
+            errorHandler: FfiConverterTypeCoreError.lift
+        )
+}
+    
+open func getRecentlyWatched(limit: UInt64)async throws  -> [FfiChannel] {
+    return
+        try  await uniffiRustCallAsync(
+            rustFutureFunc: {
+                uniffi_ffi_uniffi_fn_method_miptvcore_get_recently_watched(
+                    self.uniffiClonePointer(),
+                    FfiConverterUInt64.lower(limit)
+                )
+            },
+            pollFunc: ffi_ffi_uniffi_rust_future_poll_rust_buffer,
+            completeFunc: ffi_ffi_uniffi_rust_future_complete_rust_buffer,
+            freeFunc: ffi_ffi_uniffi_rust_future_free_rust_buffer,
+            liftFunc: FfiConverterSequenceTypeFfiChannel.lift,
+            errorHandler: FfiConverterTypeCoreError.lift
+        )
+}
+    
 open func listChannels(providerId: String)async throws  -> [FfiChannel] {
     return
         try  await uniffiRustCallAsync(
@@ -776,6 +818,23 @@ open func searchChannels(query: String)async throws  -> [FfiChannel] {
         )
 }
     
+open func syncEpg(providerId: String)async throws  -> UInt64 {
+    return
+        try  await uniffiRustCallAsync(
+            rustFutureFunc: {
+                uniffi_ffi_uniffi_fn_method_miptvcore_sync_epg(
+                    self.uniffiClonePointer(),
+                    FfiConverterString.lower(providerId)
+                )
+            },
+            pollFunc: ffi_ffi_uniffi_rust_future_poll_u64,
+            completeFunc: ffi_ffi_uniffi_rust_future_complete_u64,
+            freeFunc: ffi_ffi_uniffi_rust_future_free_u64,
+            liftFunc: FfiConverterUInt64.lift,
+            errorHandler: FfiConverterTypeCoreError.lift
+        )
+}
+    
 open func syncProvider(providerId: String)async throws  -> UInt64 {
     return
         try  await uniffiRustCallAsync(
@@ -789,6 +848,23 @@ open func syncProvider(providerId: String)async throws  -> UInt64 {
             completeFunc: ffi_ffi_uniffi_rust_future_complete_u64,
             freeFunc: ffi_ffi_uniffi_rust_future_free_u64,
             liftFunc: FfiConverterUInt64.lift,
+            errorHandler: FfiConverterTypeCoreError.lift
+        )
+}
+    
+open func updatePlaylist(playlist: FfiPlaylist)async throws  {
+    return
+        try  await uniffiRustCallAsync(
+            rustFutureFunc: {
+                uniffi_ffi_uniffi_fn_method_miptvcore_update_playlist(
+                    self.uniffiClonePointer(),
+                    FfiConverterTypeFfiPlaylist.lower(playlist)
+                )
+            },
+            pollFunc: ffi_ffi_uniffi_rust_future_poll_void,
+            completeFunc: ffi_ffi_uniffi_rust_future_complete_void,
+            freeFunc: ffi_ffi_uniffi_rust_future_free_void,
+            liftFunc: { $0 },
             errorHandler: FfiConverterTypeCoreError.lift
         )
 }
@@ -1698,6 +1774,12 @@ private var initializationResult: InitializationResult = {
     if (uniffi_ffi_uniffi_checksum_method_miptvcore_get_epg_for_channel() != 40656) {
         return InitializationResult.apiChecksumMismatch
     }
+    if (uniffi_ffi_uniffi_checksum_method_miptvcore_get_most_watched() != 21816) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_ffi_uniffi_checksum_method_miptvcore_get_recently_watched() != 3735) {
+        return InitializationResult.apiChecksumMismatch
+    }
     if (uniffi_ffi_uniffi_checksum_method_miptvcore_list_channels() != 37797) {
         return InitializationResult.apiChecksumMismatch
     }
@@ -1713,7 +1795,13 @@ private var initializationResult: InitializationResult = {
     if (uniffi_ffi_uniffi_checksum_method_miptvcore_search_channels() != 15597) {
         return InitializationResult.apiChecksumMismatch
     }
+    if (uniffi_ffi_uniffi_checksum_method_miptvcore_sync_epg() != 42600) {
+        return InitializationResult.apiChecksumMismatch
+    }
     if (uniffi_ffi_uniffi_checksum_method_miptvcore_sync_provider() != 10216) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_ffi_uniffi_checksum_method_miptvcore_update_playlist() != 63713) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_ffi_uniffi_checksum_constructor_miptvcore_init() != 59396) {

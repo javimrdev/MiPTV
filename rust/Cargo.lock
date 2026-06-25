@@ -584,6 +584,7 @@ version = "0.1.0"
 dependencies = [
  "core-data",
  "core-domain",
+ "parser-xmltv",
  "thiserror 2.0.18",
  "tokio",
  "uniffi",

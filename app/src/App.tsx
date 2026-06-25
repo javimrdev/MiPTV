@@ -1,7 +1,10 @@
 import './i18n';
 import React, { useEffect } from 'react';
 import NativeMiPTVCore from './specs/NativeMiPTVCore';
-import { StyleSheet } from 'react-native';
+import { LogBox, StyleSheet } from 'react-native';
+
+// i18next emits a noisy Intl.PluralRules dev warning under Hermes; it is harmless.
+LogBox.ignoreLogs(['i18next::pluralResolver']);
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

@@ -296,6 +296,16 @@ uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_get_current_epg(void*_Nonnull ptr
 uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_get_epg_for_channel(void*_Nonnull ptr, RustBuffer channel_id, int64_t start, int64_t end
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_GET_MOST_WATCHED
+#define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_GET_MOST_WATCHED
+uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_get_most_watched(void*_Nonnull ptr, uint64_t limit
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_GET_RECENTLY_WATCHED
+#define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_GET_RECENTLY_WATCHED
+uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_get_recently_watched(void*_Nonnull ptr, uint64_t limit
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_LIST_CHANNELS
 #define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_LIST_CHANNELS
 uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_list_channels(void*_Nonnull ptr, RustBuffer provider_id
@@ -321,9 +331,19 @@ uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_record_watch(void*_Nonnull ptr, R
 uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_search_channels(void*_Nonnull ptr, RustBuffer query
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_SYNC_EPG
+#define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_SYNC_EPG
+uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_sync_epg(void*_Nonnull ptr, RustBuffer provider_id
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_SYNC_PROVIDER
 #define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_SYNC_PROVIDER
 uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_sync_provider(void*_Nonnull ptr, RustBuffer provider_id
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_UPDATE_PLAYLIST
+#define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_FN_METHOD_MIPTVCORE_UPDATE_PLAYLIST
+uint64_t uniffi_ffi_uniffi_fn_method_miptvcore_update_playlist(void*_Nonnull ptr, RustBuffer playlist
 );
 #endif
 #ifndef UNIFFI_FFIDEF_FFI_FFI_UNIFFI_RUSTBUFFER_ALLOC
@@ -642,6 +662,18 @@ uint16_t uniffi_ffi_uniffi_checksum_method_miptvcore_get_epg_for_channel(void
     
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_GET_MOST_WATCHED
+#define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_GET_MOST_WATCHED
+uint16_t uniffi_ffi_uniffi_checksum_method_miptvcore_get_most_watched(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_GET_RECENTLY_WATCHED
+#define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_GET_RECENTLY_WATCHED
+uint16_t uniffi_ffi_uniffi_checksum_method_miptvcore_get_recently_watched(void
+    
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_LIST_CHANNELS
 #define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_LIST_CHANNELS
 uint16_t uniffi_ffi_uniffi_checksum_method_miptvcore_list_channels(void
@@ -672,9 +704,21 @@ uint16_t uniffi_ffi_uniffi_checksum_method_miptvcore_search_channels(void
     
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_SYNC_EPG
+#define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_SYNC_EPG
+uint16_t uniffi_ffi_uniffi_checksum_method_miptvcore_sync_epg(void
+    
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_SYNC_PROVIDER
 #define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_SYNC_PROVIDER
 uint16_t uniffi_ffi_uniffi_checksum_method_miptvcore_sync_provider(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_UPDATE_PLAYLIST
+#define UNIFFI_FFIDEF_UNIFFI_FFI_UNIFFI_CHECKSUM_METHOD_MIPTVCORE_UPDATE_PLAYLIST
+uint16_t uniffi_ffi_uniffi_checksum_method_miptvcore_update_playlist(void
     
 );
 #endif
