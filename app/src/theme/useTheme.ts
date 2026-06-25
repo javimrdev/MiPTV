@@ -1,5 +1,6 @@
 import { useColorScheme } from 'react-native';
 import { colors, spacing, radius, fontSize, fontWeight } from './tokens';
+import { useSettingsStore } from '../store/settingsStore';
 
 export type Theme = {
   colors: {
@@ -74,6 +75,8 @@ const darkTheme: Theme = {
 };
 
 export function useTheme(): Theme {
-  const scheme = useColorScheme();
-  return scheme === 'dark' ? darkTheme : lightTheme;
+  const systemScheme = useColorScheme();
+  const { theme } = useSettingsStore();
+  const effective = theme === 'system' ? systemScheme : theme;
+  return effective === 'dark' ? darkTheme : lightTheme;
 }
