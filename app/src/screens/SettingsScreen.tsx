@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  Alert,
   Platform,
   ScrollView,
   StyleSheet,
@@ -10,8 +11,15 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { TVFocusable } from '../components/TVFocusable';
+import { PinEntryModal } from '../components/PinEntryModal';
 import { useTheme } from '../theme/useTheme';
-import { useSettingsStore, type ThemeSetting } from '../store/settingsStore';
+import {
+  useSettingsStore,
+  type ThemeSetting,
+  type PreferredPlayer,
+  type EpgCacheTtlHours,
+  type NetworkQuality,
+} from '../store/settingsStore';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../i18n';
 import type { TabScreenProps } from '../navigation/types';
 
@@ -85,10 +93,26 @@ const LANGUAGE_LABELS: Record<SupportedLanguage | 'auto', string> = {
   pt: 'Português',
 };
 
+const EPG_TTL_OPTIONS: EpgCacheTtlHours[] = [1, 6, 12, 24, 48];
+const NETWORK_QUALITY_OPTIONS: NetworkQuality[] = ['auto', 'low', 'medium', 'high'];
+const PLAYER_OPTIONS: PreferredPlayer[] = ['internal', 'vlc'];
+
 export function SettingsScreen({ navigation }: TabScreenProps<'SettingsTab'>) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { theme: themeSetting, setTheme, language, setLanguage, parentalPinEnabled, setParentalPinEnabled } = useSettingsStore();
+  const {
+    theme: themeSetting, setTheme,
+    language, setLanguage,
+    parentalPinEnabled, setParentalPinEnabled,
+    parentalPin, setParentalPin,
+    proxyUrl, setProxyUrl,
+    preferredPlayer, setPreferredPlayer,
+    epgCacheTtlHours, setEpgCacheTtlHours,
+    networkQuality, setNetworkQuality,
+    autoPlayLastChannel, setAutoPlayLastChannel,
+  } = useSettingsStore();
+
+  const [pinModalVisible, setPinModalVisible] = useState(false);
 
   const THEME_OPTIONS: { label: string; value: ThemeSetting }[] = [
     { label: t('settings.themeSystem'), value: 'system' },
@@ -100,67 +124,144 @@ export function SettingsScreen({ navigation }: TabScreenProps<'SettingsTab'>) {
     const idx = THEME_OPTIONS.findIndex((o) => o.value === themeSetting);
     return THEME_OPTIONS[(idx + 1) % THEME_OPTIONS.length]?.value ?? 'system';
   };
-
   const themeLabel = THEME_OPTIONS.find((o) => o.value === themeSetting)?.label ?? t('settings.themeSystem');
 
   const allLanguages: Array<SupportedLanguage | 'auto'> = ['auto', ...SUPPORTED_LANGUAGES];
-
   const nextLanguage = (): SupportedLanguage | 'auto' => {
     const idx = allLanguages.indexOf(language);
     return allLanguages[(idx + 1) % allLanguages.length] ?? 'auto';
   };
 
+  const nextEpgTtl = (): EpgCacheTtlHours => {
+    const idx = EPG_TTL_OPTIONS.indexOf(epgCacheTtlHours);
+    return EPG_TTL_OPTIONS[(idx + 1) % EPG_TTL_OPTIONS.length] ?? 12;
+  };
+
+  const nextNetworkQuality = (): NetworkQuality => {
+    const idx = NETWORK_QUALITY_OPTIONS.indexOf(networkQuality);
+    return NETWORK_QUALITY_OPTIONS[(idx + 1) % NETWORK_QUALITY_OPTIONS.length] ?? 'auto';
+  };
+
+  const nextPlayer = (): PreferredPlayer => {
+    const idx = PLAYER_OPTIONS.indexOf(preferredPlayer);
+    return PLAYER_OPTIONS[(idx + 1) % PLAYER_OPTIONS.length] ?? 'internal';
+  };
+
+  const handlePinSave = (pin: string) => {
+    setParentalPin(pin);
+    setPinModalVisible(false);
+    Alert.alert(t('settings.pinEntry'), parentalPin ? t('settings.pinChanged') : t('settings.pinSet'));
+  };
+
+  const handleProxyUrl = () => {
+    Alert.prompt(
+      t('settings.proxyUrl'),
+      'http://proxy:port',
+      (text) => setProxyUrl(text.trim() || null),
+      'plain-text',
+      proxyUrl ?? '',
+    );
+  };
+
+  const networkQualityLabels: Record<NetworkQuality, string> = {
+    auto: t('settings.streamQualityAuto'),
+    low: 'Low',
+    medium: 'Medium',
+    high: 'High',
+  };
+
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      contentContainerStyle={styles.content}
-    >
-      <Text style={[styles.pageTitle, { color: theme.colors.text }]}>{t('settings.title')}</Text>
+    <>
+      <ScrollView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        contentContainerStyle={styles.content}
+      >
+        <Text style={[styles.pageTitle, { color: theme.colors.text }]}>{t('settings.title')}</Text>
 
-      <Section title={t('nav.providers')}>
-        <SettingRow
-          label={t('settings.manageProviders')}
-          onPress={() => navigation.navigate('ProviderList')}
-          hasTVPreferredFocus={Platform.isTV}
-        />
-      </Section>
-
-      <Section title={t('settings.appearance')}>
-        <SettingRow
-          label={t('settings.theme')}
-          value={themeLabel}
-          onPress={() => setTheme(nextTheme())}
-        />
-        <SettingRow
-          label={t('settings.language')}
-          value={LANGUAGE_LABELS[language]}
-          onPress={() => setLanguage(nextLanguage())}
-        />
-      </Section>
-
-      <Section title={t('settings.parentalControls')}>
-        <SettingRow label={t('settings.requirePin')}>
-          <Switch
-            value={parentalPinEnabled}
-            onValueChange={setParentalPinEnabled}
-            trackColor={{ true: theme.colors.primary }}
+        <Section title={t('nav.providers')}>
+          <SettingRow
+            label={t('settings.manageProviders')}
+            onPress={() => navigation.navigate('ProviderList')}
+            hasTVPreferredFocus={Platform.isTV}
           />
-        </SettingRow>
-        {parentalPinEnabled && (
-          <SettingRow label={t('settings.changePin')} onPress={() => {}} value="****" />
-        )}
-      </Section>
+        </Section>
 
-      <Section title={t('settings.network')}>
-        <SettingRow label={t('settings.streamQuality')} value={t('settings.streamQualityAuto')} />
-        <SettingRow label={t('settings.bufferSize')} value={t('settings.bufferSizeDefault')} />
-      </Section>
+        <Section title={t('settings.appearance')}>
+          <SettingRow
+            label={t('settings.theme')}
+            value={themeLabel}
+            onPress={() => setTheme(nextTheme())}
+          />
+          <SettingRow
+            label={t('settings.language')}
+            value={LANGUAGE_LABELS[language]}
+            onPress={() => setLanguage(nextLanguage())}
+          />
+        </Section>
 
-      <Section title={t('settings.about')}>
-        <SettingRow label={t('settings.version')} value={APP_VERSION} />
-        <SettingRow label={t('settings.build')} value="React Native + Rust" />
-      </Section>
-    </ScrollView>
+        <Section title={t('settings.parentalControls')}>
+          <SettingRow label={t('settings.requirePin')}>
+            <Switch
+              value={parentalPinEnabled}
+              onValueChange={setParentalPinEnabled}
+              trackColor={{ true: theme.colors.primary }}
+            />
+          </SettingRow>
+          {parentalPinEnabled && (
+            <SettingRow
+              label={t('settings.changePin')}
+              onPress={() => setPinModalVisible(true)}
+              value={parentalPin ? '••••' : '—'}
+            />
+          )}
+        </Section>
+
+        <Section title={t('settings.network')}>
+          <SettingRow
+            label={t('settings.streamQuality')}
+            value={networkQualityLabels[networkQuality]}
+            onPress={() => setNetworkQuality(nextNetworkQuality())}
+          />
+          <SettingRow
+            label={t('settings.proxyUrl')}
+            value={proxyUrl ?? t('settings.proxyUrlNone')}
+            onPress={Platform.OS === 'ios' ? handleProxyUrl : undefined}
+          />
+        </Section>
+
+        <Section title="Playback">
+          <SettingRow
+            label={t('settings.preferredPlayer')}
+            value={preferredPlayer === 'internal' ? t('settings.playerInternal') : t('settings.playerVlc')}
+            onPress={() => setPreferredPlayer(nextPlayer())}
+          />
+          <SettingRow
+            label={t('settings.epgCacheTtl')}
+            value={`${epgCacheTtlHours}h`}
+            onPress={() => setEpgCacheTtlHours(nextEpgTtl())}
+          />
+          <SettingRow label={t('settings.autoPlayLastChannel')}>
+            <Switch
+              value={autoPlayLastChannel}
+              onValueChange={setAutoPlayLastChannel}
+              trackColor={{ true: theme.colors.primary }}
+            />
+          </SettingRow>
+        </Section>
+
+        <Section title={t('settings.about')}>
+          <SettingRow label={t('settings.version')} value={APP_VERSION} />
+          <SettingRow label={t('settings.build')} value="React Native + Rust" />
+        </Section>
+      </ScrollView>
+
+      <PinEntryModal
+        visible={pinModalVisible}
+        onClose={() => setPinModalVisible(false)}
+        onSave={handlePinSave}
+        title={t('settings.changePin')}
+      />
+    </>
   );
 }
 
