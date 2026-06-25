@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,6 +17,7 @@ import { useProviders } from '../hooks/useProviders';
 import { useEpgForChannel, useAutoSyncEpg } from '../hooks/useEpg';
 import { useProviderStore } from '../store/providerStore';
 import { useTheme } from '../theme/useTheme';
+import { TVEPGScreen } from './TVEPGScreen';
 import type { TabScreenProps } from '../navigation/types';
 import type { EpgEntry, Channel } from '../specs/NativeMiPTVCore';
 
@@ -179,7 +181,14 @@ function EpgRow({
 
 // ── Main screen ───────────────────────────────────────────────────────────────
 
-export function EPGScreen(_props: TabScreenProps<'EPGTab'>) {
+export function EPGScreen(props: TabScreenProps<'EPGTab'>) {
+  if (Platform.isTV) {
+    return <TVEPGScreen {...props} />;
+  }
+  return <EPGScreenMobile {...props} />;
+}
+
+function EPGScreenMobile(_props: TabScreenProps<'EPGTab'>) {
   const theme = useTheme();
   const { data: providers = [] } = useProviders();
   const { activeProviderId } = useProviderStore();
