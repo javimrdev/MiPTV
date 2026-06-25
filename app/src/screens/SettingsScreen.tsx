@@ -8,9 +8,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { TVFocusable } from '../components/TVFocusable';
 import { useTheme } from '../theme/useTheme';
 import { useSettingsStore, type ThemeSetting } from '../store/settingsStore';
+import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../i18n';
 import type { TabScreenProps } from '../navigation/types';
 
 const APP_VERSION = '0.1.0';
@@ -74,48 +76,70 @@ function Section({ title, children }: SectionProps) {
   );
 }
 
-const THEME_OPTIONS: { label: string; value: ThemeSetting }[] = [
-  { label: 'System', value: 'system' },
-  { label: 'Light', value: 'light' },
-  { label: 'Dark', value: 'dark' },
-];
+const LANGUAGE_LABELS: Record<SupportedLanguage | 'auto', string> = {
+  auto: 'Auto',
+  en: 'English',
+  es: 'Español',
+  fr: 'Français',
+  de: 'Deutsch',
+  pt: 'Português',
+};
 
 export function SettingsScreen({ navigation }: TabScreenProps<'SettingsTab'>) {
+  const { t } = useTranslation();
   const theme = useTheme();
-  const { theme: themeSetting, setTheme, parentalPinEnabled, setParentalPinEnabled } = useSettingsStore();
+  const { theme: themeSetting, setTheme, language, setLanguage, parentalPinEnabled, setParentalPinEnabled } = useSettingsStore();
+
+  const THEME_OPTIONS: { label: string; value: ThemeSetting }[] = [
+    { label: t('settings.themeSystem'), value: 'system' },
+    { label: t('settings.themeLight'), value: 'light' },
+    { label: t('settings.themeDark'), value: 'dark' },
+  ];
 
   const nextTheme = (): ThemeSetting => {
     const idx = THEME_OPTIONS.findIndex((o) => o.value === themeSetting);
     return THEME_OPTIONS[(idx + 1) % THEME_OPTIONS.length]?.value ?? 'system';
   };
 
-  const themeLabel = THEME_OPTIONS.find((o) => o.value === themeSetting)?.label ?? 'System';
+  const themeLabel = THEME_OPTIONS.find((o) => o.value === themeSetting)?.label ?? t('settings.themeSystem');
+
+  const allLanguages: Array<SupportedLanguage | 'auto'> = ['auto', ...SUPPORTED_LANGUAGES];
+
+  const nextLanguage = (): SupportedLanguage | 'auto' => {
+    const idx = allLanguages.indexOf(language);
+    return allLanguages[(idx + 1) % allLanguages.length] ?? 'auto';
+  };
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       contentContainerStyle={styles.content}
     >
-      <Text style={[styles.pageTitle, { color: theme.colors.text }]}>Settings</Text>
+      <Text style={[styles.pageTitle, { color: theme.colors.text }]}>{t('settings.title')}</Text>
 
-      <Section title="Providers">
+      <Section title={t('nav.providers')}>
         <SettingRow
-          label="Manage Providers"
+          label={t('settings.manageProviders')}
           onPress={() => navigation.navigate('ProviderList')}
           hasTVPreferredFocus={Platform.isTV}
         />
       </Section>
 
-      <Section title="Appearance">
+      <Section title={t('settings.appearance')}>
         <SettingRow
-          label="Theme"
+          label={t('settings.theme')}
           value={themeLabel}
           onPress={() => setTheme(nextTheme())}
         />
+        <SettingRow
+          label={t('settings.language')}
+          value={LANGUAGE_LABELS[language]}
+          onPress={() => setLanguage(nextLanguage())}
+        />
       </Section>
 
-      <Section title="Parental Controls">
-        <SettingRow label="Require PIN">
+      <Section title={t('settings.parentalControls')}>
+        <SettingRow label={t('settings.requirePin')}>
           <Switch
             value={parentalPinEnabled}
             onValueChange={setParentalPinEnabled}
@@ -123,18 +147,18 @@ export function SettingsScreen({ navigation }: TabScreenProps<'SettingsTab'>) {
           />
         </SettingRow>
         {parentalPinEnabled && (
-          <SettingRow label="Change PIN" onPress={() => {}} value="****" />
+          <SettingRow label={t('settings.changePin')} onPress={() => {}} value="****" />
         )}
       </Section>
 
-      <Section title="Network">
-        <SettingRow label="Stream Quality" value="Auto" />
-        <SettingRow label="Buffer Size" value="Default" />
+      <Section title={t('settings.network')}>
+        <SettingRow label={t('settings.streamQuality')} value={t('settings.streamQualityAuto')} />
+        <SettingRow label={t('settings.bufferSize')} value={t('settings.bufferSizeDefault')} />
       </Section>
 
-      <Section title="About">
-        <SettingRow label="Version" value={APP_VERSION} />
-        <SettingRow label="Build" value="React Native + Rust" />
+      <Section title={t('settings.about')}>
+        <SettingRow label={t('settings.version')} value={APP_VERSION} />
+        <SettingRow label={t('settings.build')} value="React Native + Rust" />
       </Section>
     </ScrollView>
   );
