@@ -1,0 +1,14 @@
+{
+  "id": "com.miptv.app",
+  "version": "0.1.0",
+  "vendor": "MiPTV",
+  "type": "web",
+  "main": "index.html",
+  "title": "MiPTV",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "iconColor": "#000000",
+  "splashBackground": "#000000",
+  "transparent": false,
+  "handlesRelaunch": false
+}
