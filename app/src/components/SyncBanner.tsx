@@ -27,8 +27,9 @@ export function SyncBanner() {
           </ThemedText>
         </>
       ) : (
-        <ThemedText variant="caption" style={styles.text}>
+        <ThemedText variant="caption" style={styles.text} numberOfLines={2}>
           Sync failed for {errors.length} provider{errors.length > 1 ? 's' : ''}
+          {errors[0]?.error ? `: ${errors[0].error}` : ''}
         </ThemedText>
       )}
     </View>

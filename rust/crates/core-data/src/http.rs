@@ -11,7 +11,12 @@ pub struct HttpClient {
 impl HttpClient {
     pub fn new() -> Result<Self> {
         let inner = Client::builder()
-            .timeout(std::time::Duration::from_secs(30))
+            // Fail fast when a host is unreachable, but allow a generous overall
+            // budget: Xtream `get_live_streams` payloads can be ~20 MB, which on a
+            // slow mobile connection easily exceeds a tight total timeout. A 30 s
+            // total timeout was aborting every device sync mid-download.
+            .connect_timeout(std::time::Duration::from_secs(15))
+            .timeout(std::time::Duration::from_secs(120))
             .user_agent("MiPTV/0.1")
             .build()?;
         Ok(Self { inner })
@@ -19,8 +24,18 @@ impl HttpClient {
 
     /// Fetch raw bytes (used for M3U and XMLTV downloads).
     pub async fn fetch_bytes(&self, url: &str) -> Result<Vec<u8>> {
-        let response = self.inner.get(url).send().await?.error_for_status()?;
-        Ok(response.bytes().await?.to_vec())
+        let response = self
+            .inner
+            .get(url)
+            .send()
+            .await
+            .and_then(|r| r.error_for_status())
+            .map_err(|e| anyhow::anyhow!(redact_credentials(&flatten_error(&e))))?;
+        let bytes = response
+            .bytes()
+            .await
+            .map_err(|e| anyhow::anyhow!(redact_credentials(&flatten_error(&e))))?;
+        Ok(bytes.to_vec())
     }
 
     /// Fetch UTF-8 text.
@@ -28,6 +43,48 @@ impl HttpClient {
         let bytes = self.fetch_bytes(url).await?;
         Ok(String::from_utf8_lossy(&bytes).into_owned())
     }
+}
+
+/// Flatten a reqwest error and its full source chain into a single string.
+/// `reqwest::Error`'s `Display` only shows the top context (e.g. "error sending
+/// request for url (…)") and hides the real cause (timeout, DNS, connection
+/// reset). Walking `source()` recovers it for actionable error reporting.
+fn flatten_error(e: &reqwest::Error) -> String {
+    let mut msg = e.to_string();
+    let mut source = std::error::Error::source(e);
+    while let Some(s) = source {
+        msg.push_str(": ");
+        msg.push_str(&s.to_string());
+        source = s.source();
+    }
+    msg
+}
+
+/// Mask `username`/`password` query-param values so credentials never leak into
+/// logs or error messages (reqwest embeds the full request URL in its errors).
+fn redact_credentials(text: &str) -> String {
+    let mut out = text.to_string();
+    for key in ["password", "username"] {
+        out = mask_param(&out, key);
+    }
+    out
+}
+
+fn mask_param(text: &str, key: &str) -> String {
+    let needle = format!("{key}=");
+    let mut result = String::with_capacity(text.len());
+    let mut rest = text;
+    while let Some(pos) = rest.find(&needle) {
+        let (before, after) = rest.split_at(pos + needle.len());
+        result.push_str(before);
+        result.push_str("***");
+        let end = after
+            .find(|c: char| c == '&' || c == ')' || c.is_whitespace())
+            .unwrap_or(after.len());
+        rest = &after[end..];
+    }
+    result.push_str(rest);
+    result
 }
 
 impl Default for HttpClient {
@@ -48,19 +105,30 @@ pub struct XtreamClient {
 
 #[derive(Debug, Deserialize)]
 pub struct XtreamCategory {
+    #[serde(deserialize_with = "null_as_default")]
     pub category_id: String,
+    #[serde(deserialize_with = "null_as_default")]
     pub category_name: String,
+}
+
+fn null_as_default<'de, D, T>(d: D) -> Result<T, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Default + Deserialize<'de>,
+{
+    Ok(Option::<T>::deserialize(d)?.unwrap_or_default())
 }
 
 #[derive(Debug, Deserialize)]
 pub struct XtreamStream {
     pub stream_id: u64,
+    #[serde(deserialize_with = "null_as_default")]
     pub name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_as_default")]
     pub stream_icon: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_as_default")]
     pub category_id: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_as_default")]
     pub epg_channel_id: String,
     pub stream_type: Option<String>,
 }
@@ -84,14 +152,15 @@ impl XtreamClient {
 
     pub async fn get_live_categories(&self) -> Result<Vec<XtreamCategory>> {
         let url = self.api_url("get_live_categories");
-        let text = self.http.fetch_text(&url).await?;
-        Ok(serde_json::from_str(&text)?)
+        let bytes = self.http.fetch_bytes(&url).await?;
+        Ok(serde_json::from_slice(&bytes)?)
     }
 
     pub async fn get_live_streams(&self) -> Result<Vec<XtreamStream>> {
         let url = self.api_url("get_live_streams");
-        let text = self.http.fetch_text(&url).await?;
-        Ok(serde_json::from_str(&text)?)
+        // Parse straight from bytes to avoid a second ~20 MB UTF-8 copy.
+        let bytes = self.http.fetch_bytes(&url).await?;
+        Ok(serde_json::from_slice(&bytes)?)
     }
 
     pub fn get_epg_url(&self) -> String {

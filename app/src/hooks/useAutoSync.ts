@@ -8,7 +8,7 @@ const STALE_THRESHOLD_MS = 30 * 60 * 1000;
 
 export function useAutoSync(providers: Provider[]) {
   const core = useMiPTVCore();
-  const { startSync, finishSync, failSync, providers: syncStates } = useSyncStore();
+  const { startSync, finishSync, failSync } = useSyncStore();
   const queryClient = useQueryClient();
   const syncedRef = useRef<Set<string>>(new Set());
 
@@ -16,7 +16,8 @@ export function useAutoSync(providers: Provider[]) {
     if (providers.length === 0) {
       return;
     }
-
+    console.log(`[AutoSync] checking ${providers.length} providers for stale sync...`);
+    const syncStates = useSyncStore.getState().providers;
     const stale = providers.filter(p => {
       if (!p.isActive) {
         return false;
@@ -44,9 +45,13 @@ export function useAutoSync(providers: Provider[]) {
           queryClient.invalidateQueries({ queryKey: ['providers'] });
         })
         .catch((err: unknown) => {
+          // Mark as failed but keep the provider in syncedRef so it is NOT
+          // retried automatically this session. Auto-retrying here drove a
+          // tight loop (overheating + stuck "Syncing…" banner). Manual sync
+          // from ProviderListScreen remains available to retry.
+          console.warn(`[AutoSync] provider ${provider.id} failed:`, err);
           failSync(provider.id, String(err));
-          syncedRef.current.delete(provider.id);
         });
     });
-  }, [providers, syncStates, core, startSync, finishSync, failSync, queryClient]);
+  }, [providers, core, startSync, finishSync, failSync, queryClient]);
 }

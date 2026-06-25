@@ -12,6 +12,9 @@
     "node_modules",
     "src/**/*.web.ts",
     "src/**/*.web.tsx",
-    "src/web/**"
+    "src/web/**",
+    "src/**/__tests__/**",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
   ]
 }

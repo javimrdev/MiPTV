@@ -180,8 +180,8 @@ impl MiPTVCore {
     pub async fn init(db_path: String) -> Result<Arc<Self>, CoreError> {
         let db = core_data::db::Database::open(&db_path)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
-        let http = core_data::http::HttpClient::new().map_err(|e| CoreError::Network { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
+        let http = core_data::http::HttpClient::new().map_err(|e| CoreError::Network { msg: format!("{e:#}") })?;
         Ok(Arc::new(Self { db, http }))
     }
 
@@ -189,7 +189,7 @@ impl MiPTVCore {
         self.db
             .insert_provider(&ffi_to_provider(provider))
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })
     }
 
     pub async fn list_providers(&self) -> Result<Vec<FfiProvider>, CoreError> {
@@ -197,7 +197,7 @@ impl MiPTVCore {
             .db
             .list_providers()
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(providers.into_iter().map(FfiProvider::from).collect())
     }
 
@@ -205,7 +205,7 @@ impl MiPTVCore {
         self.db
             .delete_provider(&id)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })
     }
 
     pub async fn sync_provider(&self, provider_id: String) -> Result<u64, CoreError> {
@@ -213,7 +213,7 @@ impl MiPTVCore {
             .db
             .list_providers()
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         let provider = providers
             .into_iter()
             .find(|p| p.id == provider_id)
@@ -224,7 +224,7 @@ impl MiPTVCore {
         let count = sync
             .sync(&provider)
             .await
-            .map_err(|e| CoreError::Network { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Network { msg: format!("{e:#}") })?;
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap_or_default()
@@ -232,7 +232,7 @@ impl MiPTVCore {
         self.db
             .update_provider_last_sync(&provider_id, now)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(count as u64)
     }
 
@@ -241,7 +241,7 @@ impl MiPTVCore {
             .db
             .list_channels(Some(&provider_id))
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(channels.into_iter().map(FfiChannel::from).collect())
     }
 
@@ -250,7 +250,7 @@ impl MiPTVCore {
             .db
             .search_channels(&query)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(channels.into_iter().map(FfiChannel::from).collect())
     }
 
@@ -259,7 +259,7 @@ impl MiPTVCore {
             .db
             .list_providers()
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         let provider = providers
             .into_iter()
             .find(|p| p.id == provider_id)
@@ -274,16 +274,16 @@ impl MiPTVCore {
             .http
             .fetch_text(&epg_url)
             .await
-            .map_err(|e| CoreError::Network { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Network { msg: format!("{e:#}") })?;
 
-        let entries = parser_xmltv::parse(&xml).map_err(|e| CoreError::Parse { msg: e.to_string() })?;
+        let entries = parser_xmltv::parse(&xml).map_err(|e| CoreError::Parse { msg: format!("{e:#}") })?;
         let count = entries.len() as u64;
 
         // Replace stale EPG data for this provider
         self.db
             .delete_epg_for_provider(&provider_id)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
 
         // Purge entries from any provider that ended >24 h ago
         let now = std::time::SystemTime::now()
@@ -293,12 +293,12 @@ impl MiPTVCore {
         self.db
             .purge_old_epg_entries(now - 86_400)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
 
         self.db
             .upsert_epg_entries(&entries)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
 
         Ok(count)
     }
@@ -312,7 +312,7 @@ impl MiPTVCore {
             .db
             .get_current_epg(&channel_id, now)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(entry.map(FfiEpgEntry::from))
     }
 
@@ -326,7 +326,7 @@ impl MiPTVCore {
             .db
             .get_epg_for_channel(&channel_id, start, end)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(entries.into_iter().map(FfiEpgEntry::from).collect())
     }
 
@@ -334,7 +334,7 @@ impl MiPTVCore {
         self.db
             .insert_playlist(&ffi_to_playlist(playlist))
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })
     }
 
     pub async fn list_playlists(&self) -> Result<Vec<FfiPlaylist>, CoreError> {
@@ -342,7 +342,7 @@ impl MiPTVCore {
             .db
             .list_playlists()
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(playlists.into_iter().map(FfiPlaylist::from).collect())
     }
 
@@ -350,14 +350,14 @@ impl MiPTVCore {
         self.db
             .update_playlist(&ffi_to_playlist(playlist))
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })
     }
 
     pub async fn delete_playlist(&self, id: String) -> Result<(), CoreError> {
         self.db
             .delete_playlist(&id)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })
     }
 
     pub async fn record_watch(
@@ -374,7 +374,7 @@ impl MiPTVCore {
         self.db
             .record_watch(&entry)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })
     }
 
     pub async fn get_recently_watched(&self, limit: u64) -> Result<Vec<FfiChannel>, CoreError> {
@@ -382,7 +382,7 @@ impl MiPTVCore {
             .db
             .get_recently_watched_channels(limit as i64)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(channels.into_iter().map(FfiChannel::from).collect())
     }
 
@@ -391,7 +391,7 @@ impl MiPTVCore {
             .db
             .get_most_watched_channels(limit as i64)
             .await
-            .map_err(|e| CoreError::Database { msg: e.to_string() })?;
+            .map_err(|e| CoreError::Database { msg: format!("{e:#}") })?;
         Ok(channels.into_iter().map(FfiChannel::from).collect())
     }
 }

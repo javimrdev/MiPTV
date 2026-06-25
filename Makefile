@@ -91,3 +91,24 @@ run-ios-device: ios-framework pods
 	@echo "Abre Xcode, selecciona tu iPhone y compila (Cmd+R):"
 	@echo "    open $(APP_IOS_DIR)/miptv.xcworkspace"
 	@echo "La primera vez, configura tu Team en Signing & Capabilities."
+
+# Full one-shot pipeline for physical device:
+#   Rust build (device+sim) -> bindings -> xcframework -> pods -> Xcode build
+# Requires:
+#   - Team de desarrollo configurado en Xcode (Signing & Capabilities).
+#   - iPhone conectado por cable o en red local (Wireless Debugging).
+# Override the destination with: make build-ios-device DEVICE_NAME="My iPhone"
+DEVICE_NAME ?= Any iOS Device
+
+.PHONY: build-ios-device
+build-ios-device: ios-framework pods
+	cd $(APP_IOS_DIR) && xcodebuild \
+		-workspace miptv.xcworkspace \
+		-scheme miptv \
+		-configuration Debug \
+		-destination 'platform=iOS,name=$(DEVICE_NAME)' \
+		-allowProvisioningUpdates \
+		build
+	@echo ""
+	@echo "Build completado. Instala en el iPhone desde Xcode (Devices & Simulators)"
+	@echo "o con: ios-deploy -b \$$(find $(APP_IOS_DIR)/build -name '*.app' | head -1)"

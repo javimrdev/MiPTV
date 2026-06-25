@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import NativeMiPTVCore, {
   type Channel,
   type EpgEntry,
@@ -149,22 +149,42 @@ export function useMiPTVCore() {
     [ready],
   );
 
-  return {
-    listProviders,
-    addProvider,
-    deleteProvider,
-    syncProvider,
-    syncEpg,
-    listChannels,
-    searchChannels,
-    getCurrentEpg,
-    getEpgForChannel,
-    createPlaylist,
-    listPlaylists,
-    updatePlaylist,
-    deletePlaylist,
-    recordWatch,
-    getRecentlyWatched,
-    getMostWatched,
-  };
+  return useMemo(
+    () => ({
+      listProviders,
+      addProvider,
+      deleteProvider,
+      syncProvider,
+      syncEpg,
+      listChannels,
+      searchChannels,
+      getCurrentEpg,
+      getEpgForChannel,
+      createPlaylist,
+      listPlaylists,
+      updatePlaylist,
+      deletePlaylist,
+      recordWatch,
+      getRecentlyWatched,
+      getMostWatched,
+    }),
+    [
+      listProviders,
+      addProvider,
+      deleteProvider,
+      syncProvider,
+      syncEpg,
+      listChannels,
+      searchChannels,
+      getCurrentEpg,
+      getEpgForChannel,
+      createPlaylist,
+      listPlaylists,
+      updatePlaylist,
+      deletePlaylist,
+      recordWatch,
+      getRecentlyWatched,
+      getMostWatched,
+    ],
+  );
 }
