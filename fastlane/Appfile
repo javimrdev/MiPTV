@@ -1,7 +1,0 @@
-app_identifier "com.miptv.app"
-apple_id ENV["APPLE_ID"]
-team_id ENV["APPLE_TEAM_ID"]
-
-# Android
-json_key_file ENV["GOOGLE_PLAY_JSON_KEY"]
-package_name "com.miptv"
