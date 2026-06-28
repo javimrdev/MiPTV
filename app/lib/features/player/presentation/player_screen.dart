@@ -11,10 +11,14 @@ class PlayerScreen extends ConsumerStatefulWidget {
     super.key,
     required this.streamId,
     required this.extension,
+    this.type = 'live',
   });
 
   final int streamId;
   final String extension;
+
+  /// URL path segment: `live` for channels, `movie` for VOD.
+  final String type;
 
   @override
   ConsumerState<PlayerScreen> createState() => _PlayerScreenState();
@@ -54,6 +58,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
         password: password,
         streamId: widget.streamId,
         extension: widget.extension,
+        type: widget.type,
       );
 
       log.i('[Player] Opening $url');
@@ -107,13 +112,17 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Video(controller: _controller),
-          Positioned(
-            top: 40,
-            left: 16,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
+          // Built-in MediaKit controls: play/pause, seek bar, ±seek.
+          // Adaptive = Material on Android, Cupertino on iOS.
+          Video(controller: _controller, controls: AdaptiveVideoControls),
+          // Back/close button overlaid on top of the controls.
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
             ),
           ),
         ],

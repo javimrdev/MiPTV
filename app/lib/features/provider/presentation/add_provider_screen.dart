@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
@@ -18,6 +19,8 @@ class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
   final _passCtrl = TextEditingController();
   bool _loading = false;
   String? _errorMessage;
+  bool _diagLoading = false;
+  String? _diagResult;
 
   @override
   void dispose() {
@@ -25,6 +28,25 @@ class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
     _userCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _testNative() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() {
+      _diagLoading = true;
+      _diagResult = null;
+    });
+    try {
+      final api = ref.read(xtreamApiProvider);
+      final result = await api.testConnectionNative(
+        server: _serverCtrl.text.trim(),
+        username: _userCtrl.text.trim(),
+        password: _passCtrl.text,
+      );
+      if (mounted) setState(() => _diagResult = result);
+    } finally {
+      if (mounted) setState(() => _diagLoading = false);
+    }
   }
 
   Future<void> _submit() async {
@@ -42,6 +64,10 @@ class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
         password: _passCtrl.text,
       );
       await repo.syncCategories();
+      TextInput.finishAutofillContext();
+      // Refresh shared state so Home/Settings reflect the new provider.
+      ref.invalidate(providerProvider);
+      ref.invalidate(categoriesProvider);
       if (mounted) context.go('/home');
     } on AppError catch (e) {
       setState(() => _errorMessage = e.userMessage);
@@ -60,49 +86,78 @@ class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                controller: _serverCtrl,
-                decoration: const InputDecoration(labelText: 'URL del servidor'),
-                keyboardType: TextInputType.url,
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Introduce la URL del servidor' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _userCtrl,
-                decoration: const InputDecoration(labelText: 'Usuario'),
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Introduce el usuario' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passCtrl,
-                decoration: const InputDecoration(labelText: 'Contraseña'),
-                obscureText: true,
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Introduce la contraseña' : null,
-              ),
-              if (_errorMessage != null) ...[
+          child: AutofillGroup(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _serverCtrl,
+                  decoration: const InputDecoration(labelText: 'URL del servidor'),
+                  keyboardType: TextInputType.url,
+                  autofillHints: const [AutofillHints.url],
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Introduce la URL del servidor' : null,
+                ),
                 const SizedBox(height: 16),
-                Text(
-                  _errorMessage!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                TextFormField(
+                  controller: _userCtrl,
+                  decoration: const InputDecoration(labelText: 'Usuario'),
+                  autofillHints: const [AutofillHints.username],
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Introduce el usuario' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passCtrl,
+                  decoration: const InputDecoration(labelText: 'Contraseña'),
+                  obscureText: true,
+                  autofillHints: const [AutofillHints.password],
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Introduce la contraseña' : null,
+                ),
+                if (_errorMessage != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    _errorMessage!,
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
+                ],
+                const SizedBox(height: 32),
+                OutlinedButton(
+                  onPressed: (_loading || _diagLoading) ? null : _testNative,
+                  child: _diagLoading
+                      ? const SizedBox.square(
+                          dimension: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Diagnóstico nativo (dart:io)'),
+                ),
+                if (_diagResult != null) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: SelectableText(
+                      _diagResult!,
+                      style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: _loading ? null : _submit,
+                  child: _loading
+                      ? const SizedBox.square(
+                          dimension: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Conectar'),
                 ),
               ],
-              const SizedBox(height: 32),
-              FilledButton(
-                onPressed: _loading ? null : _submit,
-                child: _loading
-                    ? const SizedBox.square(
-                        dimension: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Conectar'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

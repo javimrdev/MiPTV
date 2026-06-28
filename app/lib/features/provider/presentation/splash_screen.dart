@@ -18,13 +18,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _checkSession() async {
-    final provider = await ref.read(providerRepositoryProvider).getProvider();
+    // Warm the provider state, then enter Home. Home itself handles the
+    // empty state (shows "Añadir proveedor" when none is configured).
+    await ref.read(providerRepositoryProvider).getProvider();
     if (!mounted) return;
-    if (provider != null) {
-      context.go('/home');
-    } else {
-      context.go('/add-provider');
-    }
+    context.go('/home');
   }
 
   @override

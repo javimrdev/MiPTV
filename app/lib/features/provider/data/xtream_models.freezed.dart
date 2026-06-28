@@ -586,7 +586,7 @@ as String,
 /// @nodoc
 mixin _$XtreamServerInfo {
 
-@JsonKey(name: 'url') String get url;@JsonKey(name: 'port') String get port;
+@JsonKey(name: 'url')@XtreamString() String get url;@JsonKey(name: 'port')@XtreamString() String get port;
 /// Create a copy of XtreamServerInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -619,7 +619,7 @@ abstract mixin class $XtreamServerInfoCopyWith<$Res>  {
   factory $XtreamServerInfoCopyWith(XtreamServerInfo value, $Res Function(XtreamServerInfo) _then) = _$XtreamServerInfoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'url') String url,@JsonKey(name: 'port') String port
+@JsonKey(name: 'url')@XtreamString() String url,@JsonKey(name: 'port')@XtreamString() String port
 });
 
 
@@ -725,7 +725,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'url')  String url, @JsonKey(name: 'port')  String port)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'url')@XtreamString()  String url, @JsonKey(name: 'port')@XtreamString()  String port)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _XtreamServerInfo() when $default != null:
 return $default(_that.url,_that.port);case _:
@@ -746,7 +746,7 @@ return $default(_that.url,_that.port);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'url')  String url, @JsonKey(name: 'port')  String port)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'url')@XtreamString()  String url, @JsonKey(name: 'port')@XtreamString()  String port)  $default,) {final _that = this;
 switch (_that) {
 case _XtreamServerInfo():
 return $default(_that.url,_that.port);case _:
@@ -766,7 +766,7 @@ return $default(_that.url,_that.port);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'url')  String url, @JsonKey(name: 'port')  String port)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'url')@XtreamString()  String url, @JsonKey(name: 'port')@XtreamString()  String port)?  $default,) {final _that = this;
 switch (_that) {
 case _XtreamServerInfo() when $default != null:
 return $default(_that.url,_that.port);case _:
@@ -781,11 +781,11 @@ return $default(_that.url,_that.port);case _:
 @JsonSerializable()
 
 class _XtreamServerInfo implements XtreamServerInfo {
-  const _XtreamServerInfo({@JsonKey(name: 'url') required this.url, @JsonKey(name: 'port') required this.port});
+  const _XtreamServerInfo({@JsonKey(name: 'url')@XtreamString() required this.url, @JsonKey(name: 'port')@XtreamString() required this.port});
   factory _XtreamServerInfo.fromJson(Map<String, dynamic> json) => _$XtreamServerInfoFromJson(json);
 
-@override@JsonKey(name: 'url') final  String url;
-@override@JsonKey(name: 'port') final  String port;
+@override@JsonKey(name: 'url')@XtreamString() final  String url;
+@override@JsonKey(name: 'port')@XtreamString() final  String port;
 
 /// Create a copy of XtreamServerInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -820,7 +820,7 @@ abstract mixin class _$XtreamServerInfoCopyWith<$Res> implements $XtreamServerIn
   factory _$XtreamServerInfoCopyWith(_XtreamServerInfo value, $Res Function(_XtreamServerInfo) _then) = __$XtreamServerInfoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'url') String url,@JsonKey(name: 'port') String port
+@JsonKey(name: 'url')@XtreamString() String url,@JsonKey(name: 'port')@XtreamString() String port
 });
 
 
@@ -852,7 +852,7 @@ as String,
 /// @nodoc
 mixin _$XtreamCategory {
 
-@JsonKey(name: 'category_id') String get categoryId;@JsonKey(name: 'category_name') String get categoryName;
+@JsonKey(name: 'category_id')@XtreamString() String get categoryId;@JsonKey(name: 'category_name')@XtreamString() String get categoryName;
 /// Create a copy of XtreamCategory
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -885,7 +885,7 @@ abstract mixin class $XtreamCategoryCopyWith<$Res>  {
   factory $XtreamCategoryCopyWith(XtreamCategory value, $Res Function(XtreamCategory) _then) = _$XtreamCategoryCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'category_id') String categoryId,@JsonKey(name: 'category_name') String categoryName
+@JsonKey(name: 'category_id')@XtreamString() String categoryId,@JsonKey(name: 'category_name')@XtreamString() String categoryName
 });
 
 
@@ -991,7 +991,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'category_name')  String categoryName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id')@XtreamString()  String categoryId, @JsonKey(name: 'category_name')@XtreamString()  String categoryName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _XtreamCategory() when $default != null:
 return $default(_that.categoryId,_that.categoryName);case _:
@@ -1012,7 +1012,7 @@ return $default(_that.categoryId,_that.categoryName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'category_name')  String categoryName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id')@XtreamString()  String categoryId, @JsonKey(name: 'category_name')@XtreamString()  String categoryName)  $default,) {final _that = this;
 switch (_that) {
 case _XtreamCategory():
 return $default(_that.categoryId,_that.categoryName);case _:
@@ -1032,7 +1032,7 @@ return $default(_that.categoryId,_that.categoryName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'category_name')  String categoryName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'category_id')@XtreamString()  String categoryId, @JsonKey(name: 'category_name')@XtreamString()  String categoryName)?  $default,) {final _that = this;
 switch (_that) {
 case _XtreamCategory() when $default != null:
 return $default(_that.categoryId,_that.categoryName);case _:
@@ -1047,11 +1047,11 @@ return $default(_that.categoryId,_that.categoryName);case _:
 @JsonSerializable()
 
 class _XtreamCategory implements XtreamCategory {
-  const _XtreamCategory({@JsonKey(name: 'category_id') required this.categoryId, @JsonKey(name: 'category_name') required this.categoryName});
+  const _XtreamCategory({@JsonKey(name: 'category_id')@XtreamString() required this.categoryId, @JsonKey(name: 'category_name')@XtreamString() required this.categoryName});
   factory _XtreamCategory.fromJson(Map<String, dynamic> json) => _$XtreamCategoryFromJson(json);
 
-@override@JsonKey(name: 'category_id') final  String categoryId;
-@override@JsonKey(name: 'category_name') final  String categoryName;
+@override@JsonKey(name: 'category_id')@XtreamString() final  String categoryId;
+@override@JsonKey(name: 'category_name')@XtreamString() final  String categoryName;
 
 /// Create a copy of XtreamCategory
 /// with the given fields replaced by the non-null parameter values.
@@ -1086,7 +1086,7 @@ abstract mixin class _$XtreamCategoryCopyWith<$Res> implements $XtreamCategoryCo
   factory _$XtreamCategoryCopyWith(_XtreamCategory value, $Res Function(_XtreamCategory) _then) = __$XtreamCategoryCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'category_id') String categoryId,@JsonKey(name: 'category_name') String categoryName
+@JsonKey(name: 'category_id')@XtreamString() String categoryId,@JsonKey(name: 'category_name')@XtreamString() String categoryName
 });
 
 
@@ -1118,7 +1118,7 @@ as String,
 /// @nodoc
 mixin _$XtreamStream {
 
-@JsonKey(name: 'stream_id') int get streamId;@JsonKey(name: 'name') String get name;@JsonKey(name: 'stream_icon') String get logo;@JsonKey(name: 'category_id') String get categoryId;@JsonKey(name: 'container_extension') String get extension;
+@JsonKey(name: 'stream_id') int get streamId;@JsonKey(name: 'name') String get name;@JsonKey(name: 'stream_icon') String get logo;@JsonKey(name: 'category_id')@XtreamString() String get categoryId;@JsonKey(name: 'container_extension') String get extension;
 /// Create a copy of XtreamStream
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1151,7 +1151,7 @@ abstract mixin class $XtreamStreamCopyWith<$Res>  {
   factory $XtreamStreamCopyWith(XtreamStream value, $Res Function(XtreamStream) _then) = _$XtreamStreamCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'stream_id') int streamId,@JsonKey(name: 'name') String name,@JsonKey(name: 'stream_icon') String logo,@JsonKey(name: 'category_id') String categoryId,@JsonKey(name: 'container_extension') String extension
+@JsonKey(name: 'stream_id') int streamId,@JsonKey(name: 'name') String name,@JsonKey(name: 'stream_icon') String logo,@JsonKey(name: 'category_id')@XtreamString() String categoryId,@JsonKey(name: 'container_extension') String extension
 });
 
 
@@ -1260,7 +1260,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'stream_id')  int streamId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'stream_icon')  String logo, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'container_extension')  String extension)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'stream_id')  int streamId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'stream_icon')  String logo, @JsonKey(name: 'category_id')@XtreamString()  String categoryId, @JsonKey(name: 'container_extension')  String extension)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _XtreamStream() when $default != null:
 return $default(_that.streamId,_that.name,_that.logo,_that.categoryId,_that.extension);case _:
@@ -1281,7 +1281,7 @@ return $default(_that.streamId,_that.name,_that.logo,_that.categoryId,_that.exte
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'stream_id')  int streamId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'stream_icon')  String logo, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'container_extension')  String extension)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'stream_id')  int streamId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'stream_icon')  String logo, @JsonKey(name: 'category_id')@XtreamString()  String categoryId, @JsonKey(name: 'container_extension')  String extension)  $default,) {final _that = this;
 switch (_that) {
 case _XtreamStream():
 return $default(_that.streamId,_that.name,_that.logo,_that.categoryId,_that.extension);case _:
@@ -1301,7 +1301,7 @@ return $default(_that.streamId,_that.name,_that.logo,_that.categoryId,_that.exte
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'stream_id')  int streamId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'stream_icon')  String logo, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'container_extension')  String extension)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'stream_id')  int streamId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'stream_icon')  String logo, @JsonKey(name: 'category_id')@XtreamString()  String categoryId, @JsonKey(name: 'container_extension')  String extension)?  $default,) {final _that = this;
 switch (_that) {
 case _XtreamStream() when $default != null:
 return $default(_that.streamId,_that.name,_that.logo,_that.categoryId,_that.extension);case _:
@@ -1316,13 +1316,13 @@ return $default(_that.streamId,_that.name,_that.logo,_that.categoryId,_that.exte
 @JsonSerializable()
 
 class _XtreamStream implements XtreamStream {
-  const _XtreamStream({@JsonKey(name: 'stream_id') required this.streamId, @JsonKey(name: 'name') required this.name, @JsonKey(name: 'stream_icon') this.logo = '', @JsonKey(name: 'category_id') required this.categoryId, @JsonKey(name: 'container_extension') this.extension = 'ts'});
+  const _XtreamStream({@JsonKey(name: 'stream_id') required this.streamId, @JsonKey(name: 'name') required this.name, @JsonKey(name: 'stream_icon') this.logo = '', @JsonKey(name: 'category_id')@XtreamString() required this.categoryId, @JsonKey(name: 'container_extension') this.extension = 'ts'});
   factory _XtreamStream.fromJson(Map<String, dynamic> json) => _$XtreamStreamFromJson(json);
 
 @override@JsonKey(name: 'stream_id') final  int streamId;
 @override@JsonKey(name: 'name') final  String name;
 @override@JsonKey(name: 'stream_icon') final  String logo;
-@override@JsonKey(name: 'category_id') final  String categoryId;
+@override@JsonKey(name: 'category_id')@XtreamString() final  String categoryId;
 @override@JsonKey(name: 'container_extension') final  String extension;
 
 /// Create a copy of XtreamStream
@@ -1358,7 +1358,7 @@ abstract mixin class _$XtreamStreamCopyWith<$Res> implements $XtreamStreamCopyWi
   factory _$XtreamStreamCopyWith(_XtreamStream value, $Res Function(_XtreamStream) _then) = __$XtreamStreamCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'stream_id') int streamId,@JsonKey(name: 'name') String name,@JsonKey(name: 'stream_icon') String logo,@JsonKey(name: 'category_id') String categoryId,@JsonKey(name: 'container_extension') String extension
+@JsonKey(name: 'stream_id') int streamId,@JsonKey(name: 'name') String name,@JsonKey(name: 'stream_icon') String logo,@JsonKey(name: 'category_id')@XtreamString() String categoryId,@JsonKey(name: 'container_extension') String extension
 });
 
 

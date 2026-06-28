@@ -37,21 +37,27 @@ Map<String, dynamic> _$XtreamUserInfoToJson(_XtreamUserInfo instance) =>
     };
 
 _XtreamServerInfo _$XtreamServerInfoFromJson(Map<String, dynamic> json) =>
-    _XtreamServerInfo(url: json['url'] as String, port: json['port'] as String);
+    _XtreamServerInfo(
+      url: const XtreamString().fromJson(json['url']),
+      port: const XtreamString().fromJson(json['port']),
+    );
 
 Map<String, dynamic> _$XtreamServerInfoToJson(_XtreamServerInfo instance) =>
-    <String, dynamic>{'url': instance.url, 'port': instance.port};
+    <String, dynamic>{
+      'url': const XtreamString().toJson(instance.url),
+      'port': const XtreamString().toJson(instance.port),
+    };
 
 _XtreamCategory _$XtreamCategoryFromJson(Map<String, dynamic> json) =>
     _XtreamCategory(
-      categoryId: json['category_id'] as String,
-      categoryName: json['category_name'] as String,
+      categoryId: const XtreamString().fromJson(json['category_id']),
+      categoryName: const XtreamString().fromJson(json['category_name']),
     );
 
 Map<String, dynamic> _$XtreamCategoryToJson(_XtreamCategory instance) =>
     <String, dynamic>{
-      'category_id': instance.categoryId,
-      'category_name': instance.categoryName,
+      'category_id': const XtreamString().toJson(instance.categoryId),
+      'category_name': const XtreamString().toJson(instance.categoryName),
     };
 
 _XtreamStream _$XtreamStreamFromJson(Map<String, dynamic> json) =>
@@ -59,7 +65,7 @@ _XtreamStream _$XtreamStreamFromJson(Map<String, dynamic> json) =>
       streamId: (json['stream_id'] as num).toInt(),
       name: json['name'] as String,
       logo: json['stream_icon'] as String? ?? '',
-      categoryId: json['category_id'] as String,
+      categoryId: const XtreamString().fromJson(json['category_id']),
       extension: json['container_extension'] as String? ?? 'ts',
     );
 
@@ -68,6 +74,6 @@ Map<String, dynamic> _$XtreamStreamToJson(_XtreamStream instance) =>
       'stream_id': instance.streamId,
       'name': instance.name,
       'stream_icon': instance.logo,
-      'category_id': instance.categoryId,
+      'category_id': const XtreamString().toJson(instance.categoryId),
       'container_extension': instance.extension,
     };

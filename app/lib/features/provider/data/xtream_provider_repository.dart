@@ -1,4 +1,4 @@
-import 'dart:isolate';
+import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:miptv/core/db/isar_service.dart';
 import 'package:miptv/core/errors/app_error.dart';
@@ -39,6 +39,7 @@ class XtreamProviderRepository implements IPTVProviderRepository {
       ..username = username;
 
     await _isar.writeTxn(() async {
+      await _isar.providerModels.clear();
       await _isar.providerModels.put(model);
     });
 
@@ -72,6 +73,7 @@ class XtreamProviderRepository implements IPTVProviderRepository {
     final password = await _secureStorage.readPassword();
     if (password == null) return [];
 
+    log.i('[Provider] syncCategories using server=${provider.server}');
     try {
       final rawCategories = await _api.getLiveCategories(
         server: provider.server,
@@ -79,7 +81,7 @@ class XtreamProviderRepository implements IPTVProviderRepository {
         password: password,
       );
 
-      final models = await Isolate.run(() => _mapCategories(rawCategories));
+      final models = await compute(_mapCategories, rawCategories);
 
       await _isar.writeTxn(() async {
         await _isar.categoryModels.putAll(models);
@@ -97,6 +99,11 @@ class XtreamProviderRepository implements IPTVProviderRepository {
       }
       log.e('[Provider] Offline and no cached categories', error: e);
       rethrow;
+    } catch (e, st) {
+      // Cualquier fallo inesperado (parseo, isolate…) se normaliza a AppError
+      // para que la UI muestre un mensaje útil en vez de un error crudo.
+      log.e('[Provider] Unexpected error syncing categories', error: e, stackTrace: st);
+      throw const ParseError();
     }
   }
 }

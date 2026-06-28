@@ -12,7 +12,8 @@ El MVP permitirá:
 - Navegar por categorías.
 - Reproducir canales.
 - Marcar canales como favoritos.
-- Mostrar favoritos en la pantalla principal.
+- Mostrar favoritos en una pestaña dedicada.
+- Reproducir VOD (Películas): navegar por categorías VOD y buscar en todo el catálogo.
 - Funcionar offline utilizando la última sincronización.
 
 ---
@@ -78,15 +79,15 @@ Splash
 
 ↓
 
-Añadir proveedor
+Home (pestaña Inicio)
 
 ↓
 
-Sincronizar categorías
+¿Hay proveedor?
 
-↓
-
-Home
+├─ No → Botón "Añadir proveedor" → Formulario Xtream → Sincronizar categorías → Home
+│
+└─ Sí → Lista de categorías
 
 ↓
 
@@ -105,15 +106,31 @@ Lista de canales
 Player
 ```
 
+La navegación principal se organiza con una **barra inferior (NavigationBar)** de tres
+pestañas: **Inicio**, **Favoritos** y **Ajustes** (`StatefulShellRoute.indexedStack`).
+Las pantallas `add-provider`, `category` y `player` se abren a pantalla completa sobre el
+navegador raíz (sin barra inferior).
+
 ---
 
 # Pantallas
 
-## Home
+## Home (Inicio)
 
-- Carrusel horizontal de favoritos.
-- Lista de categorías.
-- Gestión del proveedor.
+- Si no hay proveedor: botón "Añadir proveedor".
+- Si hay proveedor: lista de categorías.
+
+## Favoritos
+
+- Lista virtualizada de canales favoritos (logo + nombre).
+- Quitar de favoritos.
+- Reproducir.
+
+## Configuración (Ajustes)
+
+- Gestión del proveedor: añadir / sincronizar categorías / eliminar.
+- Selector de tema y de idioma (placeholders, aún sin efecto).
+- Información de la app.
 
 ## Categoría
 
@@ -126,8 +143,21 @@ Player
 
 - Reproducción automática.
 - Play/Pause.
+- Avanzar / retroceder (barra de progreso) — controles integrados de MediaKit (`AdaptiveVideoControls`).
+- Botón volver/cerrar.
 - Pantalla completa.
 - Manejo de errores.
+- URL construida dinámicamente: `live` para canales, `movie` para VOD.
+
+---
+
+## VOD (Películas)
+
+- Pestaña dedicada en la barra inferior.
+- Sincronización única del catálogo completo (`get_vod_categories` + `get_vod_streams` sin `category_id`), mapeada en un isolate.
+- Navegación por categorías VOD y reproducción de películas.
+- Búsqueda global por nombre sobre el catálogo cacheado (consulta Isar local con `name` indexado).
+- Colecciones Isar independientes de Live TV para evitar colisión de `stream_id`/`category_id`.
 
 ---
 
@@ -467,12 +497,12 @@ Incluye:
 - Streams
 - Favoritos
 - Player
+- VOD (Películas): categorías + búsqueda global
 - Offline
 - Sincronización lazy
 
 No incluye:
 
-- Películas
 - Series
 - EPG
 - Descargas

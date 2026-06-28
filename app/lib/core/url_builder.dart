@@ -4,9 +4,10 @@ String buildStreamUrl({
   required String password,
   required int streamId,
   required String extension,
+  String type = 'live',
 }) {
   final base = server.endsWith('/') ? server.dropLast(1) : server;
-  return '$base/live/$username/$password/$streamId.$extension';
+  return '$base/$type/$username/$password/$streamId.$extension';
 }
 
 extension on String {

@@ -1,4 +1,4 @@
-import 'dart:isolate';
+import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:miptv/core/db/isar_service.dart';
 import 'package:miptv/core/errors/app_error.dart';
@@ -72,7 +72,7 @@ class StreamRepositoryImpl implements StreamRepository {
         categoryId: categoryId,
       );
 
-      final models = await Isolate.run(() => _mapStreams(rawStreams));
+      final models = await compute(_mapStreams, rawStreams);
 
       await _isar.writeTxn(() async {
         await _isar.streamModels
@@ -101,22 +101,32 @@ class StreamRepositoryImpl implements StreamRepository {
     }
   }
 
+  @override
+  Future<List<StreamEntity>> getStreamsByIds(List<int> ids) async {
+    if (ids.isEmpty) return [];
+    final models = await _isar.streamModels
+        .filter()
+        .anyOf(ids, (q, id) => q.streamIdEqualTo(id))
+        .findAll();
+    return models.map(_toEntity).toList();
+  }
+
   Future<List<StreamEntity>> _loadFromDb(String categoryId) async {
     final models = await _isar.streamModels
         .where()
         .categoryIdEqualTo(categoryId)
         .findAll();
-    return models
-        .map((m) => StreamEntity(
-              id: m.streamId,
-              name: m.name,
-              logo: m.logo,
-              categoryId: m.categoryId,
-              extension: m.extension,
-            ))
-        .toList();
+    return models.map(_toEntity).toList();
   }
 }
+
+StreamEntity _toEntity(StreamModel m) => StreamEntity(
+      id: m.streamId,
+      name: m.name,
+      logo: m.logo,
+      categoryId: m.categoryId,
+      extension: m.extension,
+    );
 
 List<StreamModel> _mapStreams(List<XtreamStream> raw) => raw
     .map((s) => StreamModel()
