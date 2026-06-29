@@ -42,7 +42,7 @@ const StreamModelSchema = CollectionSchema(
       id: -2308752684150834108,
       name: r'streamId',
       unique: true,
-      replace: false,
+      replace: true,
       properties: [
         IndexPropertySchema(
           name: r'streamId',

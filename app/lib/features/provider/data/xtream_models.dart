@@ -20,6 +20,23 @@ class XtreamString implements JsonConverter<String, Object?> {
   Object? toJson(String value) => value;
 }
 
+/// Normaliza un entero Xtream que llega como `string`, `number` o ausente.
+/// Los timestamps del EPG (`start_timestamp`/`stop_timestamp`) llegan como
+/// string en unos paneles y number en otros; aquí los unificamos a `int`.
+class XtreamInt implements JsonConverter<int, Object?> {
+  const XtreamInt();
+
+  @override
+  int fromJson(Object? json) {
+    if (json is int) return json;
+    if (json is num) return json.toInt();
+    return int.tryParse(json?.toString() ?? '') ?? 0;
+  }
+
+  @override
+  Object? toJson(int value) => value;
+}
+
 @freezed
 abstract class XtreamAuthResponse with _$XtreamAuthResponse {
   const factory XtreamAuthResponse({
@@ -77,4 +94,22 @@ abstract class XtreamStream with _$XtreamStream {
 
   factory XtreamStream.fromJson(Map<String, dynamic> json) =>
       _$XtreamStreamFromJson(json);
+}
+
+/// Una entrada del EPG corto (`get_short_epg`) de un canal.
+///
+/// `title` llega codificado en **base64** (se decodifica en la capa de datos).
+/// `startTimestamp`/`stopTimestamp` son timestamps **unix UTC en segundos**; se
+/// usan estos —no los strings `start`/`end`, que vienen en la zona horaria del
+/// servidor— para calcular ahora/siguiente y para mostrar la hora local.
+@freezed
+abstract class XtreamEpgListing with _$XtreamEpgListing {
+  const factory XtreamEpgListing({
+    @JsonKey(name: 'title') @XtreamString() required String title,
+    @JsonKey(name: 'start_timestamp') @XtreamInt() required int startTimestamp,
+    @JsonKey(name: 'stop_timestamp') @XtreamInt() required int stopTimestamp,
+  }) = _XtreamEpgListing;
+
+  factory XtreamEpgListing.fromJson(Map<String, dynamic> json) =>
+      _$XtreamEpgListingFromJson(json);
 }

@@ -9,9 +9,9 @@ class CategorySyncModel {
   @Index(unique: true)
   late String categoryId;
 
-  late DateTime lastSync;
+  DateTime? lastSync;
 
-  late bool isSyncing;
+  bool isSyncing = false;
 
-  late int streamCount;
+  int streamCount = 0;
 }

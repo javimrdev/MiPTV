@@ -142,6 +142,39 @@ class XtreamApi {
     }
   }
 
+  /// Fetches the short EPG (now + upcoming programs) for a single live stream.
+  ///
+  /// The panel returns `{ "epg_listings": [ ... ] }`. We pull a small window
+  /// ([limit]) and let the data layer pick *now/next* by timestamp, since some
+  /// panels include the currently-airing program and others return only future
+  /// ones. Titles arrive base64-encoded.
+  Future<List<XtreamEpgListing>> getShortEpg({
+    required String server,
+    required String username,
+    required String password,
+    required int streamId,
+    int limit = 4,
+  }) async {
+    final normalizedServer = _normalizeServer(server);
+    try {
+      log.i('[XtreamApi] Fetching short EPG for stream $streamId');
+      final response = await _dio.get(
+        '$normalizedServer/player_api.php',
+        queryParameters: {
+          'username': username,
+          'password': password,
+          'action': 'get_short_epg',
+          'stream_id': streamId,
+          'limit': limit,
+        },
+      );
+      final listings = _asMap(response.data)['epg_listings'];
+      return _parseList(listings, XtreamEpgListing.fromJson);
+    } on DioException catch (e) {
+      throw _mapDioError(e);
+    }
+  }
+
   Future<String> testConnectionNative({
     required String server,
     required String username,

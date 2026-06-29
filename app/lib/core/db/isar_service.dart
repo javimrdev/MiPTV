@@ -1,7 +1,9 @@
 import 'package:isar_community/isar.dart';
 import 'package:miptv/features/categories/data/category_model.dart';
 import 'package:miptv/features/categories/data/category_sync_model.dart';
+import 'package:miptv/features/favorites/data/favorite_category_model.dart';
 import 'package:miptv/features/favorites/data/favorite_model.dart';
+import 'package:miptv/features/home/data/custom_filter_model.dart';
 import 'package:miptv/features/movies/data/vod_category_model.dart';
 import 'package:miptv/features/movies/data/vod_stream_model.dart';
 import 'package:miptv/features/movies/data/vod_sync_model.dart';
@@ -28,9 +30,11 @@ class IsarService {
         CategorySyncModelSchema,
         StreamModelSchema,
         FavoriteModelSchema,
+        FavoriteCategoryModelSchema,
         VodCategoryModelSchema,
         VodStreamModelSchema,
         VodSyncModelSchema,
+        CustomFilterModelSchema,
       ],
       directory: dir.path,
     );

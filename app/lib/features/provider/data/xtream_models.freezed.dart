@@ -1389,4 +1389,273 @@ as String,
 
 }
 
+
+/// @nodoc
+mixin _$XtreamEpgListing {
+
+@JsonKey(name: 'title')@XtreamString() String get title;@JsonKey(name: 'start_timestamp')@XtreamInt() int get startTimestamp;@JsonKey(name: 'stop_timestamp')@XtreamInt() int get stopTimestamp;
+/// Create a copy of XtreamEpgListing
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$XtreamEpgListingCopyWith<XtreamEpgListing> get copyWith => _$XtreamEpgListingCopyWithImpl<XtreamEpgListing>(this as XtreamEpgListing, _$identity);
+
+  /// Serializes this XtreamEpgListing to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is XtreamEpgListing&&(identical(other.title, title) || other.title == title)&&(identical(other.startTimestamp, startTimestamp) || other.startTimestamp == startTimestamp)&&(identical(other.stopTimestamp, stopTimestamp) || other.stopTimestamp == stopTimestamp));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,title,startTimestamp,stopTimestamp);
+
+@override
+String toString() {
+  return 'XtreamEpgListing(title: $title, startTimestamp: $startTimestamp, stopTimestamp: $stopTimestamp)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $XtreamEpgListingCopyWith<$Res>  {
+  factory $XtreamEpgListingCopyWith(XtreamEpgListing value, $Res Function(XtreamEpgListing) _then) = _$XtreamEpgListingCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'title')@XtreamString() String title,@JsonKey(name: 'start_timestamp')@XtreamInt() int startTimestamp,@JsonKey(name: 'stop_timestamp')@XtreamInt() int stopTimestamp
+});
+
+
+
+
+}
+/// @nodoc
+class _$XtreamEpgListingCopyWithImpl<$Res>
+    implements $XtreamEpgListingCopyWith<$Res> {
+  _$XtreamEpgListingCopyWithImpl(this._self, this._then);
+
+  final XtreamEpgListing _self;
+  final $Res Function(XtreamEpgListing) _then;
+
+/// Create a copy of XtreamEpgListing
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? startTimestamp = null,Object? stopTimestamp = null,}) {
+  return _then(_self.copyWith(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,startTimestamp: null == startTimestamp ? _self.startTimestamp : startTimestamp // ignore: cast_nullable_to_non_nullable
+as int,stopTimestamp: null == stopTimestamp ? _self.stopTimestamp : stopTimestamp // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [XtreamEpgListing].
+extension XtreamEpgListingPatterns on XtreamEpgListing {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _XtreamEpgListing value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _XtreamEpgListing() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _XtreamEpgListing value)  $default,){
+final _that = this;
+switch (_that) {
+case _XtreamEpgListing():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _XtreamEpgListing value)?  $default,){
+final _that = this;
+switch (_that) {
+case _XtreamEpgListing() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'title')@XtreamString()  String title, @JsonKey(name: 'start_timestamp')@XtreamInt()  int startTimestamp, @JsonKey(name: 'stop_timestamp')@XtreamInt()  int stopTimestamp)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _XtreamEpgListing() when $default != null:
+return $default(_that.title,_that.startTimestamp,_that.stopTimestamp);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'title')@XtreamString()  String title, @JsonKey(name: 'start_timestamp')@XtreamInt()  int startTimestamp, @JsonKey(name: 'stop_timestamp')@XtreamInt()  int stopTimestamp)  $default,) {final _that = this;
+switch (_that) {
+case _XtreamEpgListing():
+return $default(_that.title,_that.startTimestamp,_that.stopTimestamp);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'title')@XtreamString()  String title, @JsonKey(name: 'start_timestamp')@XtreamInt()  int startTimestamp, @JsonKey(name: 'stop_timestamp')@XtreamInt()  int stopTimestamp)?  $default,) {final _that = this;
+switch (_that) {
+case _XtreamEpgListing() when $default != null:
+return $default(_that.title,_that.startTimestamp,_that.stopTimestamp);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _XtreamEpgListing implements XtreamEpgListing {
+  const _XtreamEpgListing({@JsonKey(name: 'title')@XtreamString() required this.title, @JsonKey(name: 'start_timestamp')@XtreamInt() required this.startTimestamp, @JsonKey(name: 'stop_timestamp')@XtreamInt() required this.stopTimestamp});
+  factory _XtreamEpgListing.fromJson(Map<String, dynamic> json) => _$XtreamEpgListingFromJson(json);
+
+@override@JsonKey(name: 'title')@XtreamString() final  String title;
+@override@JsonKey(name: 'start_timestamp')@XtreamInt() final  int startTimestamp;
+@override@JsonKey(name: 'stop_timestamp')@XtreamInt() final  int stopTimestamp;
+
+/// Create a copy of XtreamEpgListing
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$XtreamEpgListingCopyWith<_XtreamEpgListing> get copyWith => __$XtreamEpgListingCopyWithImpl<_XtreamEpgListing>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$XtreamEpgListingToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _XtreamEpgListing&&(identical(other.title, title) || other.title == title)&&(identical(other.startTimestamp, startTimestamp) || other.startTimestamp == startTimestamp)&&(identical(other.stopTimestamp, stopTimestamp) || other.stopTimestamp == stopTimestamp));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,title,startTimestamp,stopTimestamp);
+
+@override
+String toString() {
+  return 'XtreamEpgListing(title: $title, startTimestamp: $startTimestamp, stopTimestamp: $stopTimestamp)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$XtreamEpgListingCopyWith<$Res> implements $XtreamEpgListingCopyWith<$Res> {
+  factory _$XtreamEpgListingCopyWith(_XtreamEpgListing value, $Res Function(_XtreamEpgListing) _then) = __$XtreamEpgListingCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'title')@XtreamString() String title,@JsonKey(name: 'start_timestamp')@XtreamInt() int startTimestamp,@JsonKey(name: 'stop_timestamp')@XtreamInt() int stopTimestamp
+});
+
+
+
+
+}
+/// @nodoc
+class __$XtreamEpgListingCopyWithImpl<$Res>
+    implements _$XtreamEpgListingCopyWith<$Res> {
+  __$XtreamEpgListingCopyWithImpl(this._self, this._then);
+
+  final _XtreamEpgListing _self;
+  final $Res Function(_XtreamEpgListing) _then;
+
+/// Create a copy of XtreamEpgListing
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? startTimestamp = null,Object? stopTimestamp = null,}) {
+  return _then(_XtreamEpgListing(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,startTimestamp: null == startTimestamp ? _self.startTimestamp : startTimestamp // ignore: cast_nullable_to_non_nullable
+as int,stopTimestamp: null == stopTimestamp ? _self.stopTimestamp : stopTimestamp // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
 // dart format on

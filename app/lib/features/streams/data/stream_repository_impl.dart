@@ -39,11 +39,21 @@ class StreamRepositoryImpl implements StreamRepository {
 
   @override
   Future<List<StreamEntity>> getStreamsForCategory(String categoryId) async {
-    final synced = await isCategorySynced(categoryId);
-    if (!synced) {
-      await _syncCategory(categoryId);
+    try {
+      final synced = await isCategorySynced(categoryId);
+      if (!synced) {
+        await _syncCategory(categoryId);
+      }
+      return _loadFromDb(categoryId);
+    } on AppError {
+      rethrow;
+    } catch (e, st) {
+      // DIAGNÓSTICO: registra y propaga la causa real para que sea visible en
+      // pantalla (UnknownError → "Error inesperado: <causa>").
+      log.e('[Streams] getStreamsForCategory failed for $categoryId',
+          error: e, stackTrace: st);
+      throw UnknownError(e.toString());
     }
-    return _loadFromDb(categoryId);
   }
 
   Future<void> _syncCategory(String categoryId) async {
@@ -98,6 +108,14 @@ class StreamRepositoryImpl implements StreamRepository {
       }
       log.e('[Streams] Offline and no cache for $categoryId', error: e);
       rethrow;
+    } catch (e, st) {
+      // Cualquier fallo inesperado (compute, escritura Isar, índice único…) se
+      // registra en consola con su stacktrace y se normaliza a AppError para
+      // que la UI muestre un mensaje útil en vez de "Error inesperado".
+      log.e('[Streams] Unexpected error syncing $categoryId', error: e, stackTrace: st);
+      syncRecord.isSyncing = false;
+      await _isar.writeTxn(() => _isar.categorySyncModels.put(syncRecord));
+      throw UnknownError(e.toString());
     }
   }
 

@@ -77,3 +77,17 @@ Map<String, dynamic> _$XtreamStreamToJson(_XtreamStream instance) =>
       'category_id': const XtreamString().toJson(instance.categoryId),
       'container_extension': instance.extension,
     };
+
+_XtreamEpgListing _$XtreamEpgListingFromJson(Map<String, dynamic> json) =>
+    _XtreamEpgListing(
+      title: const XtreamString().fromJson(json['title']),
+      startTimestamp: const XtreamInt().fromJson(json['start_timestamp']),
+      stopTimestamp: const XtreamInt().fromJson(json['stop_timestamp']),
+    );
+
+Map<String, dynamic> _$XtreamEpgListingToJson(_XtreamEpgListing instance) =>
+    <String, dynamic>{
+      'title': const XtreamString().toJson(instance.title),
+      'start_timestamp': const XtreamInt().toJson(instance.startTimestamp),
+      'stop_timestamp': const XtreamInt().toJson(instance.stopTimestamp),
+    };

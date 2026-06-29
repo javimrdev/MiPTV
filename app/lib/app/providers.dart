@@ -5,8 +5,17 @@ import 'package:miptv/core/storage/secure_storage.dart';
 import 'package:miptv/features/categories/data/category_repository_impl.dart';
 import 'package:miptv/features/categories/domain/category_entity.dart';
 import 'package:miptv/features/categories/domain/category_repository.dart';
+import 'package:miptv/features/epg/data/epg_repository_impl.dart';
+import 'package:miptv/features/epg/domain/epg_entity.dart';
+import 'package:miptv/features/epg/domain/epg_repository.dart';
 import 'package:miptv/features/favorites/data/favorite_repository_impl.dart';
 import 'package:miptv/features/favorites/domain/favorite_repository.dart';
+import 'package:miptv/features/home/data/custom_filter_repository_impl.dart';
+import 'package:miptv/features/home/data/filters/category_filters.dart';
+import 'package:miptv/features/home/data/filters/country_filters.dart';
+import 'package:miptv/features/home/data/filters/quality_filters.dart';
+import 'package:miptv/features/home/domain/custom_filter_repository.dart';
+import 'package:miptv/features/home/domain/home_filters.dart';
 import 'package:miptv/features/movies/data/movies_repository_impl.dart';
 import 'package:miptv/features/movies/domain/movies_repository.dart';
 import 'package:miptv/features/streams/domain/stream_entity.dart';
@@ -60,8 +69,53 @@ final streamRepositoryProvider = Provider<StreamRepository>((ref) {
   );
 });
 
+final epgRepositoryProvider = Provider<EpgRepository>((ref) {
+  return EpgRepositoryImpl(
+    api: ref.watch(xtreamApiProvider),
+    providerRepo: ref.watch(providerRepositoryProvider),
+    secureStorage: ref.watch(secureStorageProvider),
+  );
+});
+
+/// Now/next EPG for a single live stream. `autoDispose` releases it when the
+/// channel tile scrolls off; the repository adds a short-TTL in-memory cache so
+/// re-scrolling doesn't re-hit the panel.
+final channelEpgProvider =
+    FutureProvider.autoDispose.family<ChannelEpg, int>((ref, streamId) {
+  return ref.watch(epgRepositoryProvider).getNowNext(streamId);
+});
+
 final favoriteRepositoryProvider = Provider<FavoriteRepository>((ref) {
   return FavoriteRepositoryImpl(isarService: ref.watch(isarServiceProvider));
+});
+
+final customFilterRepositoryProvider = Provider<CustomFilterRepository>((ref) {
+  return CustomFilterRepositoryImpl(isarService: ref.watch(isarServiceProvider));
+});
+
+/// User-added (persisted) filter values for a single dimension. Invalidate
+/// after adding/removing in the manual-filters settings page.
+final customFilterValuesProvider =
+    FutureProvider.family<List<String>, HomeFilterType>((ref, type) {
+  return ref.watch(customFilterRepositoryProvider).getValues(type);
+});
+
+/// All selectable options for a Home pill: the predefined constants for the
+/// dimension followed by any user-added values. Feeds both the Home pills and
+/// the manual-filters settings page.
+final filterOptionsProvider =
+    FutureProvider.family<List<String>, HomeFilterType>((ref, type) async {
+  final custom = await ref.watch(customFilterValuesProvider(type).future);
+  final predefined = switch (type) {
+    HomeFilterType.quality => kQualityFilters,
+    HomeFilterType.category => kCategoryFilters,
+    HomeFilterType.country => kCountryFilterNames,
+  };
+  // De-dupe in case a custom value matches a predefined one.
+  return [
+    ...predefined,
+    ...custom.where((v) => !predefined.contains(v)),
+  ];
 });
 
 final moviesRepositoryProvider = Provider<MoviesRepository>((ref) {

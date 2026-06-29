@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/widgets/skeleton.dart';
 import 'package:miptv/features/movies/presentation/movie_tile.dart';
 
 class MovieCategoryScreen extends ConsumerWidget {
@@ -23,7 +24,7 @@ class MovieCategoryScreen extends ConsumerWidget {
                 itemExtent: 72,
                 itemBuilder: (_, i) => MovieTile(movie: movies[i]),
               ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const SkeletonList.movies(),
         error: (e, _) {
           final msg = e is AppError
               ? e.userMessage

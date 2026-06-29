@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/widgets/skeleton.dart';
 import 'package:miptv/features/categories/domain/category_entity.dart';
 import 'package:miptv/features/movies/presentation/movie_tile.dart';
 
@@ -83,16 +84,7 @@ class _CategoriesView extends ConsumerWidget {
         itemCount: cats.length,
         itemBuilder: (_, i) => _CategoryTile(category: cats[i]),
       ),
-      loading: () => const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 12),
-            Text('Sincronizando catálogo…'),
-          ],
-        ),
-      ),
+      loading: () => const SkeletonList.categories(),
       error: (e, _) => _ErrorView(
         message: e is AppError
             ? e.userMessage
@@ -119,7 +111,7 @@ class _SearchResultsView extends ConsumerWidget {
               itemExtent: 72,
               itemBuilder: (_, i) => MovieTile(movie: movies[i]),
             ),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const SkeletonList.movies(),
       error: (e, _) => _ErrorView(
         message: e is AppError
             ? e.userMessage

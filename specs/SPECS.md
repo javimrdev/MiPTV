@@ -500,11 +500,13 @@ Incluye:
 - VOD (Películas): categorías + búsqueda global
 - Offline
 - Sincronización lazy
+- EPG *ahora/siguiente* por canal (vista "Guía" en la lista de canales, vía
+  `get_short_epg`). No incluye guía completa ni parrilla.
 
 No incluye:
 
 - Series
-- EPG
+- EPG completo / parrilla (sólo se soporta *ahora/siguiente* por canal)
 - Descargas
 - Chromecast
 - AirPlay

@@ -8,6 +8,7 @@ import 'package:miptv/features/movies/presentation/movies_screen.dart';
 import 'package:miptv/features/player/presentation/player_screen.dart';
 import 'package:miptv/features/provider/presentation/add_provider_screen.dart';
 import 'package:miptv/features/provider/presentation/splash_screen.dart';
+import 'package:miptv/features/settings/presentation/filters_settings_screen.dart';
 import 'package:miptv/features/settings/presentation/settings_screen.dart';
 
 /// Builds the app router. Exposed as a factory so tests can get a fresh,
@@ -18,6 +19,10 @@ GoRouter createAppRouter() => GoRouter(
     // Full-screen routes (root navigator — no bottom bar).
     GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
     GoRoute(path: '/add-provider', builder: (_, __) => const AddProviderScreen()),
+    GoRoute(
+      path: '/settings/filters',
+      builder: (_, __) => const FiltersSettingsScreen(),
+    ),
     GoRoute(
       path: '/category/:id',
       builder: (_, state) => CategoryScreen(categoryId: state.pathParameters['id']!),

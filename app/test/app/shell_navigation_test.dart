@@ -32,6 +32,10 @@ void main() {
     );
     when(() => favoriteRepo.getFavorites()).thenAnswer((_) async => []);
     when(() => favoriteRepo.isFavorite(any())).thenAnswer((_) async => false);
+    when(() => favoriteRepo.getFavoriteCategories())
+        .thenAnswer((_) async => []);
+    when(() => favoriteRepo.isFavoriteCategory(any()))
+        .thenAnswer((_) async => false);
     when(() => streamRepo.getStreamsByIds(any())).thenAnswer((_) async => []);
     when(() => streamRepo.getStreamsForCategory('1')).thenAnswer(
       (_) async => const [

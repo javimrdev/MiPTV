@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miptv/app/providers.dart';
+import 'package:miptv/core/widgets/filter_pill.dart';
+import 'package:miptv/features/home/domain/home_filters.dart';
+import 'package:miptv/features/home/presentation/home_filters_provider.dart';
+
+/// Horizontal bar of filter pills (Quality / Category / Country) shown at the
+/// top of the Home screen, plus a destructive reset pill when any filter is set.
+class HomeFiltersBar extends ConsumerWidget {
+  const HomeFiltersBar({super.key});
+
+  static const _labels = {
+    HomeFilterType.quality: 'Quality',
+    HomeFilterType.category: 'Category',
+    HomeFilterType.country: 'Country',
+  };
+
+  Future<void> _openOptions(
+    BuildContext context,
+    WidgetRef ref,
+    HomeFilterType type,
+    String? current,
+  ) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _FilterOptionsSheet(type: type, current: current),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filters = ref.watch(homeFiltersProvider);
+    final scheme = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      height: 48,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        children: [
+          for (final type in HomeFilterType.values) ...[
+            FilterPill(
+              label: _labels[type]!,
+              value: filters.valueOf(type),
+              onTap: () => _openOptions(context, ref, type, filters.valueOf(type)),
+            ),
+            const SizedBox(width: 8),
+          ],
+          if (filters.hasAny)
+            ActionChip(
+              avatar: Icon(Icons.delete, size: 18, color: scheme.onError),
+              label: Text('Borrar', style: TextStyle(color: scheme.onError)),
+              backgroundColor: scheme.error,
+              onPressed: () => ref.read(homeFiltersProvider.notifier).reset(),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterOptionsSheet extends ConsumerWidget {
+  const _FilterOptionsSheet({required this.type, required this.current});
+
+  final HomeFilterType type;
+  final String? current;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final optionsAsync = ref.watch(filterOptionsProvider(type));
+
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.6,
+        ),
+        child: optionsAsync.when(
+          data: (options) => ListView(
+            shrinkWrap: true,
+            children: [
+              for (final option in options)
+                ListTile(
+                  leading: Icon(
+                    option == current
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked,
+                  ),
+                  title: Text(option),
+                  onTap: () {
+                    final notifier = ref.read(homeFiltersProvider.notifier);
+                    // Re-tapping the active option clears the filter.
+                    notifier.setValue(type, option == current ? null : option);
+                    Navigator.of(context).pop();
+                  },
+                ),
+            ],
+          ),
+          loading: () => const Padding(
+            padding: EdgeInsets.all(32),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (_, __) => const Padding(
+            padding: EdgeInsets.all(32),
+            child: Center(child: Text('No se pudieron cargar las opciones.')),
+          ),
+        ),
+      ),
+    );
+  }
+}

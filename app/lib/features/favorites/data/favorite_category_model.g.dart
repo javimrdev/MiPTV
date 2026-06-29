@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'category_sync_model.dart';
+part of 'favorite_category_model.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,47 +9,39 @@ part of 'category_sync_model.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetCategorySyncModelCollection on Isar {
-  IsarCollection<CategorySyncModel> get categorySyncModels => this.collection();
+extension GetFavoriteCategoryModelCollection on Isar {
+  IsarCollection<FavoriteCategoryModel> get favoriteCategoryModels =>
+      this.collection();
 }
 
-const CategorySyncModelSchema = CollectionSchema(
-  name: r'CategorySyncModel',
-  id: 4527613920677314295,
+const FavoriteCategoryModelSchema = CollectionSchema(
+  name: r'FavoriteCategoryModel',
+  id: 7783912563970242777,
   properties: {
     r'categoryId': PropertySchema(
       id: 0,
       name: r'categoryId',
       type: IsarType.string,
     ),
-    r'isSyncing': PropertySchema(
+    r'createdAt': PropertySchema(
       id: 1,
-      name: r'isSyncing',
-      type: IsarType.bool,
-    ),
-    r'lastSync': PropertySchema(
-      id: 2,
-      name: r'lastSync',
+      name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'streamCount': PropertySchema(
-      id: 3,
-      name: r'streamCount',
-      type: IsarType.long,
-    ),
+    r'name': PropertySchema(id: 2, name: r'name', type: IsarType.string),
   },
 
-  estimateSize: _categorySyncModelEstimateSize,
-  serialize: _categorySyncModelSerialize,
-  deserialize: _categorySyncModelDeserialize,
-  deserializeProp: _categorySyncModelDeserializeProp,
+  estimateSize: _favoriteCategoryModelEstimateSize,
+  serialize: _favoriteCategoryModelSerialize,
+  deserialize: _favoriteCategoryModelDeserialize,
+  deserializeProp: _favoriteCategoryModelDeserializeProp,
   idName: r'id',
   indexes: {
     r'categoryId': IndexSchema(
       id: -8798048739239305339,
       name: r'categoryId',
       unique: true,
-      replace: false,
+      replace: true,
       properties: [
         IndexPropertySchema(
           name: r'categoryId',
@@ -62,50 +54,49 @@ const CategorySyncModelSchema = CollectionSchema(
   links: {},
   embeddedSchemas: {},
 
-  getId: _categorySyncModelGetId,
-  getLinks: _categorySyncModelGetLinks,
-  attach: _categorySyncModelAttach,
+  getId: _favoriteCategoryModelGetId,
+  getLinks: _favoriteCategoryModelGetLinks,
+  attach: _favoriteCategoryModelAttach,
   version: '3.3.2',
 );
 
-int _categorySyncModelEstimateSize(
-  CategorySyncModel object,
+int _favoriteCategoryModelEstimateSize(
+  FavoriteCategoryModel object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.categoryId.length * 3;
+  bytesCount += 3 + object.name.length * 3;
   return bytesCount;
 }
 
-void _categorySyncModelSerialize(
-  CategorySyncModel object,
+void _favoriteCategoryModelSerialize(
+  FavoriteCategoryModel object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.categoryId);
-  writer.writeBool(offsets[1], object.isSyncing);
-  writer.writeDateTime(offsets[2], object.lastSync);
-  writer.writeLong(offsets[3], object.streamCount);
+  writer.writeDateTime(offsets[1], object.createdAt);
+  writer.writeString(offsets[2], object.name);
 }
 
-CategorySyncModel _categorySyncModelDeserialize(
+FavoriteCategoryModel _favoriteCategoryModelDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = CategorySyncModel();
+  final object = FavoriteCategoryModel();
   object.categoryId = reader.readString(offsets[0]);
+  object.createdAt = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.isSyncing = reader.readBool(offsets[1]);
-  object.lastSync = reader.readDateTimeOrNull(offsets[2]);
-  object.streamCount = reader.readLong(offsets[3]);
+  object.name = reader.readString(offsets[2]);
   return object;
 }
 
-P _categorySyncModelDeserializeProp<P>(
+P _favoriteCategoryModelDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -115,40 +106,39 @@ P _categorySyncModelDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readDateTimeOrNull(offset)) as P;
-    case 3:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-Id _categorySyncModelGetId(CategorySyncModel object) {
+Id _favoriteCategoryModelGetId(FavoriteCategoryModel object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _categorySyncModelGetLinks(
-  CategorySyncModel object,
+List<IsarLinkBase<dynamic>> _favoriteCategoryModelGetLinks(
+  FavoriteCategoryModel object,
 ) {
   return [];
 }
 
-void _categorySyncModelAttach(
+void _favoriteCategoryModelAttach(
   IsarCollection<dynamic> col,
   Id id,
-  CategorySyncModel object,
+  FavoriteCategoryModel object,
 ) {
   object.id = id;
 }
 
-extension CategorySyncModelByIndex on IsarCollection<CategorySyncModel> {
-  Future<CategorySyncModel?> getByCategoryId(String categoryId) {
+extension FavoriteCategoryModelByIndex
+    on IsarCollection<FavoriteCategoryModel> {
+  Future<FavoriteCategoryModel?> getByCategoryId(String categoryId) {
     return getByIndex(r'categoryId', [categoryId]);
   }
 
-  CategorySyncModel? getByCategoryIdSync(String categoryId) {
+  FavoriteCategoryModel? getByCategoryIdSync(String categoryId) {
     return getByIndexSync(r'categoryId', [categoryId]);
   }
 
@@ -160,14 +150,14 @@ extension CategorySyncModelByIndex on IsarCollection<CategorySyncModel> {
     return deleteByIndexSync(r'categoryId', [categoryId]);
   }
 
-  Future<List<CategorySyncModel?>> getAllByCategoryId(
+  Future<List<FavoriteCategoryModel?>> getAllByCategoryId(
     List<String> categoryIdValues,
   ) {
     final values = categoryIdValues.map((e) => [e]).toList();
     return getAllByIndex(r'categoryId', values);
   }
 
-  List<CategorySyncModel?> getAllByCategoryIdSync(
+  List<FavoriteCategoryModel?> getAllByCategoryIdSync(
     List<String> categoryIdValues,
   ) {
     final values = categoryIdValues.map((e) => [e]).toList();
@@ -184,45 +174,54 @@ extension CategorySyncModelByIndex on IsarCollection<CategorySyncModel> {
     return deleteAllByIndexSync(r'categoryId', values);
   }
 
-  Future<Id> putByCategoryId(CategorySyncModel object) {
+  Future<Id> putByCategoryId(FavoriteCategoryModel object) {
     return putByIndex(r'categoryId', object);
   }
 
-  Id putByCategoryIdSync(CategorySyncModel object, {bool saveLinks = true}) {
+  Id putByCategoryIdSync(
+    FavoriteCategoryModel object, {
+    bool saveLinks = true,
+  }) {
     return putByIndexSync(r'categoryId', object, saveLinks: saveLinks);
   }
 
-  Future<List<Id>> putAllByCategoryId(List<CategorySyncModel> objects) {
+  Future<List<Id>> putAllByCategoryId(List<FavoriteCategoryModel> objects) {
     return putAllByIndex(r'categoryId', objects);
   }
 
   List<Id> putAllByCategoryIdSync(
-    List<CategorySyncModel> objects, {
+    List<FavoriteCategoryModel> objects, {
     bool saveLinks = true,
   }) {
     return putAllByIndexSync(r'categoryId', objects, saveLinks: saveLinks);
   }
 }
 
-extension CategorySyncModelQueryWhereSort
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QWhere> {
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterWhere> anyId() {
+extension FavoriteCategoryModelQueryWhereSort
+    on QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QWhere> {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterWhere>
+  anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension CategorySyncModelQueryWhere
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QWhereClause> {
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterWhereClause>
+extension FavoriteCategoryModelQueryWhere
+    on
+        QueryBuilder<
+          FavoriteCategoryModel,
+          FavoriteCategoryModel,
+          QWhereClause
+        > {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterWhereClause>
   idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterWhereClause>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterWhereClause>
   idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -245,7 +244,7 @@ extension CategorySyncModelQueryWhere
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterWhereClause>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterWhereClause>
   idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -254,7 +253,7 @@ extension CategorySyncModelQueryWhere
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterWhereClause>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterWhereClause>
   idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -263,7 +262,7 @@ extension CategorySyncModelQueryWhere
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterWhereClause>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterWhereClause>
   idBetween(
     Id lowerId,
     Id upperId, {
@@ -282,7 +281,7 @@ extension CategorySyncModelQueryWhere
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterWhereClause>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterWhereClause>
   categoryIdEqualTo(String categoryId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -291,7 +290,7 @@ extension CategorySyncModelQueryWhere
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterWhereClause>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterWhereClause>
   categoryIdNotEqualTo(String categoryId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -335,9 +334,18 @@ extension CategorySyncModelQueryWhere
   }
 }
 
-extension CategorySyncModelQueryFilter
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QFilterCondition> {
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+extension FavoriteCategoryModelQueryFilter
+    on
+        QueryBuilder<
+          FavoriteCategoryModel,
+          FavoriteCategoryModel,
+          QFilterCondition
+        > {
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -350,7 +358,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdGreaterThan(
     String value, {
     bool include = false,
@@ -368,7 +380,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdLessThan(
     String value, {
     bool include = false,
@@ -386,7 +402,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdBetween(
     String lower,
     String upper, {
@@ -408,7 +428,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -421,7 +445,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -434,7 +462,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -447,7 +479,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -460,7 +496,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -469,7 +509,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   categoryIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -478,7 +522,82 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  createdAtEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'createdAt', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  createdAtGreaterThan(DateTime value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'createdAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  createdAtLessThan(DateTime value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'createdAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  createdAtBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'createdAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -487,7 +606,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -500,7 +623,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -513,7 +640,11 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
   idBetween(
     Id lower,
     Id upper, {
@@ -533,343 +664,362 @@ extension CategorySyncModelQueryFilter
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  isSyncingEqualTo(bool value) {
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'isSyncing', value: value),
+        FilterCondition.equalTo(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
       );
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  lastSyncIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'lastSync'),
-      );
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  lastSyncIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'lastSync'),
-      );
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  lastSyncEqualTo(DateTime? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'lastSync', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  lastSyncGreaterThan(DateTime? value, {bool include = false}) {
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'lastSync',
+          property: r'name',
           value: value,
+          caseSensitive: caseSensitive,
         ),
       );
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  lastSyncLessThan(DateTime? value, {bool include = false}) {
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'lastSync',
+          property: r'name',
           value: value,
+          caseSensitive: caseSensitive,
         ),
       );
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  lastSyncBetween(
-    DateTime? lower,
-    DateTime? upper, {
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameBetween(
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'lastSync',
+          property: r'name',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
         ),
       );
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  streamCountEqualTo(int value) {
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'streamCount', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  streamCountGreaterThan(int value, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'streamCount',
+        FilterCondition.startsWith(
+          property: r'name',
           value: value,
+          caseSensitive: caseSensitive,
         ),
       );
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  streamCountLessThan(int value, {bool include = false}) {
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'streamCount',
+        FilterCondition.endsWith(
+          property: r'name',
           value: value,
+          caseSensitive: caseSensitive,
         ),
       );
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterFilterCondition>
-  streamCountBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'streamCount',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
+        FilterCondition.contains(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'name',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'name', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<
+    FavoriteCategoryModel,
+    FavoriteCategoryModel,
+    QAfterFilterCondition
+  >
+  nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'name', value: ''),
       );
     });
   }
 }
 
-extension CategorySyncModelQueryObject
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QFilterCondition> {}
+extension FavoriteCategoryModelQueryObject
+    on
+        QueryBuilder<
+          FavoriteCategoryModel,
+          FavoriteCategoryModel,
+          QFilterCondition
+        > {}
 
-extension CategorySyncModelQueryLinks
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QFilterCondition> {}
+extension FavoriteCategoryModelQueryLinks
+    on
+        QueryBuilder<
+          FavoriteCategoryModel,
+          FavoriteCategoryModel,
+          QFilterCondition
+        > {}
 
-extension CategorySyncModelQuerySortBy
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QSortBy> {
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
+extension FavoriteCategoryModelQuerySortBy
+    on QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QSortBy> {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
   sortByCategoryId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'categoryId', Sort.asc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
   sortByCategoryIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'categoryId', Sort.desc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  sortByIsSyncing() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isSyncing', Sort.asc);
+      return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  sortByIsSyncingDesc() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isSyncing', Sort.desc);
+      return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  sortByLastSync() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  sortByName() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastSync', Sort.asc);
+      return query.addSortBy(r'name', Sort.asc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  sortByLastSyncDesc() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastSync', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  sortByStreamCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'streamCount', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  sortByStreamCountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'streamCount', Sort.desc);
+      return query.addSortBy(r'name', Sort.desc);
     });
   }
 }
 
-extension CategorySyncModelQuerySortThenBy
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QSortThenBy> {
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
+extension FavoriteCategoryModelQuerySortThenBy
+    on QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QSortThenBy> {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
   thenByCategoryId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'categoryId', Sort.asc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
   thenByCategoryIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'categoryId', Sort.desc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy> thenById() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  thenByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  thenByCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
   thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  thenByIsSyncing() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  thenByName() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isSyncing', Sort.asc);
+      return query.addSortBy(r'name', Sort.asc);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  thenByIsSyncingDesc() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QAfterSortBy>
+  thenByNameDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isSyncing', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  thenByLastSync() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastSync', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  thenByLastSyncDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastSync', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  thenByStreamCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'streamCount', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QAfterSortBy>
-  thenByStreamCountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'streamCount', Sort.desc);
+      return query.addSortBy(r'name', Sort.desc);
     });
   }
 }
 
-extension CategorySyncModelQueryWhereDistinct
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QDistinct> {
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QDistinct>
+extension FavoriteCategoryModelQueryWhereDistinct
+    on QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QDistinct> {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QDistinct>
   distinctByCategoryId({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'categoryId', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QDistinct>
-  distinctByIsSyncing() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QDistinct>
+  distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'isSyncing');
+      return query.addDistinctBy(r'createdAt');
     });
   }
 
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QDistinct>
-  distinctByLastSync() {
+  QueryBuilder<FavoriteCategoryModel, FavoriteCategoryModel, QDistinct>
+  distinctByName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'lastSync');
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, CategorySyncModel, QDistinct>
-  distinctByStreamCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'streamCount');
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
     });
   }
 }
 
-extension CategorySyncModelQueryProperty
-    on QueryBuilder<CategorySyncModel, CategorySyncModel, QQueryProperty> {
-  QueryBuilder<CategorySyncModel, int, QQueryOperations> idProperty() {
+extension FavoriteCategoryModelQueryProperty
+    on
+        QueryBuilder<
+          FavoriteCategoryModel,
+          FavoriteCategoryModel,
+          QQueryProperty
+        > {
+  QueryBuilder<FavoriteCategoryModel, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<CategorySyncModel, String, QQueryOperations>
+  QueryBuilder<FavoriteCategoryModel, String, QQueryOperations>
   categoryIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'categoryId');
     });
   }
 
-  QueryBuilder<CategorySyncModel, bool, QQueryOperations> isSyncingProperty() {
+  QueryBuilder<FavoriteCategoryModel, DateTime, QQueryOperations>
+  createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'isSyncing');
+      return query.addPropertyName(r'createdAt');
     });
   }
 
-  QueryBuilder<CategorySyncModel, DateTime?, QQueryOperations>
-  lastSyncProperty() {
+  QueryBuilder<FavoriteCategoryModel, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'lastSync');
-    });
-  }
-
-  QueryBuilder<CategorySyncModel, int, QQueryOperations> streamCountProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'streamCount');
+      return query.addPropertyName(r'name');
     });
   }
 }

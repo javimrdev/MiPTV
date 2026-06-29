@@ -35,7 +35,7 @@ const CategoryModelSchema = CollectionSchema(
       id: -8798048739239305339,
       name: r'categoryId',
       unique: true,
-      replace: false,
+      replace: true,
       properties: [
         IndexPropertySchema(
           name: r'categoryId',
