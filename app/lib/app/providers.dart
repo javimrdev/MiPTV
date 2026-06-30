@@ -9,6 +9,8 @@ import 'package:miptv/features/epg/data/epg_repository_impl.dart';
 import 'package:miptv/features/epg/domain/epg_entity.dart';
 import 'package:miptv/features/epg/domain/epg_repository.dart';
 import 'package:miptv/features/favorites/data/favorite_repository_impl.dart';
+import 'package:miptv/features/favorites/domain/favorite_category_entity.dart';
+import 'package:miptv/features/favorites/domain/favorite_entity.dart';
 import 'package:miptv/features/favorites/domain/favorite_repository.dart';
 import 'package:miptv/features/home/data/custom_filter_repository_impl.dart';
 import 'package:miptv/features/home/data/filters/category_filters.dart';
@@ -87,6 +89,26 @@ final channelEpgProvider =
 
 final favoriteRepositoryProvider = Provider<FavoriteRepository>((ref) {
   return FavoriteRepositoryImpl(isarService: ref.watch(isarServiceProvider));
+});
+
+/// Loads favorites (categories + channels) and hydrates the channels' stream
+/// details in a single batch query. Invalidate after any favorite
+/// add/remove, since the favorites tab stays mounted (indexedStack) and
+/// otherwise never refreshes.
+final favoritesViewProvider = FutureProvider<
+    (
+      List<FavoriteCategoryEntity>,
+      List<FavoriteEntity>,
+      Map<int, StreamEntity>,
+    )>((ref) async {
+  final favRepo = ref.watch(favoriteRepositoryProvider);
+  final categories = await favRepo.getFavoriteCategories();
+  final favorites = await favRepo.getFavorites();
+  final streams = await ref
+      .watch(streamRepositoryProvider)
+      .getStreamsByIds(favorites.map((f) => f.streamId).toList());
+  final byId = {for (final s in streams) s.id: s};
+  return (categories, favorites, byId);
 });
 
 final customFilterRepositoryProvider = Provider<CustomFilterRepository>((ref) {

@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/widgets/adaptive_scaffold.dart';
+import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/core/widgets/skeleton.dart';
 import 'package:miptv/features/epg/domain/epg_entity.dart';
 import 'package:miptv/features/streams/domain/stream_entity.dart';
+import 'package:miptv/l10n/app_localizations.dart';
 
 final _streamsProvider =
     FutureProvider.family<List<StreamEntity>, String>((ref, categoryId) {
@@ -36,26 +39,27 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final streamsAsync = ref.watch(_streamsProvider(widget.categoryId));
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Canales')),
+    return AppScaffold(
+      title: Text(l10n.channels),
       body: streamsAsync.when(
         data: (streams) => Column(
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
               child: SegmentedButton<_ViewMode>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: _ViewMode.lista,
-                    label: Text('Lista'),
-                    icon: Icon(Icons.list),
+                    label: Text(l10n.viewModeList),
+                    icon: const Icon(Icons.list),
                   ),
                   ButtonSegment(
                     value: _ViewMode.guia,
-                    label: Text('Guía'),
-                    icon: Icon(Icons.calendar_today),
+                    label: Text(l10n.viewModeGuide),
+                    icon: const Icon(Icons.calendar_today),
                   ),
                 ],
                 selected: {_mode},
@@ -79,9 +83,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
         ),
         loading: () => const SkeletonList.streams(),
         error: (e, _) {
-          final msg = e is AppError
-              ? e.userMessage
-              : 'Error inesperado. Inténtalo de nuevo.';
+          final msg = e is AppError ? e.userMessage(l10n) : l10n.errorUnexpected;
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -93,7 +95,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                 FilledButton(
                   onPressed: () =>
                       ref.invalidate(_streamsProvider(widget.categoryId)),
-                  child: const Text('Reintentar'),
+                  child: Text(l10n.retry),
                 ),
               ],
             ),
@@ -142,6 +144,7 @@ class _FavoriteButton extends ConsumerWidget {
             await repo.addFavorite(streamId);
           }
           ref.invalidate(_favoriteToggleProvider(streamId));
+          ref.invalidate(favoritesViewProvider);
         },
       ),
       orElse: () => const SizedBox.shrink(),
@@ -155,11 +158,13 @@ class _StreamTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: _StreamLogo(url: stream.logo),
-      title: Text(stream.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: _FavoriteButton(streamId: stream.id),
-      onTap: () => context.push('/player/${stream.id}?ext=${stream.extension}'),
+    return GlassTileBackground(
+      child: ListTile(
+        leading: _StreamLogo(url: stream.logo),
+        title: Text(stream.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        trailing: _FavoriteButton(streamId: stream.id),
+        onTap: () => context.push('/player/${stream.id}?ext=${stream.extension}'),
+      ),
     );
   }
 }
@@ -173,20 +178,22 @@ class _StreamEpgTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final epgAsync = ref.watch(channelEpgProvider(stream.id));
 
-    return ListTile(
-      leading: _StreamLogo(url: stream.logo),
-      title: Text(stream.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: epgAsync.when(
-        loading: () => const Padding(
-          padding: EdgeInsets.only(top: 4),
-          child: Text('Cargando guía…'),
+    return GlassTileBackground(
+      child: ListTile(
+        leading: _StreamLogo(url: stream.logo),
+        title: Text(stream.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: epgAsync.when(
+          loading: () => Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(AppLocalizations.of(context).epgLoading),
+          ),
+          error: (_, __) => Text(AppLocalizations.of(context).epgUnavailable),
+          data: (epg) => _EpgSubtitle(epg: epg),
         ),
-        error: (_, __) => const Text('Sin guía disponible'),
-        data: (epg) => _EpgSubtitle(epg: epg),
+        isThreeLine: true,
+        trailing: _FavoriteButton(streamId: stream.id),
+        onTap: () => context.push('/player/${stream.id}?ext=${stream.extension}'),
       ),
-      isThreeLine: true,
-      trailing: _FavoriteButton(streamId: stream.id),
-      onTap: () => context.push('/player/${stream.id}?ext=${stream.extension}'),
     );
   }
 }
@@ -197,7 +204,8 @@ class _EpgSubtitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (epg.isEmpty) return const Text('Sin guía disponible');
+    final l10n = AppLocalizations.of(context);
+    if (epg.isEmpty) return Text(l10n.epgUnavailable);
 
     return DefaultTextStyle.merge(
       style: Theme.of(context).textTheme.bodySmall,
@@ -205,9 +213,9 @@ class _EpgSubtitle extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (epg.now != null)
-            _EpgLine(label: 'Ahora', program: epg.now!, emphasize: true),
+            _EpgLine(label: l10n.epgNow, program: epg.now!, emphasize: true),
           if (epg.next != null)
-            _EpgLine(label: 'Después', program: epg.next!, emphasize: false),
+            _EpgLine(label: l10n.epgNext, program: epg.next!, emphasize: false),
         ],
       ),
     );
@@ -229,7 +237,7 @@ class _EpgLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final range = '${_hm(program.start)}–${_hm(program.end)}';
     return Text(
-      '$label · $range · ${program.title}',
+      AppLocalizations.of(context).epgProgramLine(label, range, program.title),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: emphasize ? const TextStyle(fontWeight: FontWeight.w600) : null,

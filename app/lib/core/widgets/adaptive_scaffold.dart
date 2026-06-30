@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:miptv/core/platform/app_platform.dart';
+import 'package:miptv/core/widgets/glass/glass_surface.dart';
+
+/// Drop-in replacement for `Scaffold(appBar: AppBar(title: ...), body: ...)`.
+///
+/// On Android, renders a plain `Scaffold`/`AppBar` — textually identical to
+/// what every screen built before the iOS crystal-glass redesign. On iOS,
+/// the app bar becomes a frosted-glass overlay (transparent background +
+/// `GlassSurface` behind it) and the body extends behind it, wrapped in a
+/// [SafeArea] so content isn't drawn under the translucent bar.
+class AppScaffold extends StatelessWidget {
+  const AppScaffold({super.key, required this.title, required this.body});
+
+  final Widget title;
+  final Widget body;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isIOSGlass) {
+      return Scaffold(appBar: AppBar(title: title), body: body);
+    }
+
+    final brightness = Theme.of(context).brightness;
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: title,
+        backgroundColor: Colors.transparent,
+        systemOverlayStyle: brightness == Brightness.dark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
+        flexibleSpace: const GlassSurface(
+          borderRadius: BorderRadius.zero,
+          child: SizedBox.expand(),
+        ),
+      ),
+      body: SafeArea(child: body),
+    );
+  }
+}

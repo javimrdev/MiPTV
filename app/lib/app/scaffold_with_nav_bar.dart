@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miptv/core/platform/app_platform.dart';
+import 'package:miptv/core/widgets/glass/glass_surface.dart';
+import 'package:miptv/l10n/app_localizations.dart';
 
 /// Shell scaffold hosting the bottom [NavigationBar] for the main tabs.
 /// The [navigationShell] keeps each branch's state alive (indexedStack).
@@ -10,39 +13,54 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        // Compact the M3 default (80px) while keeping labels visible.
-        height: 64,
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) => navigationShell.goBranch(
-          index,
-          // Re-tapping the active tab returns to its initial route.
-          initialLocation: index == navigationShell.currentIndex,
+    final l10n = AppLocalizations.of(context);
+    final navBar = NavigationBar(
+      selectedIndex: navigationShell.currentIndex,
+      onDestinationSelected: (index) => navigationShell.goBranch(
+        index,
+        // Re-tapping the active tab returns to its initial route.
+        initialLocation: index == navigationShell.currentIndex,
+      ),
+      backgroundColor: isIOSGlass ? Colors.transparent : null,
+      destinations: [
+        NavigationDestination(
+          icon: const Icon(Icons.home_outlined),
+          selectedIcon: const Icon(Icons.home),
+          label: l10n.navHome,
         ),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Inicio',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.movie_outlined),
-            selectedIcon: Icon(Icons.movie),
-            label: 'Películas',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.star_border),
-            selectedIcon: Icon(Icons.star),
-            label: 'Favoritos',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Ajustes',
-          ),
-        ],
+        NavigationDestination(
+          icon: const Icon(Icons.movie_outlined),
+          selectedIcon: const Icon(Icons.movie),
+          label: l10n.navMovies,
+        ),
+        NavigationDestination(
+          icon: const Icon(Icons.star_border),
+          selectedIcon: const Icon(Icons.star),
+          label: l10n.navFavorites,
+        ),
+        NavigationDestination(
+          icon: const Icon(Icons.settings_outlined),
+          selectedIcon: const Icon(Icons.settings),
+          label: l10n.navSettings,
+        ),
+      ],
+    );
+
+    if (!isIOSGlass) {
+      return Scaffold(body: navigationShell, bottomNavigationBar: navBar);
+    }
+
+    // iOS: the same NavigationBar floats as a frosted "pill" over the
+    // content, which extends behind it (extendBody).
+    return Scaffold(
+      extendBody: true,
+      body: navigationShell,
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: GlassSurface(
+          borderRadius: BorderRadius.circular(28),
+          child: navBar,
+        ),
       ),
     );
   }

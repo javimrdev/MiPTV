@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/widgets/adaptive_scaffold.dart';
 import 'package:miptv/core/widgets/skeleton.dart';
 import 'package:miptv/features/categories/domain/category_entity.dart';
 import 'package:miptv/features/movies/presentation/movie_tile.dart';
+import 'package:miptv/l10n/app_localizations.dart';
 
 class MoviesScreen extends ConsumerStatefulWidget {
   const MoviesScreen({super.key});
@@ -26,10 +28,11 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final providerAsync = ref.watch(providerProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Películas')),
+    return AppScaffold(
+      title: Text(l10n.movies),
       body: providerAsync.when(
         data: (provider) {
           if (provider == null) return const _NoProviderView();
@@ -40,7 +43,7 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
                 child: TextField(
                   controller: _controller,
                   decoration: InputDecoration(
-                    hintText: 'Buscar películas…',
+                    hintText: l10n.searchMoviesHint,
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _query.isEmpty
                         ? null
@@ -77,6 +80,7 @@ class _CategoriesView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final categoriesAsync = ref.watch(vodCategoriesProvider);
 
     return categoriesAsync.when(
@@ -86,9 +90,7 @@ class _CategoriesView extends ConsumerWidget {
       ),
       loading: () => const SkeletonList.categories(),
       error: (e, _) => _ErrorView(
-        message: e is AppError
-            ? e.userMessage
-            : 'Error inesperado. Inténtalo de nuevo.',
+        message: e is AppError ? e.userMessage(l10n) : l10n.errorUnexpected,
         onRetry: () => ref.invalidate(vodCategoriesProvider),
       ),
     );
@@ -101,11 +103,12 @@ class _SearchResultsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final resultsAsync = ref.watch(vodSearchProvider(query));
 
     return resultsAsync.when(
       data: (movies) => movies.isEmpty
-          ? const Center(child: Text('Sin resultados.'))
+          ? Center(child: Text(l10n.noResults))
           : ListView.builder(
               itemCount: movies.length,
               itemExtent: 72,
@@ -113,9 +116,7 @@ class _SearchResultsView extends ConsumerWidget {
             ),
       loading: () => const SkeletonList.movies(),
       error: (e, _) => _ErrorView(
-        message: e is AppError
-            ? e.userMessage
-            : 'Error inesperado. Inténtalo de nuevo.',
+        message: e is AppError ? e.userMessage(l10n) : l10n.errorUnexpected,
         onRetry: () => ref.invalidate(vodSearchProvider(query)),
       ),
     );
@@ -154,7 +155,10 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 12),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Reintentar')),
+            FilledButton(
+              onPressed: onRetry,
+              child: Text(AppLocalizations.of(context).retry),
+            ),
           ],
         ),
       ),
@@ -167,6 +171,7 @@ class _NoProviderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -175,14 +180,14 @@ class _NoProviderView extends StatelessWidget {
           children: [
             const Icon(Icons.movie_outlined, size: 56),
             const SizedBox(height: 16),
-            const Text(
-              'Añade un proveedor IPTV para ver películas.',
+            Text(
+              l10n.moviesNoProvider,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
               icon: const Icon(Icons.add),
-              label: const Text('Añadir proveedor'),
+              label: Text(l10n.addProvider),
               onPressed: () => context.push('/add-provider'),
             ),
           ],

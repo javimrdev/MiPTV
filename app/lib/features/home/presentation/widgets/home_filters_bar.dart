@@ -3,18 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/widgets/filter_pill.dart';
 import 'package:miptv/features/home/domain/home_filters.dart';
+import 'package:miptv/features/home/presentation/home_filter_labels.dart';
 import 'package:miptv/features/home/presentation/home_filters_provider.dart';
+import 'package:miptv/l10n/app_localizations.dart';
 
 /// Horizontal bar of filter pills (Quality / Category / Country) shown at the
 /// top of the Home screen, plus a destructive reset pill when any filter is set.
 class HomeFiltersBar extends ConsumerWidget {
   const HomeFiltersBar({super.key});
-
-  static const _labels = {
-    HomeFilterType.quality: 'Quality',
-    HomeFilterType.category: 'Category',
-    HomeFilterType.country: 'Country',
-  };
 
   Future<void> _openOptions(
     BuildContext context,
@@ -32,6 +28,7 @@ class HomeFiltersBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final filters = ref.watch(homeFiltersProvider);
     final scheme = Theme.of(context).colorScheme;
 
@@ -43,7 +40,7 @@ class HomeFiltersBar extends ConsumerWidget {
         children: [
           for (final type in HomeFilterType.values) ...[
             FilterPill(
-              label: _labels[type]!,
+              label: type.label(l10n),
               value: filters.valueOf(type),
               onTap: () => _openOptions(context, ref, type, filters.valueOf(type)),
             ),
@@ -52,7 +49,7 @@ class HomeFiltersBar extends ConsumerWidget {
           if (filters.hasAny)
             ActionChip(
               avatar: Icon(Icons.delete, size: 18, color: scheme.onError),
-              label: Text('Borrar', style: TextStyle(color: scheme.onError)),
+              label: Text(l10n.filtersClear, style: TextStyle(color: scheme.onError)),
               backgroundColor: scheme.error,
               onPressed: () => ref.read(homeFiltersProvider.notifier).reset(),
             ),
@@ -102,9 +99,11 @@ class _FilterOptionsSheet extends ConsumerWidget {
             padding: EdgeInsets.all(32),
             child: Center(child: CircularProgressIndicator()),
           ),
-          error: (_, __) => const Padding(
-            padding: EdgeInsets.all(32),
-            child: Center(child: Text('No se pudieron cargar las opciones.')),
+          error: (_, __) => Padding(
+            padding: const EdgeInsets.all(32),
+            child: Center(
+              child: Text(AppLocalizations.of(context).filterOptionsLoadError),
+            ),
           ),
         ),
       ),

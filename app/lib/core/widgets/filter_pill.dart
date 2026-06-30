@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:miptv/core/platform/app_platform.dart';
+import 'package:miptv/core/widgets/glass/glass_surface.dart';
+import 'package:miptv/l10n/app_localizations.dart';
 
 /// A tappable filter pill used in the Home filters bar.
 ///
@@ -20,13 +23,23 @@ class FilterPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = value != null;
-    return ActionChip(
+    final chip = ActionChip(
       avatar: Icon(selected ? Icons.check : Icons.expand_more, size: 18),
-      label: Text(selected ? '$label: $value' : label),
+      label: Text(
+        selected ? AppLocalizations.of(context).filterPill(label, value!) : label,
+      ),
       onPressed: onTap,
-      backgroundColor: selected
-          ? Theme.of(context).colorScheme.secondaryContainer
-          : null,
+      backgroundColor: isIOSGlass
+          ? Colors.transparent
+          : (selected ? Theme.of(context).colorScheme.secondaryContainer : null),
+    );
+
+    if (!isIOSGlass) return chip;
+
+    return GlassSurface(
+      borderRadius: BorderRadius.circular(20),
+      tintAlpha: selected ? 0.85 : 0.55,
+      child: chip,
     );
   }
 }

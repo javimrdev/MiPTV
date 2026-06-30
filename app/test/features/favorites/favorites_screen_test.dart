@@ -10,6 +10,8 @@ import 'package:miptv/features/favorites/presentation/favorites_screen.dart';
 import 'package:miptv/features/streams/domain/stream_entity.dart';
 import 'package:miptv/features/streams/domain/stream_repository.dart';
 
+import '../../support/l10n_test_app.dart';
+
 class MockFavoriteRepository extends Mock implements FavoriteRepository {}
 
 class MockStreamRepository extends Mock implements StreamRepository {}
@@ -42,7 +44,7 @@ void main() {
         favoriteRepositoryProvider.overrideWithValue(favoriteRepo),
         streamRepositoryProvider.overrideWithValue(streamRepo),
       ],
-      child: const MaterialApp(home: FavoritesScreen()),
+      child: testApp(home: const FavoritesScreen()),
     ));
     await tester.pumpAndSettle();
 
@@ -50,7 +52,7 @@ void main() {
     verify(() => streamRepo.getStreamsByIds([101])).called(1);
   });
 
-  testWidgets('shows favorite categories under the "Categorías" section',
+  testWidgets('shows favorite categories under the "Categories" section',
       (tester) async {
     final favoriteRepo = MockFavoriteRepository();
     final streamRepo = MockStreamRepository();
@@ -72,11 +74,11 @@ void main() {
         favoriteRepositoryProvider.overrideWithValue(favoriteRepo),
         streamRepositoryProvider.overrideWithValue(streamRepo),
       ],
-      child: const MaterialApp(home: FavoritesScreen()),
+      child: testApp(home: const FavoritesScreen()),
     ));
     await tester.pumpAndSettle();
 
-    expect(find.text('Categorías'), findsOneWidget);
+    expect(find.text('Categories'), findsOneWidget);
     expect(find.text('Deportes'), findsOneWidget);
   });
 
@@ -95,10 +97,10 @@ void main() {
         favoriteRepositoryProvider.overrideWithValue(favoriteRepo),
         streamRepositoryProvider.overrideWithValue(streamRepo),
       ],
-      child: const MaterialApp(home: FavoritesScreen()),
+      child: testApp(home: const FavoritesScreen()),
     ));
     await tester.pumpAndSettle();
 
-    expect(find.text('No tienes favoritos'), findsOneWidget);
+    expect(find.text('You have no favorites'), findsOneWidget);
   });
 }

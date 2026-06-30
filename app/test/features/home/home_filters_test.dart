@@ -9,6 +9,8 @@ import 'package:miptv/features/home/domain/home_filters.dart';
 import 'package:miptv/features/home/presentation/home_screen.dart';
 import 'package:miptv/features/provider/domain/provider_entity.dart';
 
+import '../../support/l10n_test_app.dart';
+
 /// In-memory [CustomFilterRepository] so tests don't touch Isar.
 class _FakeCustomFilterRepository implements CustomFilterRepository {
   _FakeCustomFilterRepository([Map<HomeFilterType, List<String>>? seed])
@@ -33,7 +35,7 @@ class _FakeCustomFilterRepository implements CustomFilterRepository {
 void main() {
   Widget wrap(List<Override> overrides) => ProviderScope(
         overrides: overrides,
-        child: const MaterialApp(home: HomeScreen()),
+        child: testApp(home: const HomeScreen()),
       );
 
   List<Override> baseOverrides({CustomFilterRepository? repo}) => [
@@ -56,7 +58,7 @@ void main() {
 
     // No filter selected → no reset pill.
     expect(find.text('Quality'), findsOneWidget);
-    expect(find.text('Borrar'), findsNothing);
+    expect(find.text('Clear'), findsNothing);
 
     await tester.tap(find.text('Quality'));
     await tester.pumpAndSettle();
@@ -64,15 +66,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Quality: HD'), findsOneWidget);
-    expect(find.text('Borrar'), findsOneWidget);
+    expect(find.text('Clear'), findsOneWidget);
 
     // Reset clears every dimension.
-    await tester.tap(find.text('Borrar'));
+    await tester.tap(find.text('Clear'));
     await tester.pumpAndSettle();
 
     expect(find.text('Quality: HD'), findsNothing);
     expect(find.text('Quality'), findsOneWidget);
-    expect(find.text('Borrar'), findsNothing);
+    expect(find.text('Clear'), findsNothing);
   });
 
   testWidgets('custom persisted values appear as pill options', (tester) async {

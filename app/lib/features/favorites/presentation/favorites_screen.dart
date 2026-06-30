@@ -3,47 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
+import 'package:miptv/core/widgets/adaptive_scaffold.dart';
+import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/features/favorites/domain/favorite_category_entity.dart';
-import 'package:miptv/features/favorites/domain/favorite_entity.dart';
 import 'package:miptv/features/streams/domain/stream_entity.dart';
-
-/// Loads favorites (categories + channels) and hydrates the channels' stream
-/// details in a single batch query.
-final _favoritesViewProvider = FutureProvider<
-    (
-      List<FavoriteCategoryEntity>,
-      List<FavoriteEntity>,
-      Map<int, StreamEntity>,
-    )>((ref) async {
-  final favRepo = ref.watch(favoriteRepositoryProvider);
-  final categories = await favRepo.getFavoriteCategories();
-  final favorites = await favRepo.getFavorites();
-  final streams = await ref
-      .watch(streamRepositoryProvider)
-      .getStreamsByIds(favorites.map((f) => f.streamId).toList());
-  final byId = {for (final s in streams) s.id: s};
-  return (categories, favorites, byId);
-});
+import 'package:miptv/l10n/app_localizations.dart';
 
 class FavoritesScreen extends ConsumerWidget {
   const FavoritesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewAsync = ref.watch(_favoritesViewProvider);
+    final l10n = AppLocalizations.of(context);
+    final viewAsync = ref.watch(favoritesViewProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Favoritos')),
+    return AppScaffold(
+      title: Text(l10n.favorites),
       body: viewAsync.when(
         data: (data) {
           final (categories, favorites, byId) = data;
           if (categories.isEmpty && favorites.isEmpty) {
-            return const Center(child: Text('No tienes favoritos'));
+            return Center(child: Text(l10n.favoritesEmpty));
           }
           return CustomScrollView(
             slivers: [
               if (categories.isNotEmpty) ...[
-                const _SectionHeader('Categorías'),
+                _SectionHeader(l10n.categories),
                 SliverFixedExtentList.builder(
                   itemExtent: 72,
                   itemCount: categories.length,
@@ -52,7 +37,7 @@ class FavoritesScreen extends ConsumerWidget {
                 ),
               ],
               if (favorites.isNotEmpty) ...[
-                const _SectionHeader('Canales'),
+                _SectionHeader(l10n.channels),
                 SliverFixedExtentList.builder(
                   itemExtent: 72,
                   itemCount: favorites.length,
@@ -69,8 +54,8 @@ class FavoritesScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const Center(
-          child: Text('No se pudieron cargar los favoritos.'),
+        error: (_, __) => Center(
+          child: Text(l10n.favoritesLoadError),
         ),
       ),
     );
@@ -103,24 +88,26 @@ class _FavoriteCategoryTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: const Icon(Icons.category),
-      title: Text(
-        category.name,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+    return GlassTileBackground(
+      child: ListTile(
+        leading: const Icon(Icons.category),
+        title: Text(
+          category.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.star),
+          tooltip: AppLocalizations.of(context).removeFromFavorites,
+          onPressed: () async {
+            await ref
+                .read(favoriteRepositoryProvider)
+                .removeFavoriteCategory(category.categoryId);
+            ref.invalidate(favoritesViewProvider);
+          },
+        ),
+        onTap: () => context.push('/category/${category.categoryId}'),
       ),
-      trailing: IconButton(
-        icon: const Icon(Icons.star),
-        tooltip: 'Quitar de favoritos',
-        onPressed: () async {
-          await ref
-              .read(favoriteRepositoryProvider)
-              .removeFavoriteCategory(category.categoryId);
-          ref.invalidate(_favoritesViewProvider);
-        },
-      ),
-      onTap: () => context.push('/category/${category.categoryId}'),
     );
   }
 }
@@ -134,34 +121,36 @@ class _FavoriteTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = stream;
-    return ListTile(
-      leading: s == null
-          ? const SizedBox.square(dimension: 48, child: Icon(Icons.live_tv))
-          : CachedNetworkImage(
-              imageUrl: s.logo,
-              width: 48,
-              height: 48,
-              fit: BoxFit.contain,
-              placeholder: (_, __) =>
-                  const SizedBox.square(dimension: 48, child: Icon(Icons.live_tv)),
-              errorWidget: (_, __, ___) => const Icon(Icons.live_tv),
-            ),
-      title: Text(
-        s?.name ?? 'Canal $streamId',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+    return GlassTileBackground(
+      child: ListTile(
+        leading: s == null
+            ? const SizedBox.square(dimension: 48, child: Icon(Icons.live_tv))
+            : CachedNetworkImage(
+                imageUrl: s.logo,
+                width: 48,
+                height: 48,
+                fit: BoxFit.contain,
+                placeholder: (_, __) =>
+                    const SizedBox.square(dimension: 48, child: Icon(Icons.live_tv)),
+                errorWidget: (_, __, ___) => const Icon(Icons.live_tv),
+              ),
+        title: Text(
+          s?.name ?? AppLocalizations.of(context).channelFallbackName(streamId),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.star),
+          tooltip: AppLocalizations.of(context).removeFromFavorites,
+          onPressed: () async {
+            await ref.read(favoriteRepositoryProvider).removeFavorite(streamId);
+            ref.invalidate(favoritesViewProvider);
+          },
+        ),
+        onTap: s == null
+            ? null
+            : () => context.push('/player/${s.id}?ext=${s.extension}'),
       ),
-      trailing: IconButton(
-        icon: const Icon(Icons.star),
-        tooltip: 'Quitar de favoritos',
-        onPressed: () async {
-          await ref.read(favoriteRepositoryProvider).removeFavorite(streamId);
-          ref.invalidate(_favoritesViewProvider);
-        },
-      ),
-      onTap: s == null
-          ? null
-          : () => context.push('/player/${s.id}?ext=${s.extension}'),
     );
   }
 }

@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/widgets/adaptive_scaffold.dart';
+import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/core/widgets/skeleton.dart';
 import 'package:miptv/features/categories/domain/category_entity.dart';
 import 'package:miptv/features/home/domain/apply_home_filters.dart';
 import 'package:miptv/features/home/presentation/home_filters_provider.dart';
 import 'package:miptv/features/home/presentation/widgets/home_filters_bar.dart';
+import 'package:miptv/l10n/app_localizations.dart';
 
 /// Whether a given category id is in favorites. Family-keyed so each tile
 /// observes only its own state and rebuilds independently.
@@ -23,8 +26,8 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final providerAsync = ref.watch(providerProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('MiPTV')),
+    return AppScaffold(
+      title: const Text('MiPTV'),
       body: providerAsync.when(
         data: (provider) =>
             provider == null ? const _NoProviderView() : const _CategoriesList(),
@@ -40,6 +43,7 @@ class _NoProviderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -48,14 +52,14 @@ class _NoProviderView extends StatelessWidget {
           children: [
             const Icon(Icons.live_tv, size: 56),
             const SizedBox(height: 16),
-            const Text(
-              'Aún no has añadido ningún proveedor IPTV.',
+            Text(
+              l10n.homeNoProvider,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
               icon: const Icon(Icons.add),
-              label: const Text('Añadir proveedor'),
+              label: Text(l10n.addProvider),
               onPressed: () => context.push('/add-provider'),
             ),
           ],
@@ -84,6 +88,7 @@ class _CategoriesListState extends ConsumerState<_CategoriesList> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final categoriesAsync = ref.watch(categoriesProvider);
 
     return Column(
@@ -95,7 +100,7 @@ class _CategoriesListState extends ConsumerState<_CategoriesList> {
           child: TextField(
             controller: _controller,
             decoration: InputDecoration(
-              hintText: 'Buscar categorías…',
+              hintText: l10n.searchCategoriesHint,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _query.isEmpty
                   ? null
@@ -125,7 +130,7 @@ class _CategoriesListState extends ConsumerState<_CategoriesList> {
                           c.name.toLowerCase().contains(_query.toLowerCase()))
                       .toList();
               if (filtered.isEmpty) {
-                return const Center(child: Text('Sin resultados.'));
+                return Center(child: Text(l10n.noResults));
               }
               return ListView.builder(
                 itemCount: filtered.length,
@@ -142,15 +147,13 @@ class _CategoriesListState extends ConsumerState<_CategoriesList> {
                     const Icon(Icons.signal_wifi_off, size: 48),
                     const SizedBox(height: 12),
                     Text(
-                      e is AppError
-                          ? e.userMessage
-                          : 'Error inesperado. Inténtalo de nuevo.',
+                      e is AppError ? e.userMessage(l10n) : l10n.errorUnexpected,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                     FilledButton(
                       onPressed: () => ref.invalidate(categoriesProvider),
-                      child: const Text('Reintentar'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
@@ -169,34 +172,39 @@ class _CategoryTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final isFavAsync = ref.watch(_categoryFavoriteToggleProvider(category.id));
 
-    return ListTile(
-      leading: const Icon(Icons.category),
-      title: Text(category.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          isFavAsync.maybeWhen(
-            data: (isFav) => IconButton(
-              icon: Icon(isFav ? Icons.star : Icons.star_border),
-              tooltip: isFav ? 'Quitar de favoritos' : 'Añadir a favoritos',
-              onPressed: () async {
-                final repo = ref.read(favoriteRepositoryProvider);
-                if (isFav) {
-                  await repo.removeFavoriteCategory(category.id);
-                } else {
-                  await repo.addFavoriteCategory(category.id, category.name);
-                }
-                ref.invalidate(_categoryFavoriteToggleProvider(category.id));
-              },
+    return GlassTileBackground(
+      child: ListTile(
+        leading: const Icon(Icons.category),
+        title: Text(category.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            isFavAsync.maybeWhen(
+              data: (isFav) => IconButton(
+                icon: Icon(isFav ? Icons.star : Icons.star_border),
+                tooltip:
+                    isFav ? l10n.removeFromFavorites : l10n.addToFavorites,
+                onPressed: () async {
+                  final repo = ref.read(favoriteRepositoryProvider);
+                  if (isFav) {
+                    await repo.removeFavoriteCategory(category.id);
+                  } else {
+                    await repo.addFavoriteCategory(category.id, category.name);
+                  }
+                  ref.invalidate(_categoryFavoriteToggleProvider(category.id));
+                  ref.invalidate(favoritesViewProvider);
+                },
+              ),
+              orElse: () => const SizedBox.square(dimension: 48),
             ),
-            orElse: () => const SizedBox.square(dimension: 48),
-          ),
-          const Icon(Icons.chevron_right),
-        ],
+            const Icon(Icons.chevron_right),
+          ],
+        ),
+        onTap: () => context.push('/category/${category.id}'),
       ),
-      onTap: () => context.push('/category/${category.id}'),
     );
   }
 }

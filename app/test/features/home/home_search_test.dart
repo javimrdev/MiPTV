@@ -6,10 +6,12 @@ import 'package:miptv/features/categories/domain/category_entity.dart';
 import 'package:miptv/features/home/presentation/home_screen.dart';
 import 'package:miptv/features/provider/domain/provider_entity.dart';
 
+import '../../support/l10n_test_app.dart';
+
 void main() {
   Widget wrap(List<Override> overrides) => ProviderScope(
         overrides: overrides,
-        child: const MaterialApp(home: HomeScreen()),
+        child: testApp(home: const HomeScreen()),
       );
 
   List<Override> overridesWith(List<CategoryEntity> categories) => [
@@ -59,14 +61,14 @@ void main() {
     expect(find.text('Cine'), findsOneWidget);
   });
 
-  testWidgets('shows "Sin resultados." when nothing matches', (tester) async {
+  testWidgets('shows "No results." when nothing matches', (tester) async {
     await tester.pumpWidget(wrap(overridesWith(categories)));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'zzz');
     await tester.pumpAndSettle();
 
-    expect(find.text('Sin resultados.'), findsOneWidget);
+    expect(find.text('No results.'), findsOneWidget);
     expect(find.text('Deportes'), findsNothing);
   });
 }

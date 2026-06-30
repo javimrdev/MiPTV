@@ -1,3 +1,5 @@
+import 'package:miptv/l10n/app_localizations.dart';
+
 sealed class AppError {
   const AppError();
 }
@@ -37,14 +39,16 @@ class UnknownError extends AppError {
 }
 
 extension AppErrorMessage on AppError {
-  String get userMessage => switch (this) {
-        NetworkTimeoutError() => 'La conexión tardó demasiado. Inténtalo de nuevo.',
-        NoConnectionError() => 'Sin conexión a internet. Revisa tu red.',
-        InvalidServerUrlError() => 'La URL del servidor no existe. Comprueba que esté bien escrita.',
-        BadCredentialsError() => 'Usuario o contraseña incorrectos.',
-        ParseError() => 'La respuesta del servidor no es válida. Inténtalo de nuevo.',
-        InvalidStreamError() => 'El canal no está disponible ahora.',
-        PlayerError(:final message) => 'Error al reproducir: $message',
-        UnknownError(:final message) => 'Error inesperado: $message',
+  /// Localized, user-facing message for this error. Pass the current
+  /// [AppLocalizations] (obtained from a [BuildContext]).
+  String userMessage(AppLocalizations l10n) => switch (this) {
+        NetworkTimeoutError() => l10n.errorNetworkTimeout,
+        NoConnectionError() => l10n.errorNoConnection,
+        InvalidServerUrlError() => l10n.errorInvalidServerUrl,
+        BadCredentialsError() => l10n.errorBadCredentials,
+        ParseError() => l10n.errorParse,
+        InvalidStreamError() => l10n.errorInvalidStream,
+        PlayerError(:final message) => l10n.errorPlayer(message),
+        UnknownError(:final message) => l10n.errorUnknown(message),
       };
 }

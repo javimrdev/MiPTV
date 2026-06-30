@@ -6,20 +6,22 @@ import 'package:miptv/features/categories/domain/category_entity.dart';
 import 'package:miptv/features/movies/presentation/movies_screen.dart';
 import 'package:miptv/features/provider/domain/provider_entity.dart';
 
+import '../../support/l10n_test_app.dart';
+
 void main() {
   Widget wrap(List<Override> overrides) => ProviderScope(
         overrides: overrides,
-        child: const MaterialApp(home: MoviesScreen()),
+        child: testApp(home: const MoviesScreen()),
       );
 
-  testWidgets('shows "Añadir proveedor" when no provider configured',
+  testWidgets('shows "Add provider" when no provider configured',
       (tester) async {
     await tester.pumpWidget(wrap([
       providerProvider.overrideWith((ref) => Future.value(null)),
     ]));
     await tester.pumpAndSettle();
 
-    expect(find.text('Añadir proveedor'), findsOneWidget);
+    expect(find.text('Add provider'), findsOneWidget);
   });
 
   testWidgets('shows search field and VOD categories when provider configured',
@@ -36,7 +38,7 @@ void main() {
     ]));
     await tester.pumpAndSettle();
 
-    expect(find.text('Buscar películas…'), findsOneWidget);
+    expect(find.text('Search movies…'), findsOneWidget);
     expect(find.text('Acción'), findsOneWidget);
   });
 }
