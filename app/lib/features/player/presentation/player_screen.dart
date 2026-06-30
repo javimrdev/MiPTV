@@ -5,6 +5,7 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/logging/app_logger.dart';
 import 'package:miptv/core/url_builder.dart';
+import 'package:miptv/l10n/app_localizations.dart';
 
 class PlayerScreen extends ConsumerStatefulWidget {
   const PlayerScreen({
@@ -39,16 +40,18 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
   }
 
   Future<void> _initPlayback() async {
+    // Captured before any await so it can be used without a BuildContext gap.
+    final l10n = AppLocalizations.of(context);
     try {
       final providerRepo = ref.read(providerRepositoryProvider);
       final provider = await providerRepo.getProvider();
       if (provider == null) {
-        setState(() => _error = 'No hay proveedor configurado.');
+        setState(() => _error = l10n.playerNoProvider);
         return;
       }
       final password = await ref.read(secureStorageProvider).readPassword();
       if (password == null) {
-        setState(() => _error = 'No se encontró la contraseña.');
+        setState(() => _error = l10n.playerNoPassword);
         return;
       }
 
@@ -66,7 +69,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
       setState(() => _initialized = true);
     } catch (e) {
       log.e('[Player] Error', error: e);
-      setState(() => _error = 'Error al reproducir el canal.');
+      setState(() => _error = l10n.playerError);
     }
   }
 
@@ -94,7 +97,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
                   setState(() => _error = null);
                   _initPlayback();
                 },
-                child: const Text('Reintentar'),
+                child: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ),

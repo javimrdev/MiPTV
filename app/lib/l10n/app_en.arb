@@ -1,0 +1,130 @@
+{
+  "@@locale": "en",
+
+  "navHome": "Home",
+  "@navHome": { "description": "Bottom navigation label for the Home tab" },
+  "navMovies": "Movies",
+  "@navMovies": { "description": "Bottom navigation label for the Movies tab" },
+  "navFavorites": "Favorites",
+  "@navFavorites": { "description": "Bottom navigation label for the Favorites tab" },
+  "navSettings": "Settings",
+  "@navSettings": { "description": "Bottom navigation label for the Settings tab" },
+
+  "retry": "Retry",
+  "@retry": { "description": "Generic retry button after an error" },
+  "addProvider": "Add provider",
+  "@addProvider": { "description": "Button/title to add an IPTV provider" },
+  "errorUnexpected": "Something went wrong. Please try again.",
+  "@errorUnexpected": { "description": "Generic fallback error message" },
+  "noResults": "No results.",
+  "@noResults": { "description": "Empty state when a search returns nothing" },
+  "addToFavorites": "Add to favorites",
+  "@addToFavorites": { "description": "Tooltip to add an item to favorites" },
+  "removeFromFavorites": "Remove from favorites",
+  "@removeFromFavorites": { "description": "Tooltip to remove an item from favorites" },
+
+  "errorNetworkTimeout": "The connection took too long. Please try again.",
+  "errorNoConnection": "No internet connection. Check your network.",
+  "errorInvalidServerUrl": "The server URL doesn't exist. Make sure it's spelled correctly.",
+  "errorBadCredentials": "Incorrect username or password.",
+  "errorParse": "The server response is invalid. Please try again.",
+  "errorInvalidStream": "This channel is not available right now.",
+  "errorPlayer": "Playback error: {message}",
+  "@errorPlayer": {
+    "description": "Player error including the underlying message",
+    "placeholders": { "message": { "type": "String" } }
+  },
+  "errorUnknown": "Unexpected error: {message}",
+  "@errorUnknown": {
+    "description": "Unknown error including the underlying message",
+    "placeholders": { "message": { "type": "String" } }
+  },
+
+  "homeNoProvider": "You haven't added any IPTV provider yet.",
+  "searchCategoriesHint": "Search categories…",
+
+  "filterQuality": "Quality",
+  "filterCategory": "Category",
+  "filterCountry": "Country",
+  "filtersClear": "Clear",
+  "filterOptionsLoadError": "Couldn't load the options.",
+  "filterPill": "{label}: {value}",
+  "@filterPill": {
+    "description": "A filter pill showing the selected value, e.g. 'Quality: HD'",
+    "placeholders": { "label": { "type": "String" }, "value": { "type": "String" } }
+  },
+
+  "channels": "Channels",
+  "viewModeList": "List",
+  "viewModeGuide": "Guide",
+  "epgLoading": "Loading guide…",
+  "epgUnavailable": "No guide available",
+  "epgNow": "Now",
+  "epgNext": "Next",
+  "epgProgramLine": "{label} · {range} · {title}",
+  "@epgProgramLine": {
+    "description": "A single EPG program line: now/next label, time range and program title",
+    "placeholders": {
+      "label": { "type": "String" },
+      "range": { "type": "String" },
+      "title": { "type": "String" }
+    }
+  },
+
+  "movies": "Movies",
+  "searchMoviesHint": "Search movies…",
+  "moviesNoProvider": "Add an IPTV provider to watch movies.",
+  "movieCategoryEmpty": "No movies in this category.",
+
+  "favorites": "Favorites",
+  "favoritesEmpty": "You have no favorites",
+  "categories": "Categories",
+  "favoritesLoadError": "Couldn't load favorites.",
+  "channelFallbackName": "Channel {streamId}",
+  "@channelFallbackName": {
+    "description": "Fallback channel name when the stream name is unknown",
+    "placeholders": { "streamId": { "type": "int" } }
+  },
+
+  "playerNoProvider": "No provider configured.",
+  "playerNoPassword": "Password not found.",
+  "playerError": "Error playing the channel.",
+
+  "serverUrlLabel": "Server URL",
+  "serverUrlValidation": "Enter the server URL",
+  "usernameLabel": "Username",
+  "usernameValidation": "Enter the username",
+  "passwordLabel": "Password",
+  "passwordValidation": "Enter the password",
+  "nativeDiagnostic": "Native diagnostic (dart:io)",
+  "connect": "Connect",
+
+  "settingsTitle": "Settings",
+  "sectionProvider": "Provider",
+  "sectionFilters": "Filters",
+  "sectionAppearance": "Appearance",
+  "sectionInfo": "Information",
+  "loading": "Loading…",
+  "customFilters": "Custom filters",
+  "appVersion": "Version {version} — MVP v0.1",
+  "@appVersion": {
+    "description": "App version line shown in Settings",
+    "placeholders": { "version": { "type": "String" } }
+  },
+  "syncCategoriesSuccess": "Categories synced",
+  "syncCategoriesError": "Couldn't sync",
+  "sync": "Sync",
+  "remove": "Remove",
+  "theme": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "language": "Language",
+  "languageSystem": "System default",
+
+  "addFilterHint": "Add filter…",
+  "add": "Add",
+  "noCustomFilters": "No custom filters.",
+  "delete": "Delete",
+  "filtersLoadError": "Couldn't load filters."
+}

@@ -6,6 +6,8 @@ import 'package:miptv/features/home/domain/custom_filter_repository.dart';
 import 'package:miptv/features/home/domain/home_filters.dart';
 import 'package:miptv/features/settings/presentation/filters_settings_screen.dart';
 
+import '../../support/l10n_test_app.dart';
+
 /// In-memory [CustomFilterRepository] standing in for the Isar-backed one.
 class _FakeCustomFilterRepository implements CustomFilterRepository {
   final Map<HomeFilterType, List<String>> _store = {
@@ -31,14 +33,14 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [customFilterRepositoryProvider.overrideWithValue(repo)],
-        child: const MaterialApp(home: FiltersSettingsScreen()),
+        child: testApp(home: const FiltersSettingsScreen()),
       ),
     );
     await tester.pumpAndSettle();
 
     // Quality is the first section.
     await tester.enterText(find.byType(TextField).first, '8K');
-    await tester.tap(find.text('Añadir').first);
+    await tester.tap(find.text('Add').first);
     await tester.pumpAndSettle();
 
     expect(repo.getValues(HomeFilterType.quality), completion(contains('8K')));

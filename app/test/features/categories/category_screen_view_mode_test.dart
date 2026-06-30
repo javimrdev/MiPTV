@@ -10,6 +10,8 @@ import 'package:miptv/features/favorites/domain/favorite_repository.dart';
 import 'package:miptv/features/streams/domain/stream_entity.dart';
 import 'package:miptv/features/streams/domain/stream_repository.dart';
 
+import '../../support/l10n_test_app.dart';
+
 class MockStreamRepository extends Mock implements StreamRepository {}
 
 class MockEpgRepository extends Mock implements EpgRepository {}
@@ -61,7 +63,7 @@ void main() {
           epgRepositoryProvider.overrideWithValue(epgRepo),
           favoriteRepositoryProvider.overrideWithValue(favRepo),
         ],
-        child: const MaterialApp(home: CategoryScreen(categoryId: 'cat')),
+        child: testApp(home: const CategoryScreen(categoryId: 'cat')),
       );
 
   testWidgets('defaults to Lista view; EPG lines are not shown', (tester) async {
@@ -77,12 +79,12 @@ void main() {
     await tester.pumpWidget(wrap());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Guía'));
+    await tester.tap(find.text('Guide'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Ahora'), findsOneWidget);
+    expect(find.textContaining('Now'), findsOneWidget);
     expect(find.textContaining('Telediario'), findsOneWidget);
-    expect(find.textContaining('Después'), findsOneWidget);
+    expect(find.textContaining('Next'), findsOneWidget);
     expect(find.textContaining('El Tiempo'), findsOneWidget);
   });
 }

@@ -1,8 +1,10 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:miptv/core/errors/app_error.dart';
 import 'package:miptv/features/streams/domain/stream_entity.dart';
 import 'package:miptv/features/streams/domain/stream_repository.dart';
+import 'package:miptv/l10n/app_localizations.dart';
 
 class MockStreamRepository extends Mock implements StreamRepository {}
 
@@ -55,20 +57,16 @@ void main() {
       );
     });
 
-    test('NoConnectionError has correct user message', () {
+    test('NoConnectionError maps to its localized message', () async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       const error = NoConnectionError();
-      expect(
-        error.userMessage,
-        contains('Sin conexión'),
-      );
+      expect(error.userMessage(l10n), l10n.errorNoConnection);
     });
 
-    test('NetworkTimeoutError has correct user message', () {
+    test('NetworkTimeoutError maps to its localized message', () async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       const error = NetworkTimeoutError();
-      expect(
-        error.userMessage,
-        contains('tardó demasiado'),
-      );
+      expect(error.userMessage(l10n), l10n.errorNetworkTimeout);
     });
   });
 }
