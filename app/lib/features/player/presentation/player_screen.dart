@@ -117,7 +117,26 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
         children: [
           // Built-in MediaKit controls: play/pause, seek bar, ±seek.
           // Adaptive = Material on Android, Cupertino on iOS.
-          Video(controller: _controller, controls: AdaptiveVideoControls),
+          //
+          // Default state shows clean video (visibleOnMount is false); tapping
+          // reveals the controls and they auto-hide. The only override is
+          // lifting the red seek bar off the bottom edge (default margin is
+          // zero, so it sits flush against the bottom).
+          MaterialVideoControlsTheme(
+            normal: kDefaultMaterialVideoControlsThemeData.copyWith(
+              visibleOnMount: false,
+              seekBarMargin: const EdgeInsets.only(
+                left: 16.0,
+                right: 16.0,
+                bottom: 12.0,
+              ),
+            ),
+            fullscreen: kDefaultMaterialVideoControlsThemeDataFullscreen,
+            child: Video(
+              controller: _controller,
+              controls: AdaptiveVideoControls,
+            ),
+          ),
           // Back/close button overlaid on top of the controls.
           SafeArea(
             child: Align(
