@@ -10,14 +10,21 @@ import 'package:miptv/core/widgets/glass/glass_surface.dart';
 /// the app bar becomes a frosted-glass overlay (transparent background +
 /// `GlassSurface` behind it) and the body extends behind it, wrapped in a
 /// [SafeArea] so content isn't drawn under the translucent bar.
+///
+/// Pass `title: null` to render without an app bar at all (just the body in
+/// a [SafeArea]) — used by screens that want a clean, chrome-free top.
 class AppScaffold extends StatelessWidget {
-  const AppScaffold({super.key, required this.title, required this.body});
+  const AppScaffold({super.key, this.title, required this.body});
 
-  final Widget title;
+  final Widget? title;
   final Widget body;
 
   @override
   Widget build(BuildContext context) {
+    if (title == null) {
+      return Scaffold(body: SafeArea(child: body));
+    }
+
     if (!isIOSGlass) {
       return Scaffold(appBar: AppBar(title: title), body: body);
     }

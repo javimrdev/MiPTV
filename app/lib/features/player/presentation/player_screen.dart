@@ -116,7 +116,8 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
       body: Stack(
         children: [
           // Built-in MediaKit controls: play/pause, seek bar, ±seek.
-          // Adaptive = Material on Android, Cupertino on iOS.
+          // AdaptiveVideoControls resolves to Material on both platforms
+          // (media_kit_video 2.0.1 has no Cupertino control set yet).
           //
           // Default state shows clean video (visibleOnMount is false); tapping
           // reveals the controls and they auto-hide. The only override is

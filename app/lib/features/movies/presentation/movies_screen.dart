@@ -149,7 +149,6 @@ class _CategoryTile extends StatelessWidget {
     return ListTile(
       leading: const Icon(Icons.movie),
       title: Text(category.name),
-      trailing: const Icon(Icons.chevron_right),
       onTap: () => context.push('/movies/category/${category.id}'),
     );
   }

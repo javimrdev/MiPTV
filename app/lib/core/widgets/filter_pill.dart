@@ -32,6 +32,7 @@ class FilterPill extends StatelessWidget {
       backgroundColor: isIOSGlass
           ? Colors.transparent
           : (selected ? Theme.of(context).colorScheme.secondaryContainer : null),
+      side: isIOSGlass ? BorderSide.none : null,
     );
 
     if (!isIOSGlass) return chip;
