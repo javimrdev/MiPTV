@@ -394,6 +394,18 @@ abstract class AppLocalizations {
   /// **'The stream took too long to start.'**
   String get playerTimeout;
 
+  /// No description provided for @providerNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get providerNameLabel;
+
+  /// No description provided for @providerNameValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name to identify this source'**
+  String get providerNameValidation;
+
   /// No description provided for @serverUrlLabel.
   ///
   /// In en, this message translates to:
@@ -513,6 +525,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get remove;
+
+  /// No description provided for @activate.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this source'**
+  String get activate;
+
+  /// No description provided for @addSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Add source'**
+  String get addSource;
+
+  /// No description provided for @sources.
+  ///
+  /// In en, this message translates to:
+  /// **'Sources'**
+  String get sources;
 
   /// No description provided for @theme.
   ///

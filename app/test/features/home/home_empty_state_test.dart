@@ -18,6 +18,7 @@ void main() {
       (tester) async {
     await tester.pumpWidget(wrap([
       providerProvider.overrideWith((ref) => Future.value(null)),
+      providersListProvider.overrideWith((ref) => Future.value(const [])),
     ]));
     await tester.pumpAndSettle();
 
@@ -26,12 +27,11 @@ void main() {
 
   testWidgets('shows category list when a provider is configured',
       (tester) async {
+    const provider =
+        ProviderEntity(id: 1, name: 'Main', server: 'http://x.tv', username: 'u');
     await tester.pumpWidget(wrap([
-      providerProvider.overrideWith(
-        (ref) => Future.value(
-          const ProviderEntity(id: 1, server: 'http://x.tv', username: 'u'),
-        ),
-      ),
+      providerProvider.overrideWith((ref) => Future.value(provider)),
+      providersListProvider.overrideWith((ref) => Future.value(const [provider])),
       categoriesProvider.overrideWith(
         (ref) => Future.value(const [CategoryEntity(id: '1', name: 'Deportes')]),
       ),

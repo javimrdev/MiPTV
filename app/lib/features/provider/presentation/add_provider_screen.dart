@@ -17,6 +17,7 @@ class AddProviderScreen extends ConsumerStatefulWidget {
 
 class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
   final _serverCtrl = TextEditingController();
   final _userCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
@@ -27,6 +28,7 @@ class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
 
   @override
   void dispose() {
+    _nameCtrl.dispose();
     _serverCtrl.dispose();
     _userCtrl.dispose();
     _passCtrl.dispose();
@@ -64,14 +66,16 @@ class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
     try {
       final repo = ref.read(providerRepositoryProvider);
       await repo.addProvider(
+        name: _nameCtrl.text.trim(),
         server: _serverCtrl.text.trim(),
         username: _userCtrl.text.trim(),
         password: _passCtrl.text,
       );
       await repo.syncCategories();
       TextInput.finishAutofillContext();
-      // Refresh shared state so Home/Settings reflect the new provider.
+      // Refresh shared state so Home/Settings reflect the new source.
       ref.invalidate(providerProvider);
+      ref.invalidate(providersListProvider);
       ref.invalidate(categoriesProvider);
       if (mounted) context.go('/home');
     } on AppError catch (e) {
@@ -98,6 +102,14 @@ class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  TextFormField(
+                    controller: _nameCtrl,
+                    decoration: InputDecoration(labelText: l10n.providerNameLabel),
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? l10n.providerNameValidation
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _serverCtrl,
                     decoration: InputDecoration(labelText: l10n.serverUrlLabel),

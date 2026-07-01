@@ -92,6 +92,8 @@
   "playerError": "Error playing the channel.",
   "playerTimeout": "The stream took too long to start.",
 
+  "providerNameLabel": "Name",
+  "providerNameValidation": "Enter a name to identify this source",
   "serverUrlLabel": "Server URL",
   "serverUrlValidation": "Enter the server URL",
   "usernameLabel": "Username",
@@ -117,6 +119,9 @@
   "syncCategoriesError": "Couldn't sync",
   "sync": "Sync",
   "remove": "Remove",
+  "activate": "Use this source",
+  "addSource": "Add source",
+  "sources": "Sources",
   "theme": "Theme",
   "themeSystem": "System",
   "themeLight": "Light",

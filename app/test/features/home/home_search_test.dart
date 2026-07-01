@@ -14,14 +14,15 @@ void main() {
         child: testApp(home: const HomeScreen()),
       );
 
-  List<Override> overridesWith(List<CategoryEntity> categories) => [
-        providerProvider.overrideWith(
-          (ref) => Future.value(
-            const ProviderEntity(id: 1, server: 'http://x.tv', username: 'u'),
-          ),
-        ),
-        categoriesProvider.overrideWith((ref) => Future.value(categories)),
-      ];
+  List<Override> overridesWith(List<CategoryEntity> categories) {
+    const provider =
+        ProviderEntity(id: 1, name: 'Main', server: 'http://x.tv', username: 'u');
+    return [
+      providerProvider.overrideWith((ref) => Future.value(provider)),
+      providersListProvider.overrideWith((ref) => Future.value(const [provider])),
+      categoriesProvider.overrideWith((ref) => Future.value(categories)),
+    ];
+  }
 
   const categories = [
     CategoryEntity(id: '1', name: 'Deportes'),

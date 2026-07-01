@@ -58,6 +58,8 @@
   "playerError": "Erro ao reproduzir o canal.",
   "playerTimeout": "O stream demorou demasiado tempo a iniciar.",
 
+  "providerNameLabel": "Nome",
+  "providerNameValidation": "Introduza um nome para identificar esta fonte",
   "serverUrlLabel": "URL do servidor",
   "serverUrlValidation": "Introduza o URL do servidor",
   "usernameLabel": "Utilizador",
@@ -79,6 +81,9 @@
   "syncCategoriesError": "Não foi possível sincronizar",
   "sync": "Sincronizar",
   "remove": "Remover",
+  "activate": "Usar esta fonte",
+  "addSource": "Adicionar fonte",
+  "sources": "Fontes",
   "theme": "Tema",
   "themeSystem": "Sistema",
   "themeLight": "Claro",

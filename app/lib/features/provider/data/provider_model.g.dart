@@ -17,9 +17,10 @@ const ProviderModelSchema = CollectionSchema(
   name: r'ProviderModel',
   id: 5360569753717054365,
   properties: {
-    r'server': PropertySchema(id: 0, name: r'server', type: IsarType.string),
+    r'name': PropertySchema(id: 0, name: r'name', type: IsarType.string),
+    r'server': PropertySchema(id: 1, name: r'server', type: IsarType.string),
     r'username': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'username',
       type: IsarType.string,
     ),
@@ -30,21 +31,7 @@ const ProviderModelSchema = CollectionSchema(
   deserialize: _providerModelDeserialize,
   deserializeProp: _providerModelDeserializeProp,
   idName: r'id',
-  indexes: {
-    r'server': IndexSchema(
-      id: -7588013344182096230,
-      name: r'server',
-      unique: true,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'server',
-          type: IndexType.hash,
-          caseSensitive: true,
-        ),
-      ],
-    ),
-  },
+  indexes: {},
   links: {},
   embeddedSchemas: {},
 
@@ -60,6 +47,7 @@ int _providerModelEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.server.length * 3;
   bytesCount += 3 + object.username.length * 3;
   return bytesCount;
@@ -71,8 +59,9 @@ void _providerModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.server);
-  writer.writeString(offsets[1], object.username);
+  writer.writeString(offsets[0], object.name);
+  writer.writeString(offsets[1], object.server);
+  writer.writeString(offsets[2], object.username);
 }
 
 ProviderModel _providerModelDeserialize(
@@ -83,8 +72,9 @@ ProviderModel _providerModelDeserialize(
 ) {
   final object = ProviderModel();
   object.id = id;
-  object.server = reader.readString(offsets[0]);
-  object.username = reader.readString(offsets[1]);
+  object.name = reader.readString(offsets[0]);
+  object.server = reader.readString(offsets[1]);
+  object.username = reader.readString(offsets[2]);
   return object;
 }
 
@@ -98,6 +88,8 @@ P _providerModelDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -118,63 +110,6 @@ void _providerModelAttach(
   ProviderModel object,
 ) {
   object.id = id;
-}
-
-extension ProviderModelByIndex on IsarCollection<ProviderModel> {
-  Future<ProviderModel?> getByServer(String server) {
-    return getByIndex(r'server', [server]);
-  }
-
-  ProviderModel? getByServerSync(String server) {
-    return getByIndexSync(r'server', [server]);
-  }
-
-  Future<bool> deleteByServer(String server) {
-    return deleteByIndex(r'server', [server]);
-  }
-
-  bool deleteByServerSync(String server) {
-    return deleteByIndexSync(r'server', [server]);
-  }
-
-  Future<List<ProviderModel?>> getAllByServer(List<String> serverValues) {
-    final values = serverValues.map((e) => [e]).toList();
-    return getAllByIndex(r'server', values);
-  }
-
-  List<ProviderModel?> getAllByServerSync(List<String> serverValues) {
-    final values = serverValues.map((e) => [e]).toList();
-    return getAllByIndexSync(r'server', values);
-  }
-
-  Future<int> deleteAllByServer(List<String> serverValues) {
-    final values = serverValues.map((e) => [e]).toList();
-    return deleteAllByIndex(r'server', values);
-  }
-
-  int deleteAllByServerSync(List<String> serverValues) {
-    final values = serverValues.map((e) => [e]).toList();
-    return deleteAllByIndexSync(r'server', values);
-  }
-
-  Future<Id> putByServer(ProviderModel object) {
-    return putByIndex(r'server', object);
-  }
-
-  Id putByServerSync(ProviderModel object, {bool saveLinks = true}) {
-    return putByIndexSync(r'server', object, saveLinks: saveLinks);
-  }
-
-  Future<List<Id>> putAllByServer(List<ProviderModel> objects) {
-    return putAllByIndex(r'server', objects);
-  }
-
-  List<Id> putAllByServerSync(
-    List<ProviderModel> objects, {
-    bool saveLinks = true,
-  }) {
-    return putAllByIndexSync(r'server', objects, saveLinks: saveLinks);
-  }
 }
 
 extension ProviderModelQueryWhereSort
@@ -259,59 +194,6 @@ extension ProviderModelQueryWhere
       );
     });
   }
-
-  QueryBuilder<ProviderModel, ProviderModel, QAfterWhereClause> serverEqualTo(
-    String server,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.equalTo(indexName: r'server', value: [server]),
-      );
-    });
-  }
-
-  QueryBuilder<ProviderModel, ProviderModel, QAfterWhereClause>
-  serverNotEqualTo(String server) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'server',
-                lower: [],
-                upper: [server],
-                includeUpper: false,
-              ),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'server',
-                lower: [server],
-                includeLower: false,
-                upper: [],
-              ),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'server',
-                lower: [server],
-                includeLower: false,
-                upper: [],
-              ),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'server',
-                lower: [],
-                upper: [server],
-                includeUpper: false,
-              ),
-            );
-      }
-    });
-  }
 }
 
 extension ProviderModelQueryFilter
@@ -369,6 +251,150 @@ extension ProviderModelQueryFilter
           upper: upper,
           includeUpper: includeUpper,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition> nameEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition>
+  nameGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition>
+  nameLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition> nameBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'name',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition>
+  nameStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition>
+  nameEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition>
+  nameContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition> nameMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'name',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition>
+  nameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'name', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterFilterCondition>
+  nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'name', value: ''),
       );
     });
   }
@@ -664,6 +690,18 @@ extension ProviderModelQueryLinks
 
 extension ProviderModelQuerySortBy
     on QueryBuilder<ProviderModel, ProviderModel, QSortBy> {
+  QueryBuilder<ProviderModel, ProviderModel, QAfterSortBy> sortByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterSortBy> sortByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProviderModel, ProviderModel, QAfterSortBy> sortByServer() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'server', Sort.asc);
@@ -704,6 +742,18 @@ extension ProviderModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<ProviderModel, ProviderModel, QAfterSortBy> thenByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProviderModel, ProviderModel, QAfterSortBy> thenByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProviderModel, ProviderModel, QAfterSortBy> thenByServer() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'server', Sort.asc);
@@ -732,6 +782,14 @@ extension ProviderModelQuerySortThenBy
 
 extension ProviderModelQueryWhereDistinct
     on QueryBuilder<ProviderModel, ProviderModel, QDistinct> {
+  QueryBuilder<ProviderModel, ProviderModel, QDistinct> distinctByName({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<ProviderModel, ProviderModel, QDistinct> distinctByServer({
     bool caseSensitive = true,
   }) {
@@ -754,6 +812,12 @@ extension ProviderModelQueryProperty
   QueryBuilder<ProviderModel, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<ProviderModel, String, QQueryOperations> nameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'name');
     });
   }
 

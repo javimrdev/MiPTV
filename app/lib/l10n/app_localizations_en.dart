@@ -165,6 +165,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerTimeout => 'The stream took too long to start.';
 
   @override
+  String get providerNameLabel => 'Name';
+
+  @override
+  String get providerNameValidation => 'Enter a name to identify this source';
+
+  @override
   String get serverUrlLabel => 'Server URL';
 
   @override
@@ -225,6 +231,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get remove => 'Remove';
+
+  @override
+  String get activate => 'Use this source';
+
+  @override
+  String get addSource => 'Add source';
+
+  @override
+  String get sources => 'Sources';
 
   @override
   String get theme => 'Theme';

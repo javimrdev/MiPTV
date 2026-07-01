@@ -38,18 +38,19 @@ void main() {
         child: testApp(home: const HomeScreen()),
       );
 
-  List<Override> baseOverrides({CustomFilterRepository? repo}) => [
-        providerProvider.overrideWith(
-          (ref) => Future.value(
-            const ProviderEntity(id: 1, server: 'http://x.tv', username: 'u'),
-          ),
-        ),
-        categoriesProvider.overrideWith(
-          (ref) => Future.value(const [CategoryEntity(id: '1', name: 'Deportes')]),
-        ),
-        customFilterRepositoryProvider
-            .overrideWithValue(repo ?? _FakeCustomFilterRepository()),
-      ];
+  List<Override> baseOverrides({CustomFilterRepository? repo}) {
+    const provider =
+        ProviderEntity(id: 1, name: 'Main', server: 'http://x.tv', username: 'u');
+    return [
+      providerProvider.overrideWith((ref) => Future.value(provider)),
+      providersListProvider.overrideWith((ref) => Future.value(const [provider])),
+      categoriesProvider.overrideWith(
+        (ref) => Future.value(const [CategoryEntity(id: '1', name: 'Deportes')]),
+      ),
+      customFilterRepositoryProvider
+          .overrideWithValue(repo ?? _FakeCustomFilterRepository()),
+    ];
+  }
 
   testWidgets('selecting a Quality value labels the pill and shows reset',
       (tester) async {

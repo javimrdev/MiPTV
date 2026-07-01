@@ -58,6 +58,8 @@
   "playerError": "Fehler beim Abspielen des Senders.",
   "playerTimeout": "Der Stream hat zu lange zum Starten gebraucht.",
 
+  "providerNameLabel": "Name",
+  "providerNameValidation": "Gib einen Namen zur Identifizierung dieser Quelle ein",
   "serverUrlLabel": "Server-URL",
   "serverUrlValidation": "Gib die Server-URL ein",
   "usernameLabel": "Benutzername",
@@ -79,6 +81,9 @@
   "syncCategoriesError": "Synchronisierung fehlgeschlagen",
   "sync": "Synchronisieren",
   "remove": "Entfernen",
+  "activate": "Diese Quelle verwenden",
+  "addSource": "Quelle hinzufügen",
+  "sources": "Quellen",
   "theme": "Design",
   "themeSystem": "System",
   "themeLight": "Hell",

@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miptv/core/db/isar_service.dart';
+import 'package:miptv/features/settings/application/locale_controller.dart'
+    show sharedPreferencesProvider;
 import 'package:miptv/core/network/dio_client.dart';
 import 'package:miptv/core/storage/secure_storage.dart';
 import 'package:miptv/features/categories/data/category_repository_impl.dart';
@@ -45,14 +47,33 @@ final providerRepositoryProvider = Provider<IPTVProviderRepository>((ref) {
     api: ref.watch(xtreamApiProvider),
     secureStorage: ref.watch(secureStorageProvider),
     isarService: ref.watch(isarServiceProvider),
+    prefs: ref.watch(sharedPreferencesProvider),
   );
 });
 
-/// Current configured provider (single-provider model). `null` when none.
-/// Shared by Home (empty state) and Settings (provider management).
+/// The active source. `null` when no source is configured. Shared by Home
+/// (empty state, top bar title) and Settings (provider management).
 final providerProvider = FutureProvider(
   (ref) => ref.watch(providerRepositoryProvider).getProvider(),
 );
+
+/// All configured sources, for the Home drawer and the Settings list.
+final providersListProvider = FutureProvider(
+  (ref) => ref.watch(providerRepositoryProvider).getProviders(),
+);
+
+/// Switches the active source and refreshes every provider-scoped bit of
+/// state so Home/Settings/Favorites reflect the new source immediately
+/// (the underlying caches were already reset by the repository).
+Future<void> switchToProvider(WidgetRef ref, int id) async {
+  await ref.read(providerRepositoryProvider).switchProvider(id);
+  await ref.read(providerRepositoryProvider).syncCategories();
+  ref.invalidate(providerProvider);
+  ref.invalidate(providersListProvider);
+  ref.invalidate(categoriesProvider);
+  ref.invalidate(favoritesViewProvider);
+  ref.invalidate(vodCategoriesProvider);
+}
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
   return CategoryRepositoryImpl(isarService: ref.watch(isarServiceProvider));

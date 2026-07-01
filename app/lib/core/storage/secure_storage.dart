@@ -1,9 +1,9 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class SecureStorageService {
-  Future<void> writePassword(String password);
-  Future<String?> readPassword();
-  Future<void> deletePassword();
+  Future<void> writePassword(int providerId, String password);
+  Future<String?> readPassword(int providerId);
+  Future<void> deletePassword(int providerId);
 }
 
 class FlutterSecureStorageService implements SecureStorageService {
@@ -11,15 +11,17 @@ class FlutterSecureStorageService implements SecureStorageService {
       : _storage = storage ?? const FlutterSecureStorage();
 
   final FlutterSecureStorage _storage;
-  static const _passwordKey = 'xtream_password';
+  static String _passwordKey(int providerId) => 'xtream_password_$providerId';
 
   @override
-  Future<void> writePassword(String password) =>
-      _storage.write(key: _passwordKey, value: password);
+  Future<void> writePassword(int providerId, String password) =>
+      _storage.write(key: _passwordKey(providerId), value: password);
 
   @override
-  Future<String?> readPassword() => _storage.read(key: _passwordKey);
+  Future<String?> readPassword(int providerId) =>
+      _storage.read(key: _passwordKey(providerId));
 
   @override
-  Future<void> deletePassword() => _storage.delete(key: _passwordKey);
+  Future<void> deletePassword(int providerId) =>
+      _storage.delete(key: _passwordKey(providerId));
 }

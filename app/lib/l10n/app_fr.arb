@@ -58,6 +58,8 @@
   "playerError": "Erreur lors de la lecture de la chaîne.",
   "playerTimeout": "Le flux a mis trop de temps à démarrer.",
 
+  "providerNameLabel": "Nom",
+  "providerNameValidation": "Saisissez un nom pour identifier cette source",
   "serverUrlLabel": "URL du serveur",
   "serverUrlValidation": "Saisissez l'URL du serveur",
   "usernameLabel": "Nom d'utilisateur",
@@ -79,6 +81,9 @@
   "syncCategoriesError": "Échec de la synchronisation",
   "sync": "Synchroniser",
   "remove": "Supprimer",
+  "activate": "Utiliser cette source",
+  "addSource": "Ajouter une source",
+  "sources": "Sources",
   "theme": "Thème",
   "themeSystem": "Système",
   "themeLight": "Clair",

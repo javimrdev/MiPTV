@@ -169,6 +169,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Lo stream ha impiegato troppo tempo per avviarsi.';
 
   @override
+  String get providerNameLabel => 'Nome';
+
+  @override
+  String get providerNameValidation =>
+      'Inserisci un nome per identificare questa fonte';
+
+  @override
   String get serverUrlLabel => 'URL del server';
 
   @override
@@ -229,6 +236,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get remove => 'Rimuovi';
+
+  @override
+  String get activate => 'Usa questa fonte';
+
+  @override
+  String get addSource => 'Aggiungi fonte';
+
+  @override
+  String get sources => 'Fonti';
 
   @override
   String get theme => 'Tema';

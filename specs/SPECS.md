@@ -167,11 +167,16 @@ navegador raíz (sin barra inferior).
 
 ```
 id
+name
 server
 username
 ```
 
-La contraseña **no se almacena** en la base de datos.
+La contraseña **no se almacena** en la base de datos: se guarda en Secure
+Storage bajo una clave por `id` de proveedor. Puede haber varios `Provider`
+simultáneos; uno de ellos es el activo (persistido en SharedPreferences), y
+cambiar de activo resetea las cachés de contenido (categorías, canales, VOD,
+favoritos, filtros personalizados) del proveedor anterior.
 
 ---
 
@@ -512,7 +517,6 @@ No incluye:
 - AirPlay
 - PiP
 - Multiusuario
-- Múltiples proveedores
 
 ---
 

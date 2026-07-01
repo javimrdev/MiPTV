@@ -59,7 +59,7 @@ class StreamRepositoryImpl implements StreamRepository {
   Future<void> _syncCategory(String categoryId) async {
     final provider = await _providerRepo.getProvider();
     if (provider == null) return;
-    final password = await _secureStorage.readPassword();
+    final password = await _secureStorage.readPassword(provider.id);
     if (password == null) return;
 
     // Mark as syncing

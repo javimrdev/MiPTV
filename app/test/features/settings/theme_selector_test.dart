@@ -38,6 +38,7 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         providerProvider.overrideWith((ref) => Future.value(null)),
+        providersListProvider.overrideWith((ref) => Future.value(const [])),
       ],
       child: const _ThemeAwareApp(),
     ));

@@ -6,6 +6,7 @@ import 'package:miptv/core/platform/app_platform.dart';
 import 'package:miptv/core/responsive/content_width_cap.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
 import 'package:miptv/core/widgets/glass/glass_surface.dart';
+import 'package:miptv/features/provider/domain/provider_entity.dart';
 import 'package:miptv/features/settings/application/locale_controller.dart';
 import 'package:miptv/features/settings/application/theme_controller.dart';
 import 'package:miptv/l10n/app_localizations.dart';
@@ -20,15 +21,31 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final providerAsync = ref.watch(providerProvider);
+    final providersAsync = ref.watch(providersListProvider);
 
     final providerSection = [
       _SectionHeader(l10n.sectionProvider),
-      providerAsync.when(
-        data: (provider) => provider == null
+      providersAsync.when(
+        data: (providers) => providers.isEmpty
             ? const _NoProviderTile()
-            : _ProviderTile(
-                server: provider.server,
-                username: provider.username,
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (final provider in providers)
+                    _ProviderTile(
+                      provider: provider,
+                      isActive: provider.id ==
+                          providerAsync.maybeWhen(
+                            data: (p) => p?.id,
+                            orElse: () => null,
+                          ),
+                    ),
+                  ListTile(
+                    leading: const Icon(Icons.add),
+                    title: Text(l10n.addSource),
+                    onTap: () => context.push('/add-provider'),
+                  ),
+                ],
               ),
         loading: () => ListTile(
           leading: const SizedBox.square(
@@ -152,10 +169,12 @@ class _NoProviderTile extends StatelessWidget {
 }
 
 class _ProviderTile extends ConsumerWidget {
-  const _ProviderTile({required this.server, required this.username});
+  const _ProviderTile({required this.provider, required this.isActive});
 
-  final String server;
-  final String username;
+  final ProviderEntity provider;
+  final bool isActive;
+
+  Future<void> _activate(WidgetRef ref) => switchToProvider(ref, provider.id);
 
   Future<void> _sync(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
@@ -171,10 +190,23 @@ class _ProviderTile extends ConsumerWidget {
     }
   }
 
-  Future<void> _remove(BuildContext context, WidgetRef ref) async {
-    await ref.read(providerRepositoryProvider).removeProvider();
+  Future<void> _remove(WidgetRef ref) async {
+    final wasActive = isActive;
+    await ref.read(providerRepositoryProvider).removeProvider(provider.id);
     ref.invalidate(providerProvider);
+    ref.invalidate(providersListProvider);
     ref.invalidate(categoriesProvider);
+    ref.invalidate(favoritesViewProvider);
+    ref.invalidate(vodCategoriesProvider);
+    if (!wasActive) return;
+    // Removing the active source reset the caches and picked another one (if
+    // any) as active: sync it now so Home doesn't sit on an empty category
+    // list until the user finds the manual Sync button.
+    final newActive = await ref.read(providerRepositoryProvider).getProvider();
+    if (newActive != null) {
+      await ref.read(providerRepositoryProvider).syncCategories();
+      ref.invalidate(categoriesProvider);
+    }
   }
 
   @override
@@ -184,13 +216,21 @@ class _ProviderTile extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ListTile(
-          leading: const Icon(Icons.dns_outlined),
-          title: Text(server),
-          subtitle: Text(username),
+          leading: Icon(
+            isActive ? Icons.radio_button_checked : Icons.dns_outlined,
+          ),
+          title: Text(provider.name),
+          subtitle: Text('${provider.server} · ${provider.username}'),
         ),
         OverflowBar(
           alignment: MainAxisAlignment.end,
           children: [
+            if (!isActive)
+              TextButton.icon(
+                icon: const Icon(Icons.check_circle_outline),
+                label: Text(l10n.activate),
+                onPressed: () => _activate(ref),
+              ),
             TextButton.icon(
               icon: const Icon(Icons.sync),
               label: Text(l10n.sync),
@@ -199,7 +239,7 @@ class _ProviderTile extends ConsumerWidget {
             TextButton.icon(
               icon: const Icon(Icons.delete_outline),
               label: Text(l10n.remove),
-              onPressed: () => _remove(context, ref),
+              onPressed: () => _remove(ref),
             ),
           ],
         ),

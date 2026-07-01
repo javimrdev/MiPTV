@@ -19,6 +19,9 @@ class AppScaffold extends StatelessWidget {
     this.title,
     required this.body,
     this.extendBehindNavBar = false,
+    this.leading,
+    this.actions,
+    this.drawer,
   });
 
   final Widget? title;
@@ -31,23 +34,47 @@ class AppScaffold extends StatelessWidget {
   /// count the home-indicator inset and leave a stray gap above the bar.
   final bool extendBehindNavBar;
 
+  /// Leading app bar widget (e.g. a burger-menu button opening [drawer]).
+  /// Requires [title] to be non-null — the chrome-free (`title == null`)
+  /// path has no app bar to host it.
+  final Widget? leading;
+
+  /// Trailing app bar actions (e.g. an "add" button). Same [title]
+  /// requirement as [leading].
+  final Widget? actions;
+
+  /// Optional navigation drawer, opened via [leading].
+  final Widget? drawer;
+
   @override
   Widget build(BuildContext context) {
     if (title == null) {
       return Scaffold(
+        drawer: drawer,
         body: SafeArea(bottom: !extendBehindNavBar, child: body),
       );
     }
 
     if (!isIOSGlass) {
-      return Scaffold(appBar: AppBar(title: title), body: body);
+      return Scaffold(
+        drawer: drawer,
+        appBar: AppBar(
+          title: title,
+          leading: leading,
+          actions: actions == null ? null : [actions!],
+        ),
+        body: body,
+      );
     }
 
     final brightness = Theme.of(context).brightness;
     return Scaffold(
+      drawer: drawer,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: title,
+        leading: leading,
+        actions: actions == null ? null : [actions!],
         backgroundColor: Colors.transparent,
         systemOverlayStyle: brightness == Brightness.dark
             ? SystemUiOverlayStyle.light

@@ -41,7 +41,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
 
   StreamSubscription<String>? _errorSub;
   StreamSubscription<bool>? _bufferingSub;
-  StreamSubscription<int?>? _widthSub;
+  StreamSubscription<Duration>? _positionSub;
   Timer? _timeoutTimer;
 
   @override
@@ -55,7 +55,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
   void _cancelWatchers() {
     _errorSub?.cancel();
     _bufferingSub?.cancel();
-    _widthSub?.cancel();
+    _positionSub?.cancel();
     _timeoutTimer?.cancel();
   }
 
@@ -70,7 +70,8 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
         setState(() => _error = l10n.playerNoProvider);
         return;
       }
-      final password = await ref.read(secureStorageProvider).readPassword();
+      final password =
+          await ref.read(secureStorageProvider).readPassword(provider.id);
       if (password == null) {
         setState(() => _error = l10n.playerNoPassword);
         return;
@@ -96,16 +97,23 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
       });
       // `playing` reflects the pause/play command state and flips to true
       // almost immediately on open, even while the stream is still stuck
-      // buffering — it's not proof anything is actually on screen. Only a
-      // resolved video width proves the decoder produced a real frame, so
-      // that's what clears the stuck-buffering timeout below.
+      // buffering — it's not proof anything is actually on screen. The
+      // resolved video width isn't proof either: mpv reports it as soon as it
+      // negotiates the decoder's output format (from container/codec
+      // headers), which can happen well before any frame is actually
+      // decoded and presented. The only unambiguous signal that real
+      // playback started is the playback clock (`position`) advancing past
+      // zero, since that only happens once frames are actively being
+      // consumed — so that's what clears the stuck-buffering timeout and
+      // flips the screen away from the spinner.
       _bufferingSub = _player.stream.buffering.listen((isBuffering) {
         log.i('[Player] buffering=$isBuffering');
       });
-      _widthSub = _player.stream.width.listen((width) {
-        if (width != null && width > 0) {
-          log.i('[Player] video width resolved: $width');
+      _positionSub = _player.stream.position.listen((position) {
+        if (position > Duration.zero && !_initialized) {
+          log.i('[Player] playback position advancing — playback confirmed');
           _timeoutTimer?.cancel();
+          if (mounted) setState(() => _initialized = true);
         }
       });
       _timeoutTimer = Timer(_kPlaybackTimeout, () {
@@ -115,7 +123,6 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
 
       log.i('[Player] Opening $url');
       await _player.open(Media(url));
-      setState(() => _initialized = true);
     } catch (e) {
       log.e('[Player] Error', error: e);
       _cancelWatchers();

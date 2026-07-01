@@ -44,7 +44,7 @@ class EpgRepositoryImpl implements EpgRepository {
     try {
       final provider = await _providerRepo.getProvider();
       if (provider == null) return const ChannelEpg();
-      final password = await _secureStorage.readPassword();
+      final password = await _secureStorage.readPassword(provider.id);
       if (password == null) return const ChannelEpg();
 
       final listings = await _api.getShortEpg(

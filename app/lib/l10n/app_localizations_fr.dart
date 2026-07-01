@@ -171,6 +171,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playerTimeout => 'Le flux a mis trop de temps à démarrer.';
 
   @override
+  String get providerNameLabel => 'Nom';
+
+  @override
+  String get providerNameValidation =>
+      'Saisissez un nom pour identifier cette source';
+
+  @override
   String get serverUrlLabel => 'URL du serveur';
 
   @override
@@ -231,6 +238,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get remove => 'Supprimer';
+
+  @override
+  String get activate => 'Utiliser cette source';
+
+  @override
+  String get addSource => 'Ajouter une source';
+
+  @override
+  String get sources => 'Sources';
 
   @override
   String get theme => 'Thème';

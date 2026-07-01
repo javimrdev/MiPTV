@@ -32,7 +32,22 @@ void main() {
     streamRepo = MockStreamRepository();
 
     when(() => providerRepo.getProvider()).thenAnswer(
-      (_) async => const ProviderEntity(id: 1, server: 'http://x.tv', username: 'u'),
+      (_) async => const ProviderEntity(
+        id: 1,
+        name: 'Main',
+        server: 'http://x.tv',
+        username: 'u',
+      ),
+    );
+    when(() => providerRepo.getProviders()).thenAnswer(
+      (_) async => [
+        const ProviderEntity(
+          id: 1,
+          name: 'Main',
+          server: 'http://x.tv',
+          username: 'u',
+        ),
+      ],
     );
     when(() => favoriteRepo.getFavorites()).thenAnswer((_) async => []);
     when(() => favoriteRepo.isFavorite(any())).thenAnswer((_) async => false);

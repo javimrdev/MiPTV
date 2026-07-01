@@ -42,4 +42,24 @@ class IsarService {
     _instance!._isar = isar;
     return _instance!;
   }
+
+  /// Clears every collection that is scoped to "whichever provider is
+  /// active" — live categories/channels, VOD, favorites and custom filters —
+  /// but leaves [ProviderModel] rows untouched. Called when the active
+  /// provider changes (add, switch, remove) so the new source starts from a
+  /// clean slate instead of showing another source's cached content or
+  /// favorites pointing at the wrong streamId.
+  Future<void> resetProviderScopedData() async {
+    await _isar.writeTxn(() async {
+      await _isar.categoryModels.clear();
+      await _isar.categorySyncModels.clear();
+      await _isar.streamModels.clear();
+      await _isar.favoriteModels.clear();
+      await _isar.favoriteCategoryModels.clear();
+      await _isar.vodCategoryModels.clear();
+      await _isar.vodStreamModels.clear();
+      await _isar.vodSyncModels.clear();
+      await _isar.customFilterModels.clear();
+    });
+  }
 }

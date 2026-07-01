@@ -32,12 +32,88 @@ class HomeScreen extends ConsumerWidget {
 
     return AppScaffold(
       extendBehindNavBar: true,
+      title: Text(providerAsync.maybeWhen(
+        data: (p) => p?.name ?? 'MiPTV',
+        orElse: () => 'MiPTV',
+      )),
+      leading: Builder(
+        builder: (context) => IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+        ),
+      ),
+      actions: IconButton(
+        icon: const Icon(Icons.add),
+        onPressed: () => context.push('/add-provider'),
+      ),
+      drawer: const _SourcesDrawer(),
       body: providerAsync.when(
         data: (provider) => provider == null
             ? const _NoProviderView()
             : const _CategoriesList(),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const _NoProviderView(),
+      ),
+    );
+  }
+}
+
+class _SourcesDrawer extends ConsumerWidget {
+  const _SourcesDrawer();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final activeAsync = ref.watch(providerProvider);
+    final providersAsync = ref.watch(providersListProvider);
+
+    return Drawer(
+      child: SafeArea(
+        child: providersAsync.when(
+          data: (providers) {
+            final activeId = activeAsync.maybeWhen(
+              data: (p) => p?.id,
+              orElse: () => null,
+            );
+            return ListView(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    l10n.sources,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                for (final provider in providers)
+                  ListTile(
+                    leading: Icon(
+                      provider.id == activeId
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked,
+                    ),
+                    title: Text(provider.name),
+                    subtitle: Text(provider.server),
+                    onTap: () async {
+                      Navigator.of(context).pop();
+                      if (provider.id == activeId) return;
+                      await switchToProvider(ref, provider.id);
+                    },
+                  ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.add),
+                  title: Text(l10n.addSource),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    context.push('/add-provider');
+                  },
+                ),
+              ],
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, __) => Center(child: Text(l10n.errorUnexpected)),
+        ),
       ),
     );
   }

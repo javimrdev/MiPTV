@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ProviderEntity {
 
- int get id; String get server; String get username;
+ int get id; String get name; String get server; String get username;
 /// Create a copy of ProviderEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ProviderEntityCopyWith<ProviderEntity> get copyWith => _$ProviderEntityCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProviderEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.server, server) || other.server == server)&&(identical(other.username, username) || other.username == username));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProviderEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.server, server) || other.server == server)&&(identical(other.username, username) || other.username == username));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,server,username);
+int get hashCode => Object.hash(runtimeType,id,name,server,username);
 
 @override
 String toString() {
-  return 'ProviderEntity(id: $id, server: $server, username: $username)';
+  return 'ProviderEntity(id: $id, name: $name, server: $server, username: $username)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ProviderEntityCopyWith<$Res>  {
   factory $ProviderEntityCopyWith(ProviderEntity value, $Res Function(ProviderEntity) _then) = _$ProviderEntityCopyWithImpl;
 @useResult
 $Res call({
- int id, String server, String username
+ int id, String name, String server, String username
 });
 
 
@@ -62,10 +62,11 @@ class _$ProviderEntityCopyWithImpl<$Res>
 
 /// Create a copy of ProviderEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? server = null,Object? username = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? server = null,Object? username = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,server: null == server ? _self.server : server // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,server: null == server ? _self.server : server // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String server,  String username)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String server,  String username)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProviderEntity() when $default != null:
-return $default(_that.id,_that.server,_that.username);case _:
+return $default(_that.id,_that.name,_that.server,_that.username);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.id,_that.server,_that.username);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String server,  String username)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String server,  String username)  $default,) {final _that = this;
 switch (_that) {
 case _ProviderEntity():
-return $default(_that.id,_that.server,_that.username);case _:
+return $default(_that.id,_that.name,_that.server,_that.username);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +194,10 @@ return $default(_that.id,_that.server,_that.username);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String server,  String username)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String server,  String username)?  $default,) {final _that = this;
 switch (_that) {
 case _ProviderEntity() when $default != null:
-return $default(_that.id,_that.server,_that.username);case _:
+return $default(_that.id,_that.name,_that.server,_that.username);case _:
   return null;
 
 }
@@ -208,10 +209,11 @@ return $default(_that.id,_that.server,_that.username);case _:
 
 
 class _ProviderEntity implements ProviderEntity {
-  const _ProviderEntity({required this.id, required this.server, required this.username});
+  const _ProviderEntity({required this.id, required this.name, required this.server, required this.username});
   
 
 @override final  int id;
+@override final  String name;
 @override final  String server;
 @override final  String username;
 
@@ -225,16 +227,16 @@ _$ProviderEntityCopyWith<_ProviderEntity> get copyWith => __$ProviderEntityCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProviderEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.server, server) || other.server == server)&&(identical(other.username, username) || other.username == username));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProviderEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.server, server) || other.server == server)&&(identical(other.username, username) || other.username == username));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,server,username);
+int get hashCode => Object.hash(runtimeType,id,name,server,username);
 
 @override
 String toString() {
-  return 'ProviderEntity(id: $id, server: $server, username: $username)';
+  return 'ProviderEntity(id: $id, name: $name, server: $server, username: $username)';
 }
 
 
@@ -245,7 +247,7 @@ abstract mixin class _$ProviderEntityCopyWith<$Res> implements $ProviderEntityCo
   factory _$ProviderEntityCopyWith(_ProviderEntity value, $Res Function(_ProviderEntity) _then) = __$ProviderEntityCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String server, String username
+ int id, String name, String server, String username
 });
 
 
@@ -262,10 +264,11 @@ class __$ProviderEntityCopyWithImpl<$Res>
 
 /// Create a copy of ProviderEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? server = null,Object? username = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? server = null,Object? username = null,}) {
   return _then(_ProviderEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,server: null == server ? _self.server : server // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,server: null == server ? _self.server : server // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,
   ));

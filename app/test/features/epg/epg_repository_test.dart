@@ -44,10 +44,14 @@ void main() {
     );
 
     when(() => providerRepo.getProvider()).thenAnswer(
-      (_) async =>
-          const ProviderEntity(id: 1, server: 'http://x.tv', username: 'u'),
+      (_) async => const ProviderEntity(
+        id: 1,
+        name: 'Main',
+        server: 'http://x.tv',
+        username: 'u',
+      ),
     );
-    when(() => storage.readPassword()).thenAnswer((_) async => 'pw');
+    when(() => storage.readPassword(any())).thenAnswer((_) async => 'pw');
   });
 
   void stubEpg(List<XtreamEpgListing> listings) {

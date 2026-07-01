@@ -36,7 +36,7 @@ void main() {
         wrap([
           providerProvider.overrideWith(
             (ref) => Future.value(
-              const ProviderEntity(id: 1, server: 'http://x.tv', username: 'u'),
+              const ProviderEntity(id: 1, name: 'Main', server: 'http://x.tv', username: 'u'),
             ),
           ),
           vodCategoriesProvider.overrideWith(
@@ -58,7 +58,7 @@ void main() {
       wrap([
         providerProvider.overrideWith(
           (ref) => Future.value(
-            const ProviderEntity(id: 1, server: 'http://x.tv', username: 'u'),
+            const ProviderEntity(id: 1, name: 'Main', server: 'http://x.tv', username: 'u'),
           ),
         ),
         vodCategoriesProvider.overrideWith((ref) => Future.value(const [])),
@@ -90,7 +90,7 @@ void main() {
       wrap([
         providerProvider.overrideWith(
           (ref) => Future.value(
-            const ProviderEntity(id: 1, server: 'http://x.tv', username: 'u'),
+            const ProviderEntity(id: 1, name: 'Main', server: 'http://x.tv', username: 'u'),
           ),
         ),
         vodCategoriesProvider.overrideWith((ref) => Future.value(const [])),

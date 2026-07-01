@@ -6,7 +6,8 @@ part 'provider_model.g.dart';
 class ProviderModel {
   Id id = Isar.autoIncrement;
 
-  @Index(unique: true)
+  late String name;
+
   late String server;
 
   late String username;
