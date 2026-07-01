@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/responsive/content_width_cap.dart';
+import 'package:miptv/core/responsive/responsive_context.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
 import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/core/widgets/skeleton.dart';
@@ -11,13 +13,17 @@ import 'package:miptv/features/epg/domain/epg_entity.dart';
 import 'package:miptv/features/streams/domain/stream_entity.dart';
 import 'package:miptv/l10n/app_localizations.dart';
 
-final _streamsProvider =
-    FutureProvider.family<List<StreamEntity>, String>((ref, categoryId) {
+final _streamsProvider = FutureProvider.family<List<StreamEntity>, String>((
+  ref,
+  categoryId,
+) {
   return ref.watch(streamRepositoryProvider).getStreamsForCategory(categoryId);
 });
 
-final _favoriteToggleProvider =
-    FutureProvider.family<bool, int>((ref, streamId) {
+final _favoriteToggleProvider = FutureProvider.family<bool, int>((
+  ref,
+  streamId,
+) {
   return ref.watch(favoriteRepositoryProvider).isFavorite(streamId);
 });
 
@@ -45,45 +51,59 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     return AppScaffold(
       title: Text(l10n.channels),
       body: streamsAsync.when(
-        data: (streams) => Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-              child: SegmentedButton<_ViewMode>(
-                segments: [
-                  ButtonSegment(
-                    value: _ViewMode.lista,
-                    label: Text(l10n.viewModeList),
-                    icon: const Icon(Icons.list),
+        data: (streams) {
+          final tablet = context.isTablet;
+          return ContentWidthCap(
+            maxWidth: 960,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                  child: SegmentedButton<_ViewMode>(
+                    segments: [
+                      ButtonSegment(
+                        value: _ViewMode.lista,
+                        label: Text(l10n.viewModeList),
+                        icon: const Icon(Icons.list),
+                      ),
+                      ButtonSegment(
+                        value: _ViewMode.guia,
+                        label: Text(l10n.viewModeGuide),
+                        icon: const Icon(Icons.calendar_today),
+                      ),
+                    ],
+                    selected: {_mode},
+                    onSelectionChanged: (s) => setState(() => _mode = s.first),
                   ),
-                  ButtonSegment(
-                    value: _ViewMode.guia,
-                    label: Text(l10n.viewModeGuide),
-                    icon: const Icon(Icons.calendar_today),
-                  ),
-                ],
-                selected: {_mode},
-                onSelectionChanged: (s) => setState(() => _mode = s.first),
-              ),
+                ),
+                Expanded(
+                  child: _mode == _ViewMode.lista
+                      ? ListView.builder(
+                          itemCount: streams.length,
+                          itemExtent: tablet ? 84 : 72,
+                          itemBuilder: (_, i) => _StreamTile(
+                            stream: streams[i],
+                            logoSize: tablet ? 56 : 48,
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: streams.length,
+                          itemExtent: tablet ? 100 : 88,
+                          itemBuilder: (_, i) => _StreamEpgTile(
+                            stream: streams[i],
+                            logoSize: tablet ? 56 : 48,
+                          ),
+                        ),
+                ),
+              ],
             ),
-            Expanded(
-              child: _mode == _ViewMode.lista
-                  ? ListView.builder(
-                      itemCount: streams.length,
-                      itemExtent: 72,
-                      itemBuilder: (_, i) => _StreamTile(stream: streams[i]),
-                    )
-                  : ListView.builder(
-                      itemCount: streams.length,
-                      itemExtent: 88,
-                      itemBuilder: (_, i) => _StreamEpgTile(stream: streams[i]),
-                    ),
-            ),
-          ],
-        ),
+          );
+        },
         loading: () => const SkeletonList.streams(),
         error: (e, _) {
-          final msg = e is AppError ? e.userMessage(l10n) : l10n.errorUnexpected;
+          final msg = e is AppError
+              ? e.userMessage(l10n)
+              : l10n.errorUnexpected;
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -108,18 +128,19 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
 /// Logo del canal con placeholder/fallback compartido por ambas vistas.
 class _StreamLogo extends StatelessWidget {
-  const _StreamLogo({required this.url});
+  const _StreamLogo({required this.url, this.size = 48});
   final String url;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       imageUrl: url,
-      width: 48,
-      height: 48,
+      width: size,
+      height: size,
       fit: BoxFit.contain,
       placeholder: (_, __) =>
-          const SizedBox.square(dimension: 48, child: Icon(Icons.live_tv)),
+          SizedBox.square(dimension: size, child: const Icon(Icons.live_tv)),
       errorWidget: (_, __, ___) => const Icon(Icons.live_tv),
     );
   }
@@ -153,17 +174,19 @@ class _FavoriteButton extends ConsumerWidget {
 }
 
 class _StreamTile extends StatelessWidget {
-  const _StreamTile({required this.stream});
+  const _StreamTile({required this.stream, this.logoSize = 48});
   final StreamEntity stream;
+  final double logoSize;
 
   @override
   Widget build(BuildContext context) {
     return GlassTileBackground(
       child: ListTile(
-        leading: _StreamLogo(url: stream.logo),
+        leading: _StreamLogo(url: stream.logo, size: logoSize),
         title: Text(stream.name, maxLines: 1, overflow: TextOverflow.ellipsis),
         trailing: _FavoriteButton(streamId: stream.id),
-        onTap: () => context.push('/player/${stream.id}?ext=${stream.extension}'),
+        onTap: () =>
+            context.push('/player/${stream.id}?ext=${stream.extension}'),
       ),
     );
   }
@@ -171,8 +194,9 @@ class _StreamTile extends StatelessWidget {
 
 /// Tile de la vista Guía: icono + emisión actual y siguiente (ahora/después).
 class _StreamEpgTile extends ConsumerWidget {
-  const _StreamEpgTile({required this.stream});
+  const _StreamEpgTile({required this.stream, this.logoSize = 48});
   final StreamEntity stream;
+  final double logoSize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -180,7 +204,7 @@ class _StreamEpgTile extends ConsumerWidget {
 
     return GlassTileBackground(
       child: ListTile(
-        leading: _StreamLogo(url: stream.logo),
+        leading: _StreamLogo(url: stream.logo, size: logoSize),
         title: Text(stream.name, maxLines: 1, overflow: TextOverflow.ellipsis),
         subtitle: epgAsync.when(
           loading: () => Padding(
@@ -192,7 +216,8 @@ class _StreamEpgTile extends ConsumerWidget {
         ),
         isThreeLine: true,
         trailing: _FavoriteButton(streamId: stream.id),
-        onTap: () => context.push('/player/${stream.id}?ext=${stream.extension}'),
+        onTap: () =>
+            context.push('/player/${stream.id}?ext=${stream.extension}'),
       ),
     );
   }

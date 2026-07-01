@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/platform/app_platform.dart';
+import 'package:miptv/core/responsive/content_width_cap.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
 import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/features/settings/application/locale_controller.dart';
@@ -25,7 +26,10 @@ class SettingsScreen extends ConsumerWidget {
       providerAsync.when(
         data: (provider) => provider == null
             ? const _NoProviderTile()
-            : _ProviderTile(server: provider.server, username: provider.username),
+            : _ProviderTile(
+                server: provider.server,
+                username: provider.username,
+              ),
         loading: () => ListTile(
           leading: const SizedBox.square(
             dimension: 24,
@@ -63,27 +67,30 @@ class SettingsScreen extends ConsumerWidget {
       title: Text(l10n.settingsTitle),
       // Android: same flat ListView + Divider list as before this change.
       // iOS: each section becomes its own frosted-glass card instead.
-      body: !isIOSGlass
-          ? ListView(
-              children: [
-                ...providerSection,
-                const Divider(),
-                ...filtersSection,
-                const Divider(),
-                ...appearanceSection,
-                const Divider(),
-                ...infoSection,
-              ],
-            )
-          : ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              children: [
-                _GlassSection(children: providerSection),
-                _GlassSection(children: filtersSection),
-                _GlassSection(children: appearanceSection),
-                _GlassSection(children: infoSection),
-              ],
-            ),
+      body: ContentWidthCap(
+        maxWidth: 720,
+        child: !isIOSGlass
+            ? ListView(
+                children: [
+                  ...providerSection,
+                  const Divider(),
+                  ...filtersSection,
+                  const Divider(),
+                  ...appearanceSection,
+                  const Divider(),
+                  ...infoSection,
+                ],
+              )
+            : ListView(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                children: [
+                  _GlassSection(children: providerSection),
+                  _GlassSection(children: filtersSection),
+                  _GlassSection(children: appearanceSection),
+                  _GlassSection(children: infoSection),
+                ],
+              ),
+      ),
     );
   }
 }
@@ -122,10 +129,9 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Text(
         title,
-        style: Theme.of(context)
-            .textTheme
-            .labelLarge
-            ?.copyWith(color: Theme.of(context).colorScheme.primary),
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }
@@ -160,9 +166,7 @@ class _ProviderTile extends ConsumerWidget {
         SnackBar(content: Text(l10n.syncCategoriesSuccess)),
       );
     } catch (_) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.syncCategoriesError)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l10n.syncCategoriesError)));
     }
   }
 
@@ -222,8 +226,9 @@ class _ThemeModeTile extends ConsumerWidget {
           ButtonSegment(value: ThemeMode.dark, label: Text(l10n.themeDark)),
         ],
         selected: {mode},
-        onSelectionChanged: (selected) =>
-            ref.read(themeControllerProvider.notifier).setThemeMode(selected.first),
+        onSelectionChanged: (selected) => ref
+            .read(themeControllerProvider.notifier)
+            .setThemeMode(selected.first),
       ),
     );
   }
@@ -278,6 +283,7 @@ class _LanguageTile extends ConsumerWidget {
       context: context,
       showDragHandle: true,
       backgroundColor: isIOSGlass ? Colors.transparent : null,
+      constraints: const BoxConstraints(maxWidth: 480),
       builder: (sheetContext) {
         final content = SafeArea(
           child: ListView(
@@ -291,7 +297,9 @@ class _LanguageTile extends ConsumerWidget {
                         : Icons.radio_button_unchecked,
                   ),
                   title: Text(
-                    option.locale == null ? l10n.languageSystem : option.endonym,
+                    option.locale == null
+                        ? l10n.languageSystem
+                        : option.endonym,
                   ),
                   onTap: () => Navigator.of(sheetContext).pop(option),
                 ),
@@ -309,7 +317,9 @@ class _LanguageTile extends ConsumerWidget {
       },
     );
     if (selected != null) {
-      await ref.read(localeControllerProvider.notifier).setLocale(selected.locale);
+      await ref
+          .read(localeControllerProvider.notifier)
+          .setLocale(selected.locale);
     }
   }
 

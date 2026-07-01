@@ -22,6 +22,7 @@ class HomeFiltersBar extends ConsumerWidget {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
+      constraints: const BoxConstraints(maxWidth: 480),
       builder: (_) => _FilterOptionsSheet(type: type, current: current),
     );
   }
@@ -42,14 +43,18 @@ class HomeFiltersBar extends ConsumerWidget {
             FilterPill(
               label: type.label(l10n),
               value: filters.valueOf(type),
-              onTap: () => _openOptions(context, ref, type, filters.valueOf(type)),
+              onTap: () =>
+                  _openOptions(context, ref, type, filters.valueOf(type)),
             ),
             const SizedBox(width: 8),
           ],
           if (filters.hasAny)
             ActionChip(
               avatar: Icon(Icons.delete, size: 18, color: scheme.onError),
-              label: Text(l10n.filtersClear, style: TextStyle(color: scheme.onError)),
+              label: Text(
+                l10n.filtersClear,
+                style: TextStyle(color: scheme.onError),
+              ),
               backgroundColor: scheme.error,
               onPressed: () => ref.read(homeFiltersProvider.notifier).reset(),
             ),

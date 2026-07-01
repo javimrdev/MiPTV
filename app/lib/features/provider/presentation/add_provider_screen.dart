@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/responsive/content_width_cap.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
 import 'package:miptv/l10n/app_localizations.dart';
 
@@ -87,81 +88,92 @@ class _AddProviderScreenState extends ConsumerState<AddProviderScreen> {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
       title: Text(l10n.addProvider),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: AutofillGroup(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  controller: _serverCtrl,
-                  decoration: InputDecoration(labelText: l10n.serverUrlLabel),
-                  keyboardType: TextInputType.url,
-                  autofillHints: const [AutofillHints.url],
-                  validator: (v) =>
-                      v == null || v.isEmpty ? l10n.serverUrlValidation : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _userCtrl,
-                  decoration: InputDecoration(labelText: l10n.usernameLabel),
-                  autofillHints: const [AutofillHints.username],
-                  validator: (v) =>
-                      v == null || v.isEmpty ? l10n.usernameValidation : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passCtrl,
-                  decoration: InputDecoration(labelText: l10n.passwordLabel),
-                  obscureText: true,
-                  autofillHints: const [AutofillHints.password],
-                  validator: (v) =>
-                      v == null || v.isEmpty ? l10n.passwordValidation : null,
-                ),
-                if (_errorMessage != null) ...[
+      body: ContentWidthCap(
+        maxWidth: 480,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                    controller: _serverCtrl,
+                    decoration: InputDecoration(labelText: l10n.serverUrlLabel),
+                    keyboardType: TextInputType.url,
+                    autofillHints: const [AutofillHints.url],
+                    validator: (v) => v == null || v.isEmpty
+                        ? l10n.serverUrlValidation
+                        : null,
+                  ),
                   const SizedBox(height: 16),
-                  Text(
-                    _errorMessage!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  TextFormField(
+                    controller: _userCtrl,
+                    decoration: InputDecoration(labelText: l10n.usernameLabel),
+                    autofillHints: const [AutofillHints.username],
+                    validator: (v) =>
+                        v == null || v.isEmpty ? l10n.usernameValidation : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passCtrl,
+                    decoration: InputDecoration(labelText: l10n.passwordLabel),
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.password],
+                    validator: (v) =>
+                        v == null || v.isEmpty ? l10n.passwordValidation : null,
+                  ),
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      _errorMessage!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 32),
+                  OutlinedButton(
+                    onPressed: (_loading || _diagLoading) ? null : _testNative,
+                    child: _diagLoading
+                        ? const SizedBox.square(
+                            dimension: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10n.nativeDiagnostic),
+                  ),
+                  if (_diagResult != null) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: SelectableText(
+                        _diagResult!,
+                        style: const TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: _loading ? null : _submit,
+                    child: _loading
+                        ? const SizedBox.square(
+                            dimension: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10n.connect),
                   ),
                 ],
-                const SizedBox(height: 32),
-                OutlinedButton(
-                  onPressed: (_loading || _diagLoading) ? null : _testNative,
-                  child: _diagLoading
-                      ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.nativeDiagnostic),
-                ),
-                if (_diagResult != null) ...[
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: SelectableText(
-                      _diagResult!,
-                      style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: _loading ? null : _submit,
-                  child: _loading
-                      ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.connect),
-                ),
-              ],
+              ),
             ),
           ),
         ),

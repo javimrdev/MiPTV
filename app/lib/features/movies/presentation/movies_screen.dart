@@ -3,9 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/responsive/content_width_cap.dart';
+import 'package:miptv/core/responsive/grid_delegates.dart';
+import 'package:miptv/core/responsive/responsive_context.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
 import 'package:miptv/core/widgets/skeleton.dart';
 import 'package:miptv/features/categories/domain/category_entity.dart';
+import 'package:miptv/features/movies/presentation/movie_grid_tile.dart';
 import 'package:miptv/features/movies/presentation/movie_tile.dart';
 import 'package:miptv/l10n/app_localizations.dart';
 
@@ -38,26 +42,29 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
           if (provider == null) return const _NoProviderView();
           return Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    hintText: l10n.searchMoviesHint,
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _query.isEmpty
-                        ? null
-                        : IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _controller.clear();
-                              setState(() => _query = '');
-                            },
-                          ),
-                    border: const OutlineInputBorder(),
-                    isDense: true,
+              ContentWidthCap(
+                maxWidth: 720,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: l10n.searchMoviesHint,
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _query.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _controller.clear();
+                                setState(() => _query = '');
+                              },
+                            ),
+                      border: const OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    onChanged: (v) => setState(() => _query = v.trim()),
                   ),
-                  onChanged: (v) => setState(() => _query = v.trim()),
                 ),
               ),
               Expanded(
@@ -84,9 +91,12 @@ class _CategoriesView extends ConsumerWidget {
     final categoriesAsync = ref.watch(vodCategoriesProvider);
 
     return categoriesAsync.when(
-      data: (cats) => ListView.builder(
-        itemCount: cats.length,
-        itemBuilder: (_, i) => _CategoryTile(category: cats[i]),
+      data: (cats) => ContentWidthCap(
+        maxWidth: 720,
+        child: ListView.builder(
+          itemCount: cats.length,
+          itemBuilder: (_, i) => _CategoryTile(category: cats[i]),
+        ),
       ),
       loading: () => const SkeletonList.categories(),
       error: (e, _) => _ErrorView(
@@ -109,12 +119,19 @@ class _SearchResultsView extends ConsumerWidget {
     return resultsAsync.when(
       data: (movies) => movies.isEmpty
           ? Center(child: Text(l10n.noResults))
+          : context.isTablet
+          ? GridView.builder(
+              gridDelegate: postersGridDelegate(),
+              itemCount: movies.length,
+              itemBuilder: (_, i) => MovieGridTile(movie: movies[i]),
+            )
           : ListView.builder(
               itemCount: movies.length,
               itemExtent: 72,
               itemBuilder: (_, i) => MovieTile(movie: movies[i]),
             ),
-      loading: () => const SkeletonList.movies(),
+      loading: () =>
+          context.isTablet ? const SkeletonGrid() : const SkeletonList.movies(),
       error: (e, _) => _ErrorView(
         message: e is AppError ? e.userMessage(l10n) : l10n.errorUnexpected,
         onRetry: () => ref.invalidate(vodSearchProvider(query)),
@@ -180,10 +197,7 @@ class _NoProviderView extends StatelessWidget {
           children: [
             const Icon(Icons.movie_outlined, size: 56),
             const SizedBox(height: 16),
-            Text(
-              l10n.moviesNoProvider,
-              textAlign: TextAlign.center,
-            ),
+            Text(l10n.moviesNoProvider, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             FilledButton.icon(
               icon: const Icon(Icons.add),

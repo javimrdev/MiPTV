@@ -6,6 +6,7 @@
 // animation value. Honours MediaQueryData.disableAnimations for accessibility
 // by showing a steady opacity instead of pulsing.
 import 'package:flutter/material.dart';
+import 'package:miptv/core/responsive/grid_delegates.dart';
 
 const double _kHorizontalPadding = 16;
 
@@ -38,8 +39,7 @@ class SkeletonBox extends StatelessWidget {
           height: height,
           decoration: BoxDecoration(
             color: baseColor.withValues(alpha: animation.value),
-            borderRadius:
-                circular ? null : BorderRadius.circular(borderRadius),
+            borderRadius: circular ? null : BorderRadius.circular(borderRadius),
             shape: circular ? BoxShape.circle : BoxShape.rectangle,
           ),
         );
@@ -78,7 +78,9 @@ class SkeletonListTile extends StatelessWidget {
               circular: leadingCircular,
             ),
             const SizedBox(width: 16),
-            const Expanded(child: SkeletonBox(width: double.infinity, height: 16)),
+            const Expanded(
+              child: SkeletonBox(width: double.infinity, height: 16),
+            ),
             if (showTrailing) ...[
               const SizedBox(width: 16),
               const SkeletonBox(width: 24, height: 24),
@@ -104,27 +106,27 @@ class SkeletonList extends StatelessWidget {
 
   /// Home / VOD categories: short tiles with a small circular leading icon.
   const SkeletonList.categories({super.key})
-      : itemExtent = 56,
-        leadingSize = 40,
-        itemCount = 12,
-        leadingCircular = true,
-        showTrailing = false;
+    : itemExtent = 56,
+      leadingSize = 40,
+      itemCount = 12,
+      leadingCircular = true,
+      showTrailing = false;
 
   /// Live channels: 72px tiles with a 48px logo and a trailing star.
   const SkeletonList.streams({super.key})
-      : itemExtent = 72,
-        leadingSize = 48,
-        itemCount = 12,
-        leadingCircular = false,
-        showTrailing = true;
+    : itemExtent = 72,
+      leadingSize = 48,
+      itemCount = 12,
+      leadingCircular = false,
+      showTrailing = true;
 
   /// VOD movies (search results / category): 72px tiles with a 48px poster.
   const SkeletonList.movies({super.key})
-      : itemExtent = 72,
-        leadingSize = 48,
-        itemCount = 12,
-        leadingCircular = false,
-        showTrailing = false;
+    : itemExtent = 72,
+      leadingSize = 48,
+      itemCount = 12,
+      leadingCircular = false,
+      showTrailing = false;
 
   final double itemExtent;
   final double leadingSize;
@@ -149,6 +151,53 @@ class SkeletonList extends StatelessWidget {
   }
 }
 
+/// Skeleton mimicking [MovieGridTile]'s layout: a poster-shaped block above
+/// a title bar.
+class SkeletonGridTile extends StatelessWidget {
+  const SkeletonGridTile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Expanded(
+            child: SkeletonBox(
+              width: double.infinity,
+              height: double.infinity,
+              borderRadius: 12,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const SkeletonBox(width: double.infinity, height: 14),
+        ],
+      ),
+    );
+  }
+}
+
+/// Grid counterpart to [SkeletonList], sharing the exact same cell geometry
+/// ([postersGridDelegate]) as the real poster grid so loading states don't
+/// visibly jump between list and grid shapes.
+class SkeletonGrid extends StatelessWidget {
+  const SkeletonGrid({super.key, this.itemCount = 12});
+
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SkeletonScope(
+      child: GridView.builder(
+        gridDelegate: postersGridDelegate(),
+        itemCount: itemCount,
+        itemBuilder: (_, __) => const SkeletonGridTile(),
+      ),
+    );
+  }
+}
+
 /// Owns a single [AnimationController] and exposes the current pulse opacity to
 /// descendant [SkeletonBox]es via an inherited [Animation].
 class _SkeletonScope extends StatefulWidget {
@@ -157,8 +206,8 @@ class _SkeletonScope extends StatefulWidget {
   final Widget child;
 
   static Animation<double> of(BuildContext context) {
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<_SkeletonInherited>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_SkeletonInherited>();
     assert(scope != null, 'SkeletonBox must be a descendant of a SkeletonList');
     return scope!.animation;
   }
@@ -179,9 +228,10 @@ class _SkeletonScopeState extends State<_SkeletonScope>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
-    _animation = Tween<double>(begin: 0.25, end: 0.6).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.25,
+      end: 0.6,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
