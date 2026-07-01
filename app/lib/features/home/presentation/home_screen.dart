@@ -30,7 +30,6 @@ class HomeScreen extends ConsumerWidget {
     final providerAsync = ref.watch(providerProvider);
 
     return AppScaffold(
-      title: const Text('MiPTV'),
       body: providerAsync.when(
         data: (provider) => provider == null
             ? const _NoProviderView()
@@ -194,28 +193,22 @@ class _CategoryTile extends ConsumerWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            isFavAsync.maybeWhen(
-              data: (isFav) => IconButton(
-                icon: Icon(isFav ? Icons.star : Icons.star_border),
-                tooltip: isFav ? l10n.removeFromFavorites : l10n.addToFavorites,
-                onPressed: () async {
-                  final repo = ref.read(favoriteRepositoryProvider);
-                  if (isFav) {
-                    await repo.removeFavoriteCategory(category.id);
-                  } else {
-                    await repo.addFavoriteCategory(category.id, category.name);
-                  }
-                  ref.invalidate(_categoryFavoriteToggleProvider(category.id));
-                  ref.invalidate(favoritesViewProvider);
-                },
-              ),
-              orElse: () => const SizedBox.square(dimension: 48),
-            ),
-            const Icon(Icons.chevron_right),
-          ],
+        trailing: isFavAsync.maybeWhen(
+          data: (isFav) => IconButton(
+            icon: Icon(isFav ? Icons.star : Icons.star_border),
+            tooltip: isFav ? l10n.removeFromFavorites : l10n.addToFavorites,
+            onPressed: () async {
+              final repo = ref.read(favoriteRepositoryProvider);
+              if (isFav) {
+                await repo.removeFavoriteCategory(category.id);
+              } else {
+                await repo.addFavoriteCategory(category.id, category.name);
+              }
+              ref.invalidate(_categoryFavoriteToggleProvider(category.id));
+              ref.invalidate(favoritesViewProvider);
+            },
+          ),
+          orElse: () => const SizedBox.square(dimension: 48),
         ),
         onTap: () => context.push('/category/${category.id}'),
       ),

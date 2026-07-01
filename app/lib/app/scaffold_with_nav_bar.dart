@@ -15,6 +15,8 @@ class ScaffoldWithNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final navBar = NavigationBar(
+      // Compact the M3 default (80px) to fit the icon+label content.
+      height: 64,
       selectedIndex: navigationShell.currentIndex,
       onDestinationSelected: (index) => navigationShell.goBranch(
         index,
@@ -52,6 +54,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
     // iOS: the same NavigationBar floats as a frosted "pill" over the
     // content, which extends behind it (extendBody).
+    //
+    // `NavigationBar` reserves `MediaQuery.viewPadding.bottom` (the home
+    // indicator inset) inside itself, which is correct when it sits flush
+    // against the screen edge — but here it's already lifted off the edge
+    // by the outer `Padding`, so that inset would be double-counted as a
+    // large empty band inside the pill. Strip it before it reaches the bar.
     return Scaffold(
       extendBody: true,
       body: navigationShell,
@@ -59,7 +67,11 @@ class ScaffoldWithNavBar extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         child: GlassSurface(
           borderRadius: BorderRadius.circular(28),
-          child: navBar,
+          child: MediaQuery.removePadding(
+            context: context,
+            removeBottom: true,
+            child: navBar,
+          ),
         ),
       ),
     );
