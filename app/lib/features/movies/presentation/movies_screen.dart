@@ -7,6 +7,7 @@ import 'package:miptv/core/responsive/content_width_cap.dart';
 import 'package:miptv/core/responsive/grid_delegates.dart';
 import 'package:miptv/core/responsive/responsive_context.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
+import 'package:miptv/core/widgets/crystal_search_field.dart';
 import 'package:miptv/core/widgets/skeleton.dart';
 import 'package:miptv/features/categories/domain/category_entity.dart';
 import 'package:miptv/features/movies/presentation/movie_grid_tile.dart';
@@ -46,23 +47,14 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
                 maxWidth: 720,
                 child: Padding(
                   padding: const EdgeInsets.all(12),
-                  child: TextField(
+                  child: CrystalSearchField(
                     controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: l10n.searchMoviesHint,
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _query.isEmpty
-                          ? null
-                          : IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _controller.clear();
-                                setState(() => _query = '');
-                              },
-                            ),
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                    ),
+                    hintText: l10n.searchMoviesHint,
+                    showClear: _query.isNotEmpty,
+                    onClear: () {
+                      _controller.clear();
+                      setState(() => _query = '');
+                    },
                     onChanged: (v) => setState(() => _query = v.trim()),
                   ),
                 ),

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/platform/app_platform.dart';
 import 'package:miptv/core/widgets/filter_pill.dart';
-import 'package:miptv/core/widgets/glass/glass_surface.dart';
+import 'package:miptv/core/widgets/glass/crystal_glass.dart';
 import 'package:miptv/features/home/domain/home_filters.dart';
 import 'package:miptv/features/home/presentation/home_filter_labels.dart';
 import 'package:miptv/features/home/presentation/home_filters_provider.dart';
@@ -25,6 +25,7 @@ class HomeFiltersBar extends ConsumerWidget {
       showDragHandle: true,
       isScrollControlled: true,
       constraints: const BoxConstraints(maxWidth: 480),
+      backgroundColor: isIOSGlass ? Colors.transparent : null,
       builder: (_) => _FilterOptionsSheet(type: type, current: current),
     );
   }
@@ -65,25 +66,45 @@ class HomeFiltersBar extends ConsumerWidget {
     ColorScheme scheme,
     AppLocalizations l10n,
   ) {
+    void onPressed() => ref.read(homeFiltersProvider.notifier).reset();
+
+    if (!isIOSGlass) {
+      return ActionChip(
+        avatar: Icon(Icons.delete, size: 18, color: scheme.onError),
+        label: Text(l10n.filtersClear, style: TextStyle(color: scheme.onError)),
+        backgroundColor: scheme.error,
+        onPressed: onPressed,
+      );
+    }
+
     // On iOS the chip sits on the neutral glass tint (not a red background),
     // so the icon/label must carry the red themselves via `error` — `onError`
     // (designed for content atop a red background) would be low-contrast and
     // not read as red here.
-    final contentColor = isIOSGlass ? scheme.error : scheme.onError;
-    final chip = ActionChip(
-      avatar: Icon(Icons.delete, size: 18, color: contentColor),
-      label: Text(
-        l10n.filtersClear,
-        style: TextStyle(color: contentColor),
+    return CrystalGlass(
+      borderRadius: BorderRadius.circular(22),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.delete, size: 18, color: scheme.error),
+              const SizedBox(width: 6),
+              Text(
+                l10n.filtersClear,
+                style: TextStyle(
+                  color: scheme.error,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      backgroundColor: isIOSGlass ? Colors.transparent : scheme.error,
-      side: isIOSGlass ? BorderSide.none : null,
-      onPressed: () => ref.read(homeFiltersProvider.notifier).reset(),
     );
-
-    if (!isIOSGlass) return chip;
-
-    return GlassSurface(borderRadius: BorderRadius.circular(20), child: chip);
   }
 }
 
@@ -97,7 +118,7 @@ class _FilterOptionsSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final optionsAsync = ref.watch(filterOptionsProvider(type));
 
-    return SafeArea(
+    final content = SafeArea(
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.6,
@@ -135,6 +156,13 @@ class _FilterOptionsSheet extends ConsumerWidget {
           ),
         ),
       ),
+    );
+
+    if (!isIOSGlass) return content;
+
+    return CrystalGlass(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      child: content,
     );
   }
 }

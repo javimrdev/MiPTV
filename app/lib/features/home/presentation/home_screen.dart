@@ -5,6 +5,7 @@ import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
 import 'package:miptv/core/responsive/content_width_cap.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
+import 'package:miptv/core/widgets/crystal_search_field.dart';
 import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/core/widgets/skeleton.dart';
 import 'package:miptv/features/categories/domain/category_entity.dart';
@@ -99,23 +100,14 @@ class _CategoriesListState extends ConsumerState<_CategoriesList> {
           const HomeFiltersBar(),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-            child: TextField(
+            child: CrystalSearchField(
               controller: _controller,
-              decoration: InputDecoration(
-                hintText: l10n.searchCategoriesHint,
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _query.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _controller.clear();
-                          setState(() => _query = '');
-                        },
-                      ),
-                border: const OutlineInputBorder(),
-                isDense: true,
-              ),
+              hintText: l10n.searchCategoriesHint,
+              showClear: _query.isNotEmpty,
+              onClear: () {
+                _controller.clear();
+                setState(() => _query = '');
+              },
               onChanged: (v) => setState(() => _query = v.trim()),
             ),
           ),
