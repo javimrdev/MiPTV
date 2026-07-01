@@ -65,6 +65,7 @@ class SettingsScreen extends ConsumerWidget {
 
     return AppScaffold(
       title: Text(l10n.settingsTitle),
+      extendBehindNavBar: true,
       // Android: same flat ListView + Divider list as before this change.
       // iOS: each section becomes its own frosted-glass card instead.
       body: ContentWidthCap(

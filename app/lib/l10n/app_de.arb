@@ -26,6 +26,7 @@
   "searchCategoriesHint": "Kategorien suchen…",
 
   "filterQuality": "Qualität",
+  "filterCodec": "Codec",
   "filterCategory": "Kategorie",
   "filterCountry": "Land",
   "filtersClear": "Löschen",

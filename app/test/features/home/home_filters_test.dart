@@ -79,7 +79,7 @@ void main() {
 
   testWidgets('custom persisted values appear as pill options', (tester) async {
     final repo = _FakeCustomFilterRepository({
-      HomeFilterType.quality: ['8K'],
+      HomeFilterType.quality: ['Dolby Vision'],
     });
     await tester.pumpWidget(wrap(baseOverrides(repo: repo)));
     await tester.pumpAndSettle();
@@ -88,8 +88,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // Predefined + custom both offered.
-    expect(find.text('UHD'), findsOneWidget);
-    expect(find.text('8K'), findsOneWidget);
+    expect(find.text('SD'), findsOneWidget);
+    expect(find.text('Dolby Vision'), findsOneWidget);
   });
 
   group('applyHomeFilters country matching', () {
@@ -134,6 +134,61 @@ void main() {
       final result = applyHomeFilters(
         custom,
         const HomeFilters(country: 'xx'),
+      );
+      expect(result.map((c) => c.id), ['9']);
+    });
+  });
+
+  group('applyHomeFilters quality/codec matching', () {
+    const cats = [
+      CategoryEntity(id: '1', name: 'Movies HD'),
+      CategoryEntity(id: '2', name: 'Movies FHD'),
+      CategoryEntity(id: '3', name: 'Movies UHD'),
+      CategoryEntity(id: '4', name: 'Movies HEVC'),
+      CategoryEntity(id: '5', name: 'Movies AV1'),
+      CategoryEntity(id: '6', name: 'Sports'),
+    ];
+
+    test('null quality/codec filters leave the list untouched', () {
+      expect(applyHomeFilters(cats, const HomeFilters()), cats);
+    });
+
+    test('"HD" matches only the exact HD tag, not FHD/UHD', () {
+      final result = applyHomeFilters(cats, const HomeFilters(quality: 'HD'));
+      expect(result.map((c) => c.id), ['1']);
+    });
+
+    test('"4K" matches the UHD alias', () {
+      final result = applyHomeFilters(cats, const HomeFilters(quality: '4K'));
+      expect(result.map((c) => c.id), ['3']);
+    });
+
+    test('"Full HD" matches the FHD alias', () {
+      final result =
+          applyHomeFilters(cats, const HomeFilters(quality: 'Full HD'));
+      expect(result.map((c) => c.id), ['2']);
+    });
+
+    test('quality filter with no matches returns an empty list', () {
+      final result = applyHomeFilters(cats, const HomeFilters(quality: '8K'));
+      expect(result, isEmpty);
+    });
+
+    test('"HEVC" codec filter matches the HEVC tag', () {
+      final result = applyHomeFilters(cats, const HomeFilters(codec: 'HEVC'));
+      expect(result.map((c) => c.id), ['4']);
+    });
+
+    test('"AV1" codec filter matches the AV1 tag', () {
+      final result = applyHomeFilters(cats, const HomeFilters(codec: 'AV1'));
+      expect(result.map((c) => c.id), ['5']);
+    });
+
+    test('custom (non-predefined) quality value matches as a whole word', () {
+      const custom = [CategoryEntity(id: '9', name: 'Movies Dolby Vision')];
+      final result = applyHomeFilters(
+        custom,
+        const HomeFilters(quality: 'Dolby Vision'),
       );
       expect(result.map((c) => c.id), ['9']);
     });

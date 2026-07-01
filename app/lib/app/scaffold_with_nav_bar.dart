@@ -55,11 +55,13 @@ class ScaffoldWithNavBar extends StatelessWidget {
     // iOS: the same NavigationBar floats as a frosted "pill" over the
     // content, which extends behind it (extendBody).
     //
-    // `NavigationBar` reserves `MediaQuery.viewPadding.bottom` (the home
-    // indicator inset) inside itself, which is correct when it sits flush
-    // against the screen edge — but here it's already lifted off the edge
-    // by the outer `Padding`, so that inset would be double-counted as a
-    // large empty band inside the pill. Strip it before it reaches the bar.
+    // `NavigationBar` wraps its fixed-height content in an internal
+    // `SafeArea` (all four sides), which adds the screen's top and bottom
+    // view insets *around* the bar instead of consuming them — correct when
+    // it sits flush against a screen edge, but here it's already lifted off
+    // both edges by the outer `Padding`, so those insets would inflate the
+    // pill's height well past its intended 64px. Strip both before they
+    // reach the bar.
     return Scaffold(
       extendBody: true,
       body: navigationShell,
@@ -69,6 +71,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           child: MediaQuery.removePadding(
             context: context,
+            removeTop: true,
             removeBottom: true,
             child: navBar,
           ),

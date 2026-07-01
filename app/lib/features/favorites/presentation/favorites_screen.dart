@@ -20,6 +20,7 @@ class FavoritesScreen extends ConsumerWidget {
 
     return AppScaffold(
       title: Text(l10n.favorites),
+      extendBehindNavBar: true,
       body: viewAsync.when(
         data: (data) {
           final (categories, favorites, byId) = data;

@@ -31,6 +31,7 @@ class HomeScreen extends ConsumerWidget {
     final providerAsync = ref.watch(providerProvider);
 
     return AppScaffold(
+      extendBehindNavBar: true,
       body: providerAsync.when(
         data: (provider) => provider == null
             ? const _NoProviderView()

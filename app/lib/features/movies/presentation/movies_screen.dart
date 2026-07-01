@@ -38,6 +38,7 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
 
     return AppScaffold(
       title: Text(l10n.movies),
+      extendBehindNavBar: true,
       body: providerAsync.when(
         data: (provider) {
           if (provider == null) return const _NoProviderView();

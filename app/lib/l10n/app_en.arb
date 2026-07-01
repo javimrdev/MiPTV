@@ -44,6 +44,7 @@
   "searchCategoriesHint": "Search categories…",
 
   "filterQuality": "Quality",
+  "filterCodec": "Codec",
   "filterCategory": "Category",
   "filterCountry": "Country",
   "filtersClear": "Clear",

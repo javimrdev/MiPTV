@@ -14,6 +14,7 @@ import 'package:miptv/features/favorites/domain/favorite_entity.dart';
 import 'package:miptv/features/favorites/domain/favorite_repository.dart';
 import 'package:miptv/features/home/data/custom_filter_repository_impl.dart';
 import 'package:miptv/features/home/data/filters/category_filters.dart';
+import 'package:miptv/features/home/data/filters/codec_filters.dart';
 import 'package:miptv/features/home/data/filters/country_filters.dart';
 import 'package:miptv/features/home/data/filters/quality_filters.dart';
 import 'package:miptv/features/home/domain/custom_filter_repository.dart';
@@ -130,6 +131,7 @@ final filterOptionsProvider =
   final custom = await ref.watch(customFilterValuesProvider(type).future);
   final predefined = switch (type) {
     HomeFilterType.quality => kQualityFilters,
+    HomeFilterType.codec => kCodecFilters,
     HomeFilterType.category => kCategoryFilters,
     HomeFilterType.country => kCountryFilterNames,
   };

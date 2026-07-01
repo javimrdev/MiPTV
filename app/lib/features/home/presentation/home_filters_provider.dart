@@ -8,6 +8,8 @@ class HomeFiltersNotifier extends Notifier<HomeFilters> {
 
   void setQuality(String? value) => state = state.copyWith(quality: value);
 
+  void setCodec(String? value) => state = state.copyWith(codec: value);
+
   void setCategory(String? value) => state = state.copyWith(category: value);
 
   void setCountry(String? value) => state = state.copyWith(country: value);
@@ -17,6 +19,8 @@ class HomeFiltersNotifier extends Notifier<HomeFilters> {
     switch (type) {
       case HomeFilterType.quality:
         setQuality(value);
+      case HomeFilterType.codec:
+        setCodec(value);
       case HomeFilterType.category:
         setCategory(value);
       case HomeFilterType.country:

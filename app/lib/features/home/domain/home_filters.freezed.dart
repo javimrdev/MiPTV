@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeFilters {
 
- String? get quality; String? get category; String? get country;
+ String? get quality; String? get codec; String? get category; String? get country;
 /// Create a copy of HomeFilters
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $HomeFiltersCopyWith<HomeFilters> get copyWith => _$HomeFiltersCopyWithImpl<Home
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeFilters&&(identical(other.quality, quality) || other.quality == quality)&&(identical(other.category, category) || other.category == category)&&(identical(other.country, country) || other.country == country));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeFilters&&(identical(other.quality, quality) || other.quality == quality)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.category, category) || other.category == category)&&(identical(other.country, country) || other.country == country));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,quality,category,country);
+int get hashCode => Object.hash(runtimeType,quality,codec,category,country);
 
 @override
 String toString() {
-  return 'HomeFilters(quality: $quality, category: $category, country: $country)';
+  return 'HomeFilters(quality: $quality, codec: $codec, category: $category, country: $country)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $HomeFiltersCopyWith<$Res>  {
   factory $HomeFiltersCopyWith(HomeFilters value, $Res Function(HomeFilters) _then) = _$HomeFiltersCopyWithImpl;
 @useResult
 $Res call({
- String? quality, String? category, String? country
+ String? quality, String? codec, String? category, String? country
 });
 
 
@@ -62,9 +62,10 @@ class _$HomeFiltersCopyWithImpl<$Res>
 
 /// Create a copy of HomeFilters
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? quality = freezed,Object? category = freezed,Object? country = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? quality = freezed,Object? codec = freezed,Object? category = freezed,Object? country = freezed,}) {
   return _then(_self.copyWith(
 quality: freezed == quality ? _self.quality : quality // ignore: cast_nullable_to_non_nullable
+as String?,codec: freezed == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
 as String?,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as String?,country: freezed == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? quality,  String? category,  String? country)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? quality,  String? codec,  String? category,  String? country)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HomeFilters() when $default != null:
-return $default(_that.quality,_that.category,_that.country);case _:
+return $default(_that.quality,_that.codec,_that.category,_that.country);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.quality,_that.category,_that.country);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? quality,  String? category,  String? country)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? quality,  String? codec,  String? category,  String? country)  $default,) {final _that = this;
 switch (_that) {
 case _HomeFilters():
-return $default(_that.quality,_that.category,_that.country);case _:
+return $default(_that.quality,_that.codec,_that.category,_that.country);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +194,10 @@ return $default(_that.quality,_that.category,_that.country);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? quality,  String? category,  String? country)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? quality,  String? codec,  String? category,  String? country)?  $default,) {final _that = this;
 switch (_that) {
 case _HomeFilters() when $default != null:
-return $default(_that.quality,_that.category,_that.country);case _:
+return $default(_that.quality,_that.codec,_that.category,_that.country);case _:
   return null;
 
 }
@@ -208,10 +209,11 @@ return $default(_that.quality,_that.category,_that.country);case _:
 
 
 class _HomeFilters extends HomeFilters {
-  const _HomeFilters({this.quality, this.category, this.country}): super._();
+  const _HomeFilters({this.quality, this.codec, this.category, this.country}): super._();
   
 
 @override final  String? quality;
+@override final  String? codec;
 @override final  String? category;
 @override final  String? country;
 
@@ -225,16 +227,16 @@ _$HomeFiltersCopyWith<_HomeFilters> get copyWith => __$HomeFiltersCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeFilters&&(identical(other.quality, quality) || other.quality == quality)&&(identical(other.category, category) || other.category == category)&&(identical(other.country, country) || other.country == country));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeFilters&&(identical(other.quality, quality) || other.quality == quality)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.category, category) || other.category == category)&&(identical(other.country, country) || other.country == country));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,quality,category,country);
+int get hashCode => Object.hash(runtimeType,quality,codec,category,country);
 
 @override
 String toString() {
-  return 'HomeFilters(quality: $quality, category: $category, country: $country)';
+  return 'HomeFilters(quality: $quality, codec: $codec, category: $category, country: $country)';
 }
 
 
@@ -245,7 +247,7 @@ abstract mixin class _$HomeFiltersCopyWith<$Res> implements $HomeFiltersCopyWith
   factory _$HomeFiltersCopyWith(_HomeFilters value, $Res Function(_HomeFilters) _then) = __$HomeFiltersCopyWithImpl;
 @override @useResult
 $Res call({
- String? quality, String? category, String? country
+ String? quality, String? codec, String? category, String? country
 });
 
 
@@ -262,9 +264,10 @@ class __$HomeFiltersCopyWithImpl<$Res>
 
 /// Create a copy of HomeFilters
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? quality = freezed,Object? category = freezed,Object? country = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? quality = freezed,Object? codec = freezed,Object? category = freezed,Object? country = freezed,}) {
   return _then(_HomeFilters(
 quality: freezed == quality ? _self.quality : quality // ignore: cast_nullable_to_non_nullable
+as String?,codec: freezed == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
 as String?,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as String?,country: freezed == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
 as String?,

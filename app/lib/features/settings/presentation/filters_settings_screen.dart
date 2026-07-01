@@ -19,6 +19,8 @@ class FiltersSettingsScreen extends StatelessWidget {
         children: const [
           _FilterSection(type: HomeFilterType.quality),
           Divider(),
+          _FilterSection(type: HomeFilterType.codec),
+          Divider(),
           _FilterSection(type: HomeFilterType.category),
           Divider(),
           _FilterSection(type: HomeFilterType.country),

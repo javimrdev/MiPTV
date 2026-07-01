@@ -81,6 +81,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filterQuality => 'Qualität';
 
   @override
+  String get filterCodec => 'Codec';
+
+  @override
   String get filterCategory => 'Kategorie';
 
   @override

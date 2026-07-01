@@ -232,6 +232,12 @@ abstract class AppLocalizations {
   /// **'Quality'**
   String get filterQuality;
 
+  /// No description provided for @filterCodec.
+  ///
+  /// In en, this message translates to:
+  /// **'Codec'**
+  String get filterCodec;
+
   /// No description provided for @filterCategory.
   ///
   /// In en, this message translates to:

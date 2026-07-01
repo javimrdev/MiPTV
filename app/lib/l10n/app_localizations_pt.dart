@@ -81,6 +81,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get filterQuality => 'Qualidade';
 
   @override
+  String get filterCodec => 'Codec';
+
+  @override
   String get filterCategory => 'Categoria';
 
   @override

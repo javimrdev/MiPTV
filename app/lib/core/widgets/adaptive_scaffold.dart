@@ -14,15 +14,29 @@ import 'package:miptv/core/widgets/glass/glass_surface.dart';
 /// Pass `title: null` to render without an app bar at all (just the body in
 /// a [SafeArea]) — used by screens that want a clean, chrome-free top.
 class AppScaffold extends StatelessWidget {
-  const AppScaffold({super.key, this.title, required this.body});
+  const AppScaffold({
+    super.key,
+    this.title,
+    required this.body,
+    this.extendBehindNavBar = false,
+  });
 
   final Widget? title;
   final Widget body;
 
+  /// Set to `true` for screens hosted inside [ScaffoldWithNavBar]'s
+  /// [StatefulShellRoute] branches: that shell already floats a
+  /// self-contained bottom nav bar over the content (with its own safe-area
+  /// handling), so reserving `SafeArea`'s bottom inset here would double
+  /// count the home-indicator inset and leave a stray gap above the bar.
+  final bool extendBehindNavBar;
+
   @override
   Widget build(BuildContext context) {
     if (title == null) {
-      return Scaffold(body: SafeArea(child: body));
+      return Scaffold(
+        body: SafeArea(bottom: !extendBehindNavBar, child: body),
+      );
     }
 
     if (!isIOSGlass) {
@@ -43,7 +57,7 @@ class AppScaffold extends StatelessWidget {
           child: SizedBox.expand(),
         ),
       ),
-      body: SafeArea(child: body),
+      body: SafeArea(bottom: !extendBehindNavBar, child: body),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:miptv/l10n/app_localizations.dart';
 extension HomeFilterTypeLabel on HomeFilterType {
   String label(AppLocalizations l10n) => switch (this) {
         HomeFilterType.quality => l10n.filterQuality,
+        HomeFilterType.codec => l10n.filterCodec,
         HomeFilterType.category => l10n.filterCategory,
         HomeFilterType.country => l10n.filterCountry,
       };
