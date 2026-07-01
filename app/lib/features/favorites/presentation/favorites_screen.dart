@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
+import 'package:miptv/core/responsive/content_width_cap.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
 import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/features/favorites/domain/favorite_category_entity.dart';
@@ -25,38 +26,39 @@ class FavoritesScreen extends ConsumerWidget {
           if (categories.isEmpty && favorites.isEmpty) {
             return Center(child: Text(l10n.favoritesEmpty));
           }
-          return CustomScrollView(
-            slivers: [
-              if (categories.isNotEmpty) ...[
-                _SectionHeader(l10n.categories),
-                SliverFixedExtentList.builder(
-                  itemExtent: 72,
-                  itemCount: categories.length,
-                  itemBuilder: (_, i) =>
-                      _FavoriteCategoryTile(category: categories[i]),
-                ),
+          return ContentWidthCap(
+            maxWidth: 960,
+            child: CustomScrollView(
+              slivers: [
+                if (categories.isNotEmpty) ...[
+                  _SectionHeader(l10n.categories),
+                  SliverFixedExtentList.builder(
+                    itemExtent: 72,
+                    itemCount: categories.length,
+                    itemBuilder: (_, i) =>
+                        _FavoriteCategoryTile(category: categories[i]),
+                  ),
+                ],
+                if (favorites.isNotEmpty) ...[
+                  _SectionHeader(l10n.channels),
+                  SliverFixedExtentList.builder(
+                    itemExtent: 72,
+                    itemCount: favorites.length,
+                    itemBuilder: (_, i) {
+                      final fav = favorites[i];
+                      return _FavoriteTile(
+                        streamId: fav.streamId,
+                        stream: byId[fav.streamId],
+                      );
+                    },
+                  ),
+                ],
               ],
-              if (favorites.isNotEmpty) ...[
-                _SectionHeader(l10n.channels),
-                SliverFixedExtentList.builder(
-                  itemExtent: 72,
-                  itemCount: favorites.length,
-                  itemBuilder: (_, i) {
-                    final fav = favorites[i];
-                    return _FavoriteTile(
-                      streamId: fav.streamId,
-                      stream: byId[fav.streamId],
-                    );
-                  },
-                ),
-              ],
-            ],
+            ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(
-          child: Text(l10n.favoritesLoadError),
-        ),
+        error: (_, __) => Center(child: Text(l10n.favoritesLoadError)),
       ),
     );
   }
@@ -72,10 +74,7 @@ class _SectionHeader extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-        child: Text(
-          title,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
+        child: Text(title, style: Theme.of(context).textTheme.titleSmall),
       ),
     );
   }
@@ -130,8 +129,10 @@ class _FavoriteTile extends ConsumerWidget {
                 width: 48,
                 height: 48,
                 fit: BoxFit.contain,
-                placeholder: (_, __) =>
-                    const SizedBox.square(dimension: 48, child: Icon(Icons.live_tv)),
+                placeholder: (_, __) => const SizedBox.square(
+                  dimension: 48,
+                  child: Icon(Icons.live_tv),
+                ),
                 errorWidget: (_, __, ___) => const Icon(Icons.live_tv),
               ),
         title: Text(

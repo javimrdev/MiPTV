@@ -100,3 +100,31 @@ class GlassTileBackground extends StatelessWidget {
     );
   }
 }
+
+/// Grid-cell counterpart to [GlassTileBackground]. A grid cell isn't
+/// extent-constrained the way a `ListTile` row inside a fixed `itemExtent`
+/// is, so this uses a full border/margin on all sides instead of the
+/// horizontal-only margin [GlassTileBackground] requires to fit its row
+/// height. Same cheap pass-through-on-Android, no-`BackdropFilter`
+/// rationale as [GlassTileBackground] — grid cells scroll too.
+class GlassGridTileBackground extends StatelessWidget {
+  const GlassGridTileBackground({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isIOSGlass) return child;
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: scheme.surface.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: scheme.onSurface.withValues(alpha: 0.08)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Material(type: MaterialType.transparency, child: child),
+    );
+  }
+}

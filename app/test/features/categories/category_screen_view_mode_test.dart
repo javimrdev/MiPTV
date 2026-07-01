@@ -11,6 +11,7 @@ import 'package:miptv/features/streams/domain/stream_entity.dart';
 import 'package:miptv/features/streams/domain/stream_repository.dart';
 
 import '../../support/l10n_test_app.dart';
+import '../../support/responsive_test_helpers.dart';
 
 class MockStreamRepository extends Mock implements StreamRepository {}
 
@@ -36,8 +37,9 @@ void main() {
     epgRepo = MockEpgRepository();
     favRepo = MockFavoriteRepository();
 
-    when(() => streamRepo.getStreamsForCategory(any()))
-        .thenAnswer((_) async => [stream]);
+    when(
+      () => streamRepo.getStreamsForCategory(any()),
+    ).thenAnswer((_) async => [stream]);
     when(() => favRepo.isFavorite(any())).thenAnswer((_) async => false);
 
     final now = DateTime.now();
@@ -58,15 +60,17 @@ void main() {
   });
 
   Widget wrap() => ProviderScope(
-        overrides: [
-          streamRepositoryProvider.overrideWithValue(streamRepo),
-          epgRepositoryProvider.overrideWithValue(epgRepo),
-          favoriteRepositoryProvider.overrideWithValue(favRepo),
-        ],
-        child: testApp(home: const CategoryScreen(categoryId: 'cat')),
-      );
+    overrides: [
+      streamRepositoryProvider.overrideWithValue(streamRepo),
+      epgRepositoryProvider.overrideWithValue(epgRepo),
+      favoriteRepositoryProvider.overrideWithValue(favRepo),
+    ],
+    child: testApp(home: const CategoryScreen(categoryId: 'cat')),
+  );
 
-  testWidgets('defaults to Lista view; EPG lines are not shown', (tester) async {
+  testWidgets('defaults to Lista view; EPG lines are not shown', (
+    tester,
+  ) async {
     await tester.pumpWidget(wrap());
     await tester.pumpAndSettle();
 
@@ -86,5 +90,18 @@ void main() {
     expect(find.textContaining('Telediario'), findsOneWidget);
     expect(find.textContaining('Next'), findsOneWidget);
     expect(find.textContaining('El Tiempo'), findsOneWidget);
+  });
+
+  testWidgets('caps content width on tablet but stays a ListView (no grid)', (
+    tester,
+  ) async {
+    setTabletViewport(tester);
+    await tester.pumpWidget(wrap());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ListView), findsOneWidget);
+    expect(find.byType(GridView), findsNothing);
+    final width = tester.getSize(find.byType(ListView)).width;
+    expect(width, lessThanOrEqualTo(960));
   });
 }

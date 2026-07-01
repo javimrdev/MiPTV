@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miptv/app/providers.dart';
 import 'package:miptv/core/errors/app_error.dart';
+import 'package:miptv/core/responsive/content_width_cap.dart';
 import 'package:miptv/core/widgets/adaptive_scaffold.dart';
 import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/core/widgets/skeleton.dart';
@@ -14,8 +15,10 @@ import 'package:miptv/l10n/app_localizations.dart';
 
 /// Whether a given category id is in favorites. Family-keyed so each tile
 /// observes only its own state and rebuilds independently.
-final _categoryFavoriteToggleProvider =
-    FutureProvider.family<bool, String>((ref, categoryId) {
+final _categoryFavoriteToggleProvider = FutureProvider.family<bool, String>((
+  ref,
+  categoryId,
+) {
   return ref.watch(favoriteRepositoryProvider).isFavoriteCategory(categoryId);
 });
 
@@ -29,8 +32,9 @@ class HomeScreen extends ConsumerWidget {
     return AppScaffold(
       title: const Text('MiPTV'),
       body: providerAsync.when(
-        data: (provider) =>
-            provider == null ? const _NoProviderView() : const _CategoriesList(),
+        data: (provider) => provider == null
+            ? const _NoProviderView()
+            : const _CategoriesList(),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const _NoProviderView(),
       ),
@@ -52,10 +56,7 @@ class _NoProviderView extends StatelessWidget {
           children: [
             const Icon(Icons.live_tv, size: 56),
             const SizedBox(height: 16),
-            Text(
-              l10n.homeNoProvider,
-              textAlign: TextAlign.center,
-            ),
+            Text(l10n.homeNoProvider, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             FilledButton.icon(
               icon: const Icon(Icons.add),
@@ -91,77 +92,87 @@ class _CategoriesListState extends ConsumerState<_CategoriesList> {
     final l10n = AppLocalizations.of(context);
     final categoriesAsync = ref.watch(categoriesProvider);
 
-    return Column(
-      children: [
-        const SizedBox(height: 8),
-        const HomeFiltersBar(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-          child: TextField(
-            controller: _controller,
-            decoration: InputDecoration(
-              hintText: l10n.searchCategoriesHint,
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: _query.isEmpty
-                  ? null
-                  : IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _controller.clear();
-                        setState(() => _query = '');
-                      },
-                    ),
-              border: const OutlineInputBorder(),
-              isDense: true,
+    return ContentWidthCap(
+      maxWidth: 720,
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          const HomeFiltersBar(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                hintText: l10n.searchCategoriesHint,
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _query.isEmpty
+                    ? null
+                    : IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _controller.clear();
+                          setState(() => _query = '');
+                        },
+                      ),
+                border: const OutlineInputBorder(),
+                isDense: true,
+              ),
+              onChanged: (v) => setState(() => _query = v.trim()),
             ),
-            onChanged: (v) => setState(() => _query = v.trim()),
           ),
-        ),
-        Expanded(
-          child: categoriesAsync.when(
-            data: (cats) {
-              // Pill filters first (mocked pass-through), then text search.
-              final byFilters =
-                  applyHomeFilters(cats, ref.watch(homeFiltersProvider));
-              final filtered = _query.isEmpty
-                  ? byFilters
-                  : byFilters
-                      .where((c) =>
-                          c.name.toLowerCase().contains(_query.toLowerCase()))
-                      .toList();
-              if (filtered.isEmpty) {
-                return Center(child: Text(l10n.noResults));
-              }
-              return ListView.builder(
-                itemCount: filtered.length,
-                itemBuilder: (_, i) => _CategoryTile(category: filtered[i]),
-              );
-            },
-            loading: () => const SkeletonList.categories(),
-            error: (e, _) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.signal_wifi_off, size: 48),
-                    const SizedBox(height: 12),
-                    Text(
-                      e is AppError ? e.userMessage(l10n) : l10n.errorUnexpected,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () => ref.invalidate(categoriesProvider),
-                      child: Text(l10n.retry),
-                    ),
-                  ],
+          Expanded(
+            child: categoriesAsync.when(
+              data: (cats) {
+                // Pill filters first (mocked pass-through), then text search.
+                final byFilters = applyHomeFilters(
+                  cats,
+                  ref.watch(homeFiltersProvider),
+                );
+                final filtered = _query.isEmpty
+                    ? byFilters
+                    : byFilters
+                          .where(
+                            (c) => c.name.toLowerCase().contains(
+                              _query.toLowerCase(),
+                            ),
+                          )
+                          .toList();
+                if (filtered.isEmpty) {
+                  return Center(child: Text(l10n.noResults));
+                }
+                return ListView.builder(
+                  itemCount: filtered.length,
+                  itemBuilder: (_, i) => _CategoryTile(category: filtered[i]),
+                );
+              },
+              loading: () => const SkeletonList.categories(),
+              error: (e, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.signal_wifi_off, size: 48),
+                      const SizedBox(height: 12),
+                      Text(
+                        e is AppError
+                            ? e.userMessage(l10n)
+                            : l10n.errorUnexpected,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: () => ref.invalidate(categoriesProvider),
+                        child: Text(l10n.retry),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -178,15 +189,18 @@ class _CategoryTile extends ConsumerWidget {
     return GlassTileBackground(
       child: ListTile(
         leading: const Icon(Icons.category),
-        title: Text(category.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: Text(
+          category.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             isFavAsync.maybeWhen(
               data: (isFav) => IconButton(
                 icon: Icon(isFav ? Icons.star : Icons.star_border),
-                tooltip:
-                    isFav ? l10n.removeFromFavorites : l10n.addToFavorites,
+                tooltip: isFav ? l10n.removeFromFavorites : l10n.addToFavorites,
                 onPressed: () async {
                   final repo = ref.read(favoriteRepositoryProvider);
                   if (isFav) {
