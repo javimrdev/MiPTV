@@ -168,6 +168,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playerError => 'Erreur lors de la lecture de la chaîne.';
 
   @override
+  String get playerTimeout => 'Le flux a mis trop de temps à démarrer.';
+
+  @override
   String get serverUrlLabel => 'URL du serveur';
 
   @override

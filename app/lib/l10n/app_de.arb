@@ -56,6 +56,7 @@
   "playerNoProvider": "Kein Anbieter konfiguriert.",
   "playerNoPassword": "Passwort nicht gefunden.",
   "playerError": "Fehler beim Abspielen des Senders.",
+  "playerTimeout": "Der Stream hat zu lange zum Starten gebraucht.",
 
   "serverUrlLabel": "Server-URL",
   "serverUrlValidation": "Gib die Server-URL ein",

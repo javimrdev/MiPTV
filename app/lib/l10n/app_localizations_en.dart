@@ -162,6 +162,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerError => 'Error playing the channel.';
 
   @override
+  String get playerTimeout => 'The stream took too long to start.';
+
+  @override
   String get serverUrlLabel => 'Server URL';
 
   @override

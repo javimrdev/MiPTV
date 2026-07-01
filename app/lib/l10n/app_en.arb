@@ -90,6 +90,7 @@
   "playerNoProvider": "No provider configured.",
   "playerNoPassword": "Password not found.",
   "playerError": "Error playing the channel.",
+  "playerTimeout": "The stream took too long to start.",
 
   "serverUrlLabel": "Server URL",
   "serverUrlValidation": "Enter the server URL",

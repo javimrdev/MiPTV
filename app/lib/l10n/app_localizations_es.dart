@@ -163,6 +163,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get playerError => 'Error al reproducir el canal.';
 
   @override
+  String get playerTimeout => 'El stream tardó demasiado en iniciar.';
+
+  @override
   String get serverUrlLabel => 'URL del servidor';
 
   @override

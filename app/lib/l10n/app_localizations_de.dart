@@ -166,6 +166,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get playerError => 'Fehler beim Abspielen des Senders.';
 
   @override
+  String get playerTimeout => 'Der Stream hat zu lange zum Starten gebraucht.';
+
+  @override
   String get serverUrlLabel => 'Server-URL';
 
   @override

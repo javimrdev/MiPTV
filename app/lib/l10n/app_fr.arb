@@ -56,6 +56,7 @@
   "playerNoProvider": "Aucun fournisseur configuré.",
   "playerNoPassword": "Mot de passe introuvable.",
   "playerError": "Erreur lors de la lecture de la chaîne.",
+  "playerTimeout": "Le flux a mis trop de temps à démarrer.",
 
   "serverUrlLabel": "URL du serveur",
   "serverUrlValidation": "Saisissez l'URL du serveur",

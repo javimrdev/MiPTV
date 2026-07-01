@@ -221,6 +221,7 @@ class _ThemeModeTile extends ConsumerWidget {
       leading: const Icon(Icons.brightness_6_outlined),
       title: Text(l10n.theme),
       subtitle: SegmentedButton<ThemeMode>(
+        showSelectedIcon: false,
         segments: [
           ButtonSegment(value: ThemeMode.system, label: Text(l10n.themeSystem)),
           ButtonSegment(value: ThemeMode.light, label: Text(l10n.themeLight)),

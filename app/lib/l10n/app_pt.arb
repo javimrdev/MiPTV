@@ -56,6 +56,7 @@
   "playerNoProvider": "Nenhum fornecedor configurado.",
   "playerNoPassword": "Palavra-passe não encontrada.",
   "playerError": "Erro ao reproduzir o canal.",
+  "playerTimeout": "O stream demorou demasiado tempo a iniciar.",
 
   "serverUrlLabel": "URL do servidor",
   "serverUrlValidation": "Introduza o URL do servidor",

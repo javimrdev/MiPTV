@@ -388,6 +388,12 @@ abstract class AppLocalizations {
   /// **'Error playing the channel.'**
   String get playerError;
 
+  /// No description provided for @playerTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The stream took too long to start.'**
+  String get playerTimeout;
+
   /// No description provided for @serverUrlLabel.
   ///
   /// In en, this message translates to:
