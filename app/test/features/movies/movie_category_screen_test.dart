@@ -62,8 +62,8 @@ void main() {
   });
 
   testWidgets(
-    'composes tablet grid with iOS glass chrome (GlassGridTileBackground '
-    'renders its frosted Container, not a plain pass-through)',
+    'tablet grid tiles are not wrapped in a frosted Container on iOS '
+    '(GlassGridTileBackground is a plain pass-through)',
     (tester) async {
       setTabletViewport(tester);
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
@@ -73,13 +73,11 @@ void main() {
 
         expect(find.byType(GridView), findsOneWidget);
         expect(find.byType(GlassGridTileBackground), findsNWidgets(2));
-        // Only the iOS-glass branch of GlassGridTileBackground wraps its
-        // child in a Container; the Android branch returns it untouched.
         final glassContainer = find.descendant(
           of: find.byType(GlassGridTileBackground).first,
           matching: find.byType(Container),
         );
-        expect(glassContainer, findsOneWidget);
+        expect(glassContainer, findsNothing);
       } finally {
         debugDefaultTargetPlatformOverride = null;
       }

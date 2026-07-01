@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:miptv/core/platform/app_platform.dart';
 
 /// A reusable frosted-glass container: blurs whatever sits behind it and
 /// overlays a translucent, theme-aware tint plus a hairline border.
@@ -61,70 +60,25 @@ class GlassSurface extends StatelessWidget {
   }
 }
 
-/// Cheap translucent-tint wrapper for list rows — NO `BackdropFilter`, since
-/// a real-time blur per row inside a virtualized `ListView.builder` would
-/// cost a blur pass on every visible row on every scroll frame (SPECS.md
-/// requires a fluid 60/120fps scroll). Pass-through on Android.
-///
-/// Only adds horizontal margin (never vertical), so it fits inside the
-/// fixed `itemExtent` (56/72/88px) used by the channel/movie/category lists
-/// without changing their row height.
+/// No-op pass-through for list rows. List rows deliberately don't get the
+/// frosted-glass treatment (unlike static chrome such as app bars, the nav
+/// pill, or chips) — kept as a wrapper so call sites don't need to change.
 class GlassTileBackground extends StatelessWidget {
   const GlassTileBackground({super.key, required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    if (!isIOSGlass) return child;
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: scheme.surface.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(14),
-        // Side-only border: `Container` adds a decoration border's width as
-        // inner padding, and a top/bottom border would eat into the row's
-        // fixed `itemExtent` height (see class doc). Left/right only avoids
-        // that without giving up the "card edge" look.
-        border: Border.symmetric(
-          vertical: BorderSide(color: scheme.onSurface.withValues(alpha: 0.08)),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      // `ListTile` paints its background/ink splashes on the nearest
-      // `Material` ancestor. Without this, the opaque DecoratedBox above
-      // would sit between the tile and that ancestor and hide them
-      // (Flutter raises a debug assertion for exactly this).
-      child: Material(type: MaterialType.transparency, child: child),
-    );
-  }
+  Widget build(BuildContext context) => child;
 }
 
-/// Grid-cell counterpart to [GlassTileBackground]. A grid cell isn't
-/// extent-constrained the way a `ListTile` row inside a fixed `itemExtent`
-/// is, so this uses a full border/margin on all sides instead of the
-/// horizontal-only margin [GlassTileBackground] requires to fit its row
-/// height. Same cheap pass-through-on-Android, no-`BackdropFilter`
-/// rationale as [GlassTileBackground] — grid cells scroll too.
+/// Grid-cell counterpart to [GlassTileBackground]. Same no-op pass-through —
+/// grid cells (e.g. movie posters) don't get the frosted-glass treatment.
 class GlassGridTileBackground extends StatelessWidget {
   const GlassGridTileBackground({super.key, required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    if (!isIOSGlass) return child;
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      margin: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        color: scheme.surface.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.onSurface.withValues(alpha: 0.08)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Material(type: MaterialType.transparency, child: child),
-    );
-  }
+  Widget build(BuildContext context) => child;
 }

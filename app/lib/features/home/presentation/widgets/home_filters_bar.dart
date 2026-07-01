@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miptv/app/providers.dart';
+import 'package:miptv/core/platform/app_platform.dart';
 import 'package:miptv/core/widgets/filter_pill.dart';
+import 'package:miptv/core/widgets/glass/glass_surface.dart';
 import 'package:miptv/features/home/domain/home_filters.dart';
 import 'package:miptv/features/home/presentation/home_filter_labels.dart';
 import 'package:miptv/features/home/presentation/home_filters_provider.dart';
@@ -39,6 +41,10 @@ class HomeFiltersBar extends ConsumerWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         children: [
+          if (filters.hasAny) ...[
+            _buildClearChip(context, ref, scheme, l10n),
+            const SizedBox(width: 8),
+          ],
           for (final type in HomeFilterType.values) ...[
             FilterPill(
               label: type.label(l10n),
@@ -48,19 +54,36 @@ class HomeFiltersBar extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
           ],
-          if (filters.hasAny)
-            ActionChip(
-              avatar: Icon(Icons.delete, size: 18, color: scheme.onError),
-              label: Text(
-                l10n.filtersClear,
-                style: TextStyle(color: scheme.onError),
-              ),
-              backgroundColor: scheme.error,
-              onPressed: () => ref.read(homeFiltersProvider.notifier).reset(),
-            ),
         ],
       ),
     );
+  }
+
+  Widget _buildClearChip(
+    BuildContext context,
+    WidgetRef ref,
+    ColorScheme scheme,
+    AppLocalizations l10n,
+  ) {
+    // On iOS the chip sits on the neutral glass tint (not a red background),
+    // so the icon/label must carry the red themselves via `error` — `onError`
+    // (designed for content atop a red background) would be low-contrast and
+    // not read as red here.
+    final contentColor = isIOSGlass ? scheme.error : scheme.onError;
+    final chip = ActionChip(
+      avatar: Icon(Icons.delete, size: 18, color: contentColor),
+      label: Text(
+        l10n.filtersClear,
+        style: TextStyle(color: contentColor),
+      ),
+      backgroundColor: isIOSGlass ? Colors.transparent : scheme.error,
+      side: isIOSGlass ? BorderSide.none : null,
+      onPressed: () => ref.read(homeFiltersProvider.notifier).reset(),
+    );
+
+    if (!isIOSGlass) return chip;
+
+    return GlassSurface(borderRadius: BorderRadius.circular(20), child: chip);
   }
 }
 
